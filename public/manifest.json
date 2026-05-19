@@ -1,0 +1,22 @@
+{
+  "name": "Bisecco — Le réseau social des artisans français",
+  "short_name": "Bisecco",
+  "description": "Trouvez un artisan qualifié et vérifié près de chez vous. SIREN contrôlé, avis authentiques, devis gratuit.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f7fc",
+  "theme_color": "#f07a2f",
+  "lang": "fr-FR",
+  "categories": ["business", "lifestyle", "social"],
+  "icons": [
+    { "src": "/logo.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any" },
+    { "src": "/logo.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Trouver un artisan",    "url": "/rechercher",  "description": "Recherche carte interactive" },
+    { "name": "Demander un devis",     "url": "/devis",       "description": "Devis gratuit en 2 minutes" },
+    { "name": "Mes messages",          "url": "/messagerie",  "description": "Discussion avec mes artisans" }
+  ]
+}

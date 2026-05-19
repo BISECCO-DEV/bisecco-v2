@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Zones privées
+Disallow: /admin
+Disallow: /api
+Disallow: /auth/
+
+# Pages utilisateur connecté
+Disallow: /mon-profil
+Disallow: /messagerie
+Disallow: /devis
+
+# Formulaires auth
+Disallow: /inscription
+Disallow: /connexion
+Disallow: /recuperation-compte
+Disallow: /email-verifie
+Disallow: /forbidden
+
+Sitemap: https://bisecco.fr/sitemap.xml

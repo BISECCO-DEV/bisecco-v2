@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand: 240 122 47;
+    --ink: 8 31 77;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-ink-50 text-ink-700 font-sans;
+  }
+
+  ::selection {
+    @apply bg-brand-500/20 text-brand-700;
+  }
+
+  /* Le ticker promo reste visible AU-DESSUS du menu mobile ouvert */
+  body.mobile-menu-open .promo-ticker {
+    z-index: 120 !important;
+  }
+
+  /* Sur les pages /coming-soon, on retire le bg-ink-50 du body et toute marge */
+  body:has(> [data-coming-soon]) {
+    background-color: #050b1f !important;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-150;
+  }
+  .btn-primary {
+    @apply btn bg-brand-500 text-white shadow-brand hover:bg-brand-600 hover:-translate-y-0.5;
+  }
+  .btn-secondary {
+    @apply btn border-2 border-white/20 text-white bg-white/5 hover:bg-white/10 backdrop-blur-sm;
+  }
+  .btn-outline {
+    @apply btn border-2 border-ink-200 text-ink-700 bg-white hover:border-brand-500 hover:text-brand-500;
+  }
+  .container-default {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 1600px;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Animations Leaflet marqueurs */
+@keyframes bsc-pulse {
+  0%, 100% { transform: rotate(-45deg) scale(1); }
+  50%      { transform: rotate(-45deg) scale(1.12); }
+}
+@keyframes bsc-pulse-user {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.5); opacity: 0;   }
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
+}
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+}
+
+/* Confiner Leaflet dans son propre stacking context — empêche ses tiles/markers/controls (z-index 400-800)
+   de passer au-dessus du header fixed (z-50). */
+.leaflet-container {
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+}
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom,
+.leaflet-control {
+  z-index: auto !important;
+}
+.leaflet-tile-pane     { z-index: 1 !important; }
+.leaflet-overlay-pane  { z-index: 2 !important; }
+.leaflet-shadow-pane   { z-index: 3 !important; }
+.leaflet-marker-pane   { z-index: 4 !important; }
+.leaflet-tooltip-pane  { z-index: 5 !important; }
+.leaflet-popup-pane    { z-index: 6 !important; }
+.leaflet-map-pane canvas,
+.leaflet-map-pane svg  { z-index: 1 !important; }

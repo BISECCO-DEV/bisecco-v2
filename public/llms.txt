@@ -1,0 +1,58 @@
+# Bisecco — Le réseau social des artisans français vérifiés
+
+> Plateforme française de mise en relation entre particuliers et artisans qualifiés. Chaque artisan est vérifié via son SIREN auprès de l'API officielle gouv.fr. Zone de service : France entière, lancement régional à Meaux (77) et Île-de-France.
+
+## Concept
+Bisecco combine annuaire d'artisans vérifiés (style Pages Jaunes) + réseau social pro (style LinkedIn) + mise en relation directe (style StarOfService). La différenciation repose sur la vérification SIREN obligatoire, les avis clients vérifiés (impossibles à acheter), un devis en ligne avec photos en 2 minutes, et l'absence totale de commission.
+
+## Pour les particuliers
+- Trouver un artisan par métier et ville (carte interactive Leaflet)
+- Voir le profil complet : SIREN vérifié, avis clients, photos de chantiers, services, tarifs indicatifs
+- Envoyer une demande de devis avec photos en 2 minutes
+- Recevoir plusieurs devis sous 24h, sans engagement
+- Messagerie directe sécurisée avec l'artisan
+- 100% gratuit, sans commission, sans intermédiaire
+
+## Pour les artisans
+- Profil pro vitrine vérifié SIREN
+- Recevoir des demandes qualifiées avec photos
+- Réseau social entre artisans (feed pro)
+- Abonnement freemium : Gratuit / Pro 19€/mois / Premium 49€/mois (visibilité boostée)
+- Statistiques de profil détaillées
+- Pas de carte bancaire requise à l'inscription
+
+## Métiers couverts
+288 métiers d'artisans français en 7 catégories :
+- Alimentation (Boulanger, Pâtissier, Boucher, Brasseur artisanal, Crêpier, Pizzaïolo, Vigneron…)
+- Bâtiment (Plombier, Électricien, Maçon, Menuisier, Peintre, Couvreur, Carreleur, Charpentier, Chauffagiste, Plaquiste, Façadier, Tailleur de pierre, Serrurier…)
+- Artisanat traditionnel (Ébéniste, Forgeron, Bijoutier, Horloger, Verrier, Vitrailliste, Luthier, Souffleur de verre, Vannier…)
+- Textile / mode (Couturier, Tailleur, Modiste, Brodeur, Dentellier, Plumassier…)
+- Automobile (Mécanicien, Carrossier, Sellier auto, Réparateur cycles/moto…)
+- Services (Coiffeur, Esthéticien, Fleuriste, Photographe, Informaticien, Maréchal-ferrant…)
+- Métiers d'art (Mosaïste, Lapidaire, Enlumineur, Facteur d'orgues, Tufteur…)
+
+## URL principales
+- Accueil : https://bisecco.fr/
+- Recherche carte interactive : https://bisecco.fr/rechercher
+- Tous les métiers : https://bisecco.fr/metiers
+- Pages métier dédiées : https://bisecco.fr/metiers/{metier}
+- Pages métier × ville (SEO local) : https://bisecco.fr/artisans/{metier}/{ville} (ex: /artisans/plombier/meaux)
+- Tous les avis : https://bisecco.fr/avis
+- Blog : https://bisecco.fr/blog
+- Demander un devis : https://bisecco.fr/devis
+
+## Différenciateurs clés
+1. SIREN vérifié automatiquement via API gouv.fr (recherche-entreprises.api.gouv.fr)
+2. Avis 100% authentiques (impossibles à acheter, seuls les clients réels peuvent en laisser)
+3. Devis gratuit en 2 minutes avec photos
+4. Aucune commission, aucun intermédiaire financier
+5. Hébergé en France, conforme RGPD
+6. Note moyenne 4.8/5 sur 247 avis publiés
+
+## Tech stack
+Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS · Supabase (Auth + PostgreSQL + RLS) · Police Manrope
+
+## Contact
+- Email : contact@bisecco.fr
+- Support : bisecco.support@gmail.com
+- Médiation : disponible gratuitement en cas de litige

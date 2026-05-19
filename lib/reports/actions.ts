@@ -4,19 +4,9 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
+import { REASONS, type ReportReason } from "./constants";
 
 export type ReportState = { error?: string; success?: string } | undefined;
-
-const REASONS = ["spam", "fake_profile", "inappropriate", "siren_invalid", "abuse", "other"] as const;
-
-export const REASON_LABELS: Record<typeof REASONS[number], string> = {
-  spam: "Spam / pub / arnaque",
-  fake_profile: "Faux profil (nom, photo, identité)",
-  inappropriate: "Contenu inapproprié",
-  siren_invalid: "SIREN invalide ou inexistant",
-  abuse: "Harcèlement / abus",
-  other: "Autre raison",
-};
 
 /** Signaler un profil · supporte auth + anon */
 export async function submitReportAction(
@@ -30,7 +20,7 @@ export async function submitReportAction(
   const reporterEmail = formData.get("reporter_email")?.toString().trim().toLowerCase() || null;
 
   if (!reportedUserId) return { error: "Profil cible invalide." };
-  if (!REASONS.includes(reasonRaw as typeof REASONS[number])) return { error: "Raison invalide." };
+  if (!REASONS.includes(reasonRaw as ReportReason)) return { error: "Raison invalide." };
 
   const me = await getCurrentDbUser();
   if (!me && !reporterEmail) return { error: "Email requis pour les signalements anonymes." };

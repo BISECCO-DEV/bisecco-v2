@@ -5,27 +5,9 @@ import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { pushNotification } from "@/lib/notifications/actions";
+import { URGENCY, BUDGET, type Urgency, type BudgetRange } from "./constants";
 
 export type QuoteState = { error?: string; success?: string; quoteId?: number } | undefined;
-
-const URGENCY = ["immediate", "week", "month", "flexible"] as const;
-const BUDGET = ["under_500", "500_2000", "2000_5000", "5000_10000", "over_10000", "unknown"] as const;
-
-export const URGENCY_LABELS: Record<typeof URGENCY[number], string> = {
-  immediate: "Immédiat (sous 48h)",
-  week: "Cette semaine",
-  month: "Ce mois-ci",
-  flexible: "Flexible",
-};
-
-export const BUDGET_LABELS: Record<typeof BUDGET[number], string> = {
-  under_500: "< 500 €",
-  "500_2000": "500 – 2 000 €",
-  "2000_5000": "2 000 – 5 000 €",
-  "5000_10000": "5 000 – 10 000 €",
-  over_10000: "> 10 000 €",
-  unknown: "À définir",
-};
 
 /** Soumet une demande de devis ciblée sur un artisan (depuis sa page profil). */
 export async function submitQuoteAction(
@@ -42,8 +24,8 @@ export async function submitQuoteAction(
   const description = formData.get("description")?.toString().trim();
   const city = formData.get("city")?.toString().trim() || null;
   const postalCode = formData.get("postal_code")?.toString().trim() || null;
-  const urgency = formData.get("urgency")?.toString() as typeof URGENCY[number];
-  const budgetRange = formData.get("budget_range")?.toString() as typeof BUDGET[number];
+  const urgency = formData.get("urgency")?.toString() as Urgency;
+  const budgetRange = formData.get("budget_range")?.toString() as BudgetRange;
   const contactPhone = formData.get("contact_phone")?.toString().trim() || null;
   const contactEmail = formData.get("contact_email")?.toString().trim();
 

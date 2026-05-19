@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Flag, AlertTriangle, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { handleReportAction, REASON_LABELS } from "@/lib/reports/actions";
+import { handleReportAction } from "@/lib/reports/actions";
+import { REASON_LABELS } from "@/lib/reports/constants";
 
 export const dynamic = "force-dynamic";
 

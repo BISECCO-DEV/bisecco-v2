@@ -2,7 +2,8 @@
 
 import { useActionState, useState } from "react";
 import { AlertTriangle } from "lucide-react";
-import { submitReportAction, REASON_LABELS, type ReportState } from "@/lib/reports/actions";
+import { submitReportAction, type ReportState } from "@/lib/reports/actions";
+import { REASON_LABELS } from "@/lib/reports/constants";
 
 type Props = {
   reportedUserId: number;
@@ -58,7 +59,7 @@ export function ReportProfileForm({ reportedUserId, isGuest }: Props) {
               >
                 <option value="">— Choisir —</option>
                 {Object.entries(REASON_LABELS).map(([key, label]) => (
-                  <option key={key} value={key}>{label}</option>
+                  <option key={key} value={key}>{String(label)}</option>
                 ))}
               </select>
             </div>

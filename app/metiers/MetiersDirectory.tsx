@@ -94,7 +94,7 @@ export function MetiersDirectory({ metiers }: Props) {
 
   return (
     <>
-      {/* Stats banner — chevauche la frontière navy/gris */}
+      {/* Stats banner · chevauche la frontière navy/gris */}
       <div className="container-default -mt-20 sm:-mt-24 relative z-10">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {[

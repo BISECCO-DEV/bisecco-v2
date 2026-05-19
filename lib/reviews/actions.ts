@@ -8,7 +8,7 @@ import { pushNotification } from "@/lib/notifications/actions";
 
 export type ReviewState = { error?: string; success?: string } | undefined;
 
-/** Poster un avis — modération obligatoire avant publication */
+/** Poster un avis · modération obligatoire avant publication */
 export async function submitReviewAction(_prev: ReviewState, formData: FormData): Promise<ReviewState> {
   const me = await getCurrentDbUser();
   if (!me) return { error: "Connexion requise." };

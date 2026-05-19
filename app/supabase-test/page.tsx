@@ -36,7 +36,7 @@ async function runTests() {
 
   // 2. Connexion réelle au projet
   let connectionOk = false;
-  let connectionDetail = "Skip — variables manquantes";
+  let connectionDetail = "Skip · variables manquantes";
   if (url && anon) {
     try {
       const supabase = await createClient();
@@ -45,7 +45,7 @@ async function runTests() {
         connectionDetail = `Erreur: ${error.message}`;
       } else {
         connectionOk = true;
-        connectionDetail = "Session check OK — Supabase répond";
+        connectionDetail = "Session check OK · Supabase répond";
       }
     } catch (e) {
       connectionDetail = `Exception: ${(e as Error).message}`;
@@ -108,7 +108,7 @@ export default async function SupabaseTestPage() {
         >
           <div className="flex items-center gap-3 font-bold text-lg">
             {allOk ? <CheckCircle2 size={22} /> : <XCircle size={22} />}
-            {allOk ? "Tout est OK — Supabase est prêt à l'emploi" : "Configuration incomplète"}
+            {allOk ? "Tout est OK · Supabase est prêt à l'emploi" : "Configuration incomplète"}
           </div>
           {!allOk && (
             <p className="mt-2 text-sm">
@@ -172,7 +172,7 @@ export default async function SupabaseTestPage() {
                   ))}
                 </div>
                 <p className="mt-4 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg">
-                  ✅ Connexion DB + lecture réussies — le V2 lit bien les vraies données Supabase.
+                  ✅ Connexion DB + lecture réussies · le V2 lit bien les vraies données Supabase.
                 </p>
               </>
             ) : (
@@ -223,7 +223,7 @@ export default async function SupabaseTestPage() {
           <ul className="text-sm text-ink-600 space-y-1.5 list-disc list-inside">
             <li><code className="px-1 rounded bg-white border font-mono text-xs">NEXT_PUBLIC_*</code> = exposé au navigateur, OK</li>
             <li><code className="px-1 rounded bg-white border font-mono text-xs">SUPABASE_SERVICE_ROLE_KEY</code> = côté serveur uniquement, ne JAMAIS exposer</li>
-            <li><code className="px-1 rounded bg-white border font-mono text-xs">.env.local</code> est dans <code className="px-1 rounded bg-white border font-mono text-xs">.gitignore</code> — ne sera jamais commité</li>
+            <li><code className="px-1 rounded bg-white border font-mono text-xs">.env.local</code> est dans <code className="px-1 rounded bg-white border font-mono text-xs">.gitignore</code> · ne sera jamais commité</li>
           </ul>
         </div>
       </div>

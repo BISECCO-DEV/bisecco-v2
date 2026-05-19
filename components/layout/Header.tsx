@@ -47,7 +47,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
 
   return (
     <>
-      {/* Ticker promo — toujours visible, masqué uniquement quand le menu mobile est ouvert */}
+      {/* Ticker promo · toujours visible, masqué uniquement quand le menu mobile est ouvert */}
       <div className="promo-ticker fixed top-0 left-0 right-0 z-[52] overflow-hidden whitespace-nowrap py-2 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 border-b border-brand-600/40 shadow-[0_1px_0_rgba(255,255,255,0.18)_inset]">
         <div className="inline-flex animate-marquee">
           {[...Array(4)].map((_, i) => (
@@ -55,7 +55,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
               key={i}
               className="px-20 text-[0.72rem] font-bold tracking-[0.04em] text-white"
             >
-              🚀 Nouveau service — Rejoignez les premiers artisans Bisecco
+              🚀 Nouveau service · Rejoignez les premiers artisans Bisecco
               <span className="mx-2 text-white/65">·</span>
               Profil vérifié SIREN, 0 % commission, contact direct.
             </span>
@@ -63,7 +63,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
         </div>
       </div>
 
-      {/* Voile ambiant — donne de la présence au header transparent (mode overlay uniquement) */}
+      {/* Voile ambiant · donne de la présence au header transparent (mode overlay uniquement) */}
       {isTransparent && (
         <div
           className="fixed top-0 left-0 right-0 z-[49] h-[180px] pointer-events-none transition-opacity duration-300"
@@ -75,7 +75,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
         />
       )}
 
-      {/* Header principal — navy au scroll, transparent sur hero */}
+      {/* Header principal · navy au scroll, transparent sur hero */}
       <header
         className={`fixed left-0 right-0 z-50 transition-all duration-300 ${
           isTransparent
@@ -86,7 +86,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8 flex items-center h-[72px] gap-4 lg:gap-6">
 
           {/* Logo + tagline */}
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0 group" aria-label="Bisecco — accueil">
+          <Link href="/" className="flex items-center gap-3 flex-shrink-0 group" aria-label="Bisecco · accueil">
             <div className="w-11 h-11 rounded-xl overflow-hidden border border-white/20 shadow-[0_4px_14px_rgba(0,0,0,0.4)] bg-white/95">
               <Image
                 src="/logo.jpg"
@@ -146,7 +146,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
         </div>
       </header>
 
-      {/* Spacer — réserve la hauteur du header pour ne pas que le contenu passe dessous.
+      {/* Spacer · réserve la hauteur du header pour ne pas que le contenu passe dessous.
           Sur les pages "overlay hero", le hero gère son propre layout (min-h-screen). */}
       {!isOverlayPage && <div className="h-[104px] sm:h-[108px]" aria-hidden />}
     </>

@@ -93,7 +93,7 @@ export async function recheckSirenAction(formData: FormData): Promise<void> {
   revalidatePath("/admin", "layout");
   feedbackRedirect(formData, {
     msg: check.found
-      ? `SIREN ${check.status === "A" ? "ACTIF" : "CESSÉ"} — ${check.company_name ?? "?"}`
+      ? `SIREN ${check.status === "A" ? "ACTIF" : "CESSÉ"} · ${check.company_name ?? "?"}`
       : "SIREN introuvable au registre",
   });
 }

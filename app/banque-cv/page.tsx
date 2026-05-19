@@ -9,7 +9,7 @@ import { fetchPublishedCvs } from "@/lib/db/cv";
 import { fetchAllMetiers } from "@/lib/db/metiers";
 
 export const metadata: Metadata = {
-  title: "Banque de CV — Bisecco Pro",
+  title: "Banque de CV · Bisecco Pro",
   description:
     "Trouvez votre prochain employé ou apprenti dans l'artisanat. CVs vérifiés, filtrables par métier et ville.",
   robots: { index: false, follow: false },
@@ -54,7 +54,7 @@ export default async function BanqueCVPage({ searchParams }: { searchParams: Sea
             Réservé aux pros
           </span>
           <h1 className="mt-5 text-[32px] sm:text-[44px] font-extrabold tracking-[-0.025em] leading-[1.05]">
-            <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">
+            <span className="text-brand-500">
               Banque de CV
             </span>{" "}
             Bisecco
@@ -145,7 +145,7 @@ export default async function BanqueCVPage({ searchParams }: { searchParams: Sea
             <div className="mb-5 flex items-center justify-between">
               <p className="text-sm text-ink-500">
                 <strong className="text-ink-700">{cvs.length}</strong> CV{cvs.length > 1 ? "s" : ""}{" "}
-                {params.metier && ` — ${metiers.find((m) => m.slug === params.metier)?.name ?? params.metier}`}
+                {params.metier && ` · ${metiers.find((m) => m.slug === params.metier)?.name ?? params.metier}`}
                 {params.ville && ` à ${params.ville}`}
               </p>
             </div>
@@ -242,7 +242,7 @@ function GatedBanqueCV() {
 
           <h1 className="mt-6 text-[32px] sm:text-[44px] leading-[1.05] font-extrabold tracking-[-0.025em]">
             Recrutez des{" "}
-            <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">
+            <span className="text-brand-500">
               talents artisanaux
             </span>
           </h1>

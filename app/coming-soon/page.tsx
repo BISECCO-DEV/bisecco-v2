@@ -4,9 +4,9 @@ import { Sparkles, ShieldCheck, Globe, KeyRound, Mail } from "lucide-react";
 import { ComingSoonClient } from "./ComingSoonClient";
 
 export const metadata: Metadata = {
-  title: "Bisecco — Bientôt disponible sur bisecco.fr",
+  title: "Bisecco · Bientôt disponible sur bisecco.fr",
   description:
-    "Bisecco — Le 1er réseau social d'artisans français vérifiés SIREN, développé pour les particuliers. Inscrivez-vous pour être prévenu du lancement.",
+    "Bisecco · Le 1er réseau social d'artisans français vérifiés SIREN, développé pour les particuliers. Inscrivez-vous pour être prévenu du lancement.",
   robots: { index: false, follow: false },
 };
 
@@ -18,7 +18,7 @@ export default function ComingSoonPage() {
       className="relative min-h-screen w-full text-white overflow-hidden"
       style={{ backgroundColor: "#040A1C" }}
     >
-      {/* Mesh gradient principal — fond animé multi-couleurs */}
+      {/* Mesh gradient principal · fond animé multi-couleurs */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -121,7 +121,7 @@ export default function ComingSoonPage() {
           <h1 className="text-center text-[34px] sm:text-[48px] lg:text-[60px] leading-[1.05] font-extrabold tracking-[-0.025em]">
             Service technique
             <br />
-            <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">
+            <span className="text-brand-500">
               Bisecco
             </span>
           </h1>
@@ -173,7 +173,7 @@ export default function ComingSoonPage() {
 
         {/* Footer fixe en bas */}
         <footer className="absolute bottom-4 left-0 right-0 text-center text-[0.66rem] text-white/30">
-          © {new Date().getFullYear()} Bisecco — Tous droits réservés ·{" "}
+          © {new Date().getFullYear()} Bisecco · Tous droits réservés ·{" "}
           <a href="https://bisecco.fr" className="hover:text-white/60 transition">bisecco.fr</a>
         </footer>
       </main>

@@ -114,7 +114,7 @@ export function HomeHowItWorks() {
           </p>
         </div>
 
-        {/* Tabs — switch audience */}
+        {/* Tabs · switch audience */}
         <div className="flex justify-center mb-12 sm:mb-16">
           <div role="tablist" aria-label="Audience" className="inline-flex items-center gap-1 p-1.5 rounded-2xl bg-white border border-ink-100 shadow-[0_4px_20px_-8px_rgba(13,30,74,0.12)]">
             {(["particulier", "artisan"] as const).map((a) => {

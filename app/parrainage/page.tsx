@@ -4,7 +4,7 @@ import { Gift, Users, Sparkles, Award, Share2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Programme de parrainage Bisecco",
-  description: "Invitez vos proches et vos professionnels à vous rejoindre sur bisecco.fr — le 1er réseau social d'artisans français vérifiés SIREN.",
+  description: "Invitez vos proches et vos professionnels à vous rejoindre sur bisecco.fr · le 1er réseau social d'artisans français vérifiés SIREN.",
 };
 
 export default function ParrainagePage() {
@@ -20,7 +20,7 @@ export default function ParrainagePage() {
           </span>
           <h1 className="text-3xl md:text-[2.8rem] font-bold mt-4 tracking-[-0.02em] leading-[1.05]">
             Invitez vos proches<br />
-            <span className="bg-gradient-to-r from-brand-400 to-brand-500 bg-clip-text text-transparent">
+            <span className="text-brand-500">
               et vos professionnels
             </span>
             <br />à vous rejoindre sur bisecco.fr

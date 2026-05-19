@@ -1,7 +1,7 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 /**
- * Client Supabase ADMIN — service_role key.
+ * Client Supabase ADMIN · service_role key.
  *
  * ⚠️ À N'UTILISER QUE CÔTÉ SERVEUR (Server Components, Route Handlers, Server Actions, scripts).
  * Cette clé bypass TOUTES les Row Level Security policies.

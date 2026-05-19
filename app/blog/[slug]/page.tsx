@@ -82,7 +82,7 @@ function ContentRenderer({ blocks }: { blocks: ContentBlock[] }) {
                 <p className="italic text-ink-700 text-[1.1rem] leading-relaxed">{block.text}</p>
                 {block.author && (
                   <footer className="mt-2 text-[0.84rem] font-semibold text-brand-700 not-italic">
-                    — {block.author}
+                    · {block.author}
                   </footer>
                 )}
               </blockquote>

@@ -52,7 +52,7 @@ export default async function DebugMePage() {
           </>
         ) : (
           <p className="text-red-600 font-bold">
-            ❌ AUCUNE LIGNE dans public.users pour cet email — c&apos;est ça le problème
+            ❌ AUCUNE LIGNE dans public.users pour cet email · c&apos;est ça le problème
           </p>
         )}
       </section>
@@ -64,7 +64,7 @@ export default async function DebugMePage() {
 {JSON.stringify(currentUser, null, 2)}
           </pre>
         ) : (
-          <p className="text-red-600 font-bold">❌ Null — pas de user</p>
+          <p className="text-red-600 font-bold">❌ Null · pas de user</p>
         )}
       </section>
 
@@ -164,7 +164,7 @@ async function DbCheck() {
         </div>
       ) : (
         <p className="text-red-600 font-bold text-sm">
-          ❌ AUCUN user dans public.users — la migration n&apos;a pas marché !
+          ❌ AUCUN user dans public.users · la migration n&apos;a pas marché !
         </p>
       )}
     </section>

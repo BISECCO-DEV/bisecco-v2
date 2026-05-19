@@ -11,7 +11,7 @@ import { fetchCvById } from "@/lib/db/cv";
 type Props = { params: Promise<{ id: string }> };
 
 export const metadata: Metadata = {
-  title: "CV — Bisecco Pro",
+  title: "CV · Bisecco Pro",
   robots: { index: false, follow: false },
 };
 

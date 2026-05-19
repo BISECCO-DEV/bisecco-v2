@@ -225,7 +225,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: [
       { type: "p", text: "Une fuite d'eau un dimanche soir, et c'est la panique. Avant de composer le premier numéro de plombier d'urgence (souvent à 250-400 € la simple intervention), prenez 5 minutes pour appliquer ces 5 gestes simples. Vous limiterez les dégâts et obtiendrez un meilleur tarif." },
       { type: "h2", text: "1. Couper l'arrivée d'eau générale" },
-      { type: "p", text: "Identifiez votre robinet d'arrêt principal (souvent sous l'évier de cuisine, dans un placard technique ou à l'entrée d'eau du logement). Tournez-le dans le sens des aiguilles d'une montre pour fermer. Si vous ne savez pas où il est, repérez-le dès maintenant — c'est vital." },
+      { type: "p", text: "Identifiez votre robinet d'arrêt principal (souvent sous l'évier de cuisine, dans un placard technique ou à l'entrée d'eau du logement). Tournez-le dans le sens des aiguilles d'une montre pour fermer. Si vous ne savez pas où il est, repérez-le dès maintenant · c'est vital." },
       { type: "h2", text: "2. Localiser la fuite précisément" },
       { type: "p", text: "Avant d'appeler, identifiez exactement d'où vient la fuite : robinet, flexible, tuyau apparent, joint silicone, mécanisme WC, ballon d'eau chaude. Cela permet au plombier de venir avec les bonnes pièces et de chiffrer correctement." },
       { type: "h2", text: "3. Photographier pour documenter" },
@@ -262,7 +262,7 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "p", text: "7-10 % des déperditions, surtout en rez-de-chaussée sur vide sanitaire ou sur sol froid. Isolation par dessous (vide sanitaire) ou par dessus (avant pose du revêtement). Coût : 30-60 €/m²." },
       { type: "list", items: ["Combles : ROI 3-5 ans", "Murs (ITE) : ROI 8-12 ans", "Fenêtres : ROI 12-15 ans", "Sols : ROI 6-10 ans"] },
       { type: "h2", text: "Quel isolant choisir ?" },
-      { type: "p", text: "Trois grandes familles : minéraux (laine de verre, laine de roche) — peu chers, efficaces ; biosourcés (ouate de cellulose, chanvre, fibre de bois) — meilleurs en confort d'été, plus écologiques ; synthétiques (polystyrène, polyuréthane) — performants en faible épaisseur." },
+      { type: "p", text: "Trois grandes familles : minéraux (laine de verre, laine de roche) · peu chers, efficaces ; biosourcés (ouate de cellulose, chanvre, fibre de bois) · meilleurs en confort d'été, plus écologiques ; synthétiques (polystyrène, polyuréthane) · performants en faible épaisseur." },
       { type: "quote", text: "Pour une rénovation globale, prévoyez 100-150 €/m² de surface habitable tous travaux confondus. Avec MaPrimeRénov' et CEE, le reste à charge peut tomber à 30-50 %." },
       { type: "h3", text: "Le bon ordre, le bon artisan" },
       { type: "p", text: "Ne lancez jamais une isolation sans avis d'un thermicien ou d'un audit énergétique. Sur Bisecco, trouvez des artisans RGE proches de chez vous, comparez 3 devis et obtenez les aides MaPrimeRénov' auxquelles vous avez droit." },

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Briefcase, MapPin, Heart, Coffee, Zap, ArrowRight, Users, Award, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Carrières — Rejoignez Bisecco",
+  title: "Carrières · Rejoignez Bisecco",
   description: "Bisecco recrute. Découvrez nos offres d'emploi et notre culture. Télétravail flexible, équipe à taille humaine.",
 };
 
@@ -25,7 +25,7 @@ export default function CarrieresPage() {
           </span>
           <h1 className="text-3xl md:text-[2.8rem] font-bold mt-4 tracking-[-0.02em] leading-[1.05]">
             Construisez avec nous <br />
-            <span className="bg-gradient-to-r from-brand-400 to-brand-500 bg-clip-text text-transparent">
+            <span className="text-brand-500">
               le futur de l&apos;artisanat français.
             </span>
           </h1>

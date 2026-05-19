@@ -22,7 +22,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL("https://bisecco.fr"),
   title: {
-    default: "Bisecco — Le réseau social des artisans français",
+    default: "Bisecco · Le réseau social des artisans français",
     template: "%s | Bisecco",
   },
   description:
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: "https://bisecco.fr",
     siteName: "Bisecco",
-    title: "Bisecco — Le réseau social des artisans français",
+    title: "Bisecco · Le réseau social des artisans français",
     description: "Trouvez un artisan qualifié et vérifié près de chez vous.",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
   },

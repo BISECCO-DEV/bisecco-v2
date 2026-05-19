@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Briefcase, Users, Eye, Edit3, Pause, Plus, MapPin, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Mes offres d'emploi — Espace recruteur",
+  title: "Mes offres d'emploi · Espace recruteur",
   description: "Gérez vos offres d'emploi publiées sur Bisecco et suivez les candidatures reçues.",
 };
 

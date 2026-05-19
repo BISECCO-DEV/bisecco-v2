@@ -8,7 +8,7 @@ import { ContactForm } from "./ContactForm";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Contact — Réseau des artisans français",
+  title: "Contact · Réseau des artisans français",
   description: "Contactez l'équipe Bisecco : support, partenariats, presse, recrutement. Réponse sous 24h ouvrées. Email, téléphone et formulaire en ligne.",
   alternates: { canonical: "/contact" },
 };
@@ -82,7 +82,7 @@ export default function ContactPage() {
               </span>
               <h1 className="mt-5 text-[40px] sm:text-[48px] lg:text-[56px] leading-[1.05] font-extrabold tracking-[-0.025em] text-white">
                 Une question ?<br />
-                <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">
+                <span className="text-brand-500">
                   Notre équipe vous écoute.
                 </span>
               </h1>
@@ -232,7 +232,7 @@ export default function ContactPage() {
             <div className="mt-10 text-center bg-gradient-to-br from-brand-50/60 via-white to-brand-50/40 rounded-3xl border border-brand-100 p-8">
               <h3 className="text-xl font-extrabold text-ink-700">Vous ne trouvez pas la réponse ?</h3>
               <p className="text-ink-500 mt-2 text-[0.94rem]">
-                Notre équipe support est là pour vous aider — réponse sous 24h.
+                Notre équipe support est là pour vous aider · réponse sous 24h.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <a

@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const a = ARTICLES[slug];
   if (!a) return { title: "Article introuvable" };
-  return { title: `${a.title} — Aide`, description: a.excerpt };
+  return { title: `${a.title} · Aide`, description: a.excerpt };
 }
 
 export default async function AideArticlePage({ params }: Props) {

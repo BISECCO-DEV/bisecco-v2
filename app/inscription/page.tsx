@@ -5,7 +5,7 @@ import { SignupForm } from "@/components/auth/SignupForm";
 
 export const metadata: Metadata = {
   title: "Inscription",
-  description: "Créez votre compte Bisecco en 2 minutes — gratuit, sans engagement.",
+  description: "Créez votre compte Bisecco en 2 minutes · gratuit, sans engagement.",
   robots: { index: false, follow: false },
 };
 

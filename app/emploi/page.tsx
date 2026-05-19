@@ -4,7 +4,7 @@ import { EmploiClient } from "./EmploiClient";
 import { Briefcase, TrendingUp, Award, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Emploi artisanat — Le 1er job board des métiers d'artisans",
+  title: "Emploi artisanat · Le 1er job board des métiers d'artisans",
   description: "Trouvez un emploi dans l'artisanat : boulanger, plombier, maçon, menuisier, électricien, boucher. Apprentissage, CDI, alternance, partout en France.",
 };
 
@@ -22,12 +22,12 @@ export default function EmploiPage() {
           </span>
           <h1 className="text-3xl md:text-[2.8rem] font-bold mt-4 tracking-[-0.02em] leading-[1.05]">
             Le 1<sup className="text-xl">er</sup> job board<br />
-            <span className="bg-gradient-to-r from-brand-400 to-brand-500 bg-clip-text text-transparent">
+            <span className="text-brand-500">
               dédié aux métiers d&apos;artisans.
             </span>
           </h1>
           <p className="mt-5 text-white/65 max-w-2xl leading-relaxed">
-            Apprentissages, CDI, alternances : trouvez un emploi dans l&apos;artisanat près de chez vous. Pas de spam, pas de fausses annonces — les entreprises sont vérifiées via leur SIREN.
+            Apprentissages, CDI, alternances : trouvez un emploi dans l&apos;artisanat près de chez vous. Pas de spam, pas de fausses annonces · les entreprises sont vérifiées via leur SIREN.
           </p>
 
           {/* Stats */}

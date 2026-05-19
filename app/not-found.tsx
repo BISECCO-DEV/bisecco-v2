@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <div className="min-h-[calc(100vh-160px)] bg-ink-50 flex items-center justify-center px-4">
       <div className="bg-white rounded-3xl shadow-card border border-ink-100 p-12 text-center max-w-md">
-        <div className="text-7xl sm:text-8xl font-bold bg-gradient-to-br from-ink-700 to-brand-500 bg-clip-text text-transparent">
+        <div className="text-7xl sm:text-8xl font-bold text-ink-700">
           404
         </div>
         <h1 className="text-2xl font-bold text-ink-700 mt-2">Page introuvable</h1>

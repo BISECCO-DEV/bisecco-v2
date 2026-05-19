@@ -11,7 +11,7 @@ export type NavLink = {
 };
 
 /**
- * Navigation principale — affichée à la fois dans le Header desktop
+ * Navigation principale · affichée à la fois dans le Header desktop
  * et dans le drawer mobile. Source unique pour éviter toute divergence.
  */
 export const MAIN_NAV: NavLink[] = [
@@ -25,7 +25,7 @@ export const MAIN_NAV: NavLink[] = [
 ];
 
 /**
- * Liens secondaires — affichés uniquement dans le drawer mobile (bonus).
+ * Liens secondaires · affichés uniquement dans le drawer mobile (bonus).
  */
 export const SECONDARY_NAV: NavLink[] = [
   { href: "/avis",  label: "Avis clients",        icon: Star },
@@ -34,7 +34,7 @@ export const SECONDARY_NAV: NavLink[] = [
 ];
 
 /**
- * Liens "Mon espace" — affichés dans le drawer mobile uniquement
+ * Liens "Mon espace" · affichés dans le drawer mobile uniquement
  * (auth-aware en futur quand Supabase sera branché).
  */
 export const ACCOUNT_NAV: NavLink[] = [

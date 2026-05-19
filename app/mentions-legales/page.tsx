@@ -13,7 +13,7 @@ export default function MentionsPage() {
           Site édité par <strong>Bisecco</strong>, plateforme française de mise en relation entre artisans et particuliers.
         </p>
         <h2 className="text-xl font-bold text-ink-700 mt-8">Éditeur</h2>
-        <p className="text-ink-500">Bisecco — France · contact@bisecco.fr</p>
+        <p className="text-ink-500">Bisecco · France · contact@bisecco.fr</p>
         <h2 className="text-xl font-bold text-ink-700 mt-6">Hébergement</h2>
         <p className="text-ink-500">À compléter selon le choix d&apos;hébergeur (Vercel / Cloudflare / etc.)</p>
       </div>

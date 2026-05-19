@@ -77,7 +77,7 @@ export function MobileMenu({ user }: MobileMenuProps = {}) {
         aria-hidden
       />
 
-      {/* Drawer — navy theme, plein écran sur mobile */}
+      {/* Drawer · navy theme, plein écran sur mobile */}
       <aside
         className={`fixed top-[36px] right-0 left-0 z-[110] w-full shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] lg:hidden transition-transform duration-300 ease-out sm:left-auto sm:w-[min(420px,100vw)] ${
           open ? "translate-x-0" : "translate-x-full"
@@ -233,7 +233,7 @@ export function MobileMenu({ user }: MobileMenuProps = {}) {
               </ul>
             </div>
 
-            {/* Mon espace — SEULEMENT si connecté */}
+            {/* Mon espace · SEULEMENT si connecté */}
             {user && (
               <div className="px-3 py-3 border-t border-white/[0.05]">
                 <div className="text-[0.62rem] font-extrabold tracking-[0.18em] text-white/40 uppercase px-4 py-2">

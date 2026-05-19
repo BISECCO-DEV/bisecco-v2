@@ -50,7 +50,7 @@ export function MobileBottomNav() {
             <BottomNavItem key={item.href} item={item} active={!!item.match?.(pathname)} />
           ))}
 
-          {/* CTA central — Demander un devis (raised, brand color) */}
+          {/* CTA central · Demander un devis (raised, brand color) */}
           <li className="flex items-center justify-center">
             <Link
               href="/devis"
@@ -69,7 +69,7 @@ export function MobileBottomNav() {
           ))}
         </ul>
 
-        {/* Label du CTA central — visible sous la bulle */}
+        {/* Label du CTA central · visible sous la bulle */}
         <div className="absolute left-1/2 -translate-x-1/2 bottom-1 text-[0.55rem] font-bold tracking-[0.08em] uppercase text-brand-500 pointer-events-none">
           Devis
         </div>

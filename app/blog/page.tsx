@@ -9,7 +9,7 @@ import { BlogClient } from "./BlogClient";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Blog — Conseils, guides et actualités artisanat",
+  title: "Blog · Conseils, guides et actualités artisanat",
   description:
     "Le blog Bisecco : guides pratiques travaux, sécurité, vérification SIREN, tendances 2026, métiers d'artisan, législation et conseils pour particuliers comme artisans.",
   alternates: { canonical: "/blog" },
@@ -57,7 +57,7 @@ export default function BlogPage() {
               </span>
               <h1 className="mt-5 text-[40px] sm:text-[48px] lg:text-[56px] leading-[1.05] font-extrabold tracking-[-0.025em] text-white">
                 Conseils, guides<br />
-                <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">
+                <span className="text-brand-500">
                   & actualités artisanat.
                 </span>
               </h1>
@@ -92,7 +92,7 @@ export default function BlogPage() {
         <section className="container-default py-14">
           <div className="grid lg:grid-cols-[1fr_320px] gap-8">
 
-            {/* Featured article — large card */}
+            {/* Featured article · large card */}
             <Link
               href={`/blog/${featured.slug}`}
               className="group relative block bg-ink-800 rounded-3xl overflow-hidden shadow-[0_20px_50px_-20px_rgba(13,30,74,0.35)] hover:shadow-[0_30px_60px_-20px_rgba(13,30,74,0.45)] transition-all"

@@ -36,7 +36,7 @@ export function HomeBlogTeasers() {
               <span className="text-brand-500">.</span>
             </h2>
             <p className="mt-3 text-[0.95rem] sm:text-[1rem] text-ink-500 leading-relaxed">
-              Guides pratiques, conseils experts, actualités artisanat — mis à jour <strong className="text-ink-700">chaque semaine</strong>.
+              Guides pratiques, conseils experts, actualités artisanat · mis à jour <strong className="text-ink-700">chaque semaine</strong>.
             </p>
           </div>
 

@@ -180,7 +180,7 @@ export function MultiMetierPicker({ value, onChange, max = 3, variant = "light" 
                   Ajouter « <span className="text-amber-700">{trimmedQuery}</span> »
                 </div>
                 <div className="text-[0.7rem] text-ink-500">
-                  Métier personnalisé — validation admin sous 24h
+                  Métier personnalisé · validation admin sous 24h
                 </div>
               </div>
             </button>

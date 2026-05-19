@@ -137,7 +137,7 @@ export async function listMyServices(): Promise<ServiceRow[]> {
 
 /**
  * Remplace tous les services de l'artisan par la liste fournie.
- * (delete-all + insert-all — simple et correct pour la V1)
+ * (delete-all + insert-all · simple et correct pour la V1)
  */
 export async function setServicesAction(
   _prev: ServicesState | undefined,

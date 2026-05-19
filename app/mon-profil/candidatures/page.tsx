@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Briefcase, Clock, CheckCircle2, XCircle, Eye, MessageSquare } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Mes candidatures — Mon profil",
+  title: "Mes candidatures · Mon profil",
   description: "Suivez l'état de vos candidatures aux offres d'emploi de l'artisanat.",
 };
 

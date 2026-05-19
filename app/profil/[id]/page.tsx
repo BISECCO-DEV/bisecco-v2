@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const a = detail.artisan;
   const metierLabel = a.metiers[0]?.name ?? "Artisan";
   return {
-    title: `${a.company_name ?? a.name} — ${metierLabel} à ${a.city ?? "France"}`,
+    title: `${a.company_name ?? a.name} · ${metierLabel} à ${a.city ?? "France"}`,
     description: a.description ?? `${metierLabel} vérifié sur Bisecco. Devis gratuit, contact direct.`,
     openGraph: {
       title: `${a.company_name ?? a.name} | Bisecco`,
@@ -381,7 +381,7 @@ export default async function ProfilPage({ params }: Props) {
                   {a.siren
                     ? "Identité vérifiée par notre équipe via le SIREN officiel."
                     : "Profil en cours de vérification."}
-                  {" "}Aucune transaction directe — tout passe par la messagerie sécurisée.
+                  {" "}Aucune transaction directe · tout passe par la messagerie sécurisée.
                 </p>
               </div>
             </aside>

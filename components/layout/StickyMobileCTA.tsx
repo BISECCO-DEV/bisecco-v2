@@ -18,7 +18,7 @@ const HIDDEN_ROUTES = [
   "/coming-soon",
 ];
 
-const SCROLL_SHOW_THRESHOLD = 400; // pixels — apparaît après avoir scrollé du hero
+const SCROLL_SHOW_THRESHOLD = 400; // pixels · apparaît après avoir scrollé du hero
 
 export function StickyMobileCTA() {
   const pathname = usePathname() || "/";

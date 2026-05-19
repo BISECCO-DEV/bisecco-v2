@@ -13,16 +13,24 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const STATS = [
-  { label: "Vues du profil",     value: 1284, change: "+12%",  icon: Eye,           color: "from-blue-400 to-blue-600" },
-  { label: "Nouveaux messages",  value: 7,    change: "+3",    icon: MessageCircle, color: "from-emerald-400 to-emerald-600" },
-  { label: "Devis reçus",        value: 24,   change: "+5",    icon: FileText,      color: "from-brand-400 to-brand-600" },
-  { label: "Note moyenne",       value: 4.8,  change: "+0.2",  icon: Star,          color: "from-yellow-400 to-amber-500" },
+// Hero-metric template cassé : on garde UNE stat héroïque (vues = signal le plus
+// parlant) et 3 satellites discrètes en liste typographique.
+const STAT_HERO = {
+  label: "Vues du profil ce mois",
+  value: 1284,
+  change: "+12% vs mois dernier",
+  icon: Eye,
+};
+
+const STAT_SATELLITES = [
+  { label: "Messages reçus",  value: 7,    icon: MessageCircle, href: "/messagerie" },
+  { label: "Devis reçus",     value: 24,   icon: FileText,      href: "/mon-profil/devis" },
+  { label: "Note moyenne",    value: "4.8 / 5",  icon: Star,    href: "/mon-profil/avis" },
 ];
 
 const ACTIVITIES = [
   { id: 1, type: "message", href: "/messagerie",         title: "Nouveau message de Marie L.", time: "Il y a 5 min", icon: MessageCircle, color: "text-blue-500", bg: "bg-blue-50" },
-  { id: 2, type: "devis",   href: "/mon-profil/devis",   title: "Nouvelle demande de devis — Rénovation salle de bain", time: "Il y a 2h", icon: FileText, color: "text-brand-500", bg: "bg-brand-50" },
+  { id: 2, type: "devis",   href: "/mon-profil/devis",   title: "Nouvelle demande de devis · Rénovation salle de bain", time: "Il y a 2h", icon: FileText, color: "text-brand-500", bg: "bg-brand-50" },
   { id: 3, type: "review",  href: "/mon-profil/avis",    title: "Vous avez reçu un avis 5★ de Pierre M.", time: "Hier", icon: Star, color: "text-yellow-500", bg: "bg-yellow-50" },
   { id: 4, type: "view",    href: "/mon-profil/activite", title: "Sophie K. a consulté votre profil", time: "Hier", icon: Eye, color: "text-emerald-500", bg: "bg-emerald-50" },
 ];
@@ -34,7 +42,7 @@ export default async function MonProfilPage() {
     user.profile_photo ??
     `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name)}`;
   const roleLabel = user.role === "artisan" ? "Artisan" : user.role === "admin" ? "Admin" : "Particulier";
-  // Complétion du profil — heuristique simple sur les champs remplis
+  // Complétion du profil · heuristique simple sur les champs remplis
   const fields = [user.name, user.email, user.phone, user.city, user.description, user.profile_photo];
   const completion = Math.round(
     (fields.filter(Boolean).length / fields.length) * 100,
@@ -105,23 +113,48 @@ export default async function MonProfilPage() {
           </div>
         </div>
 
-        {/* Stats grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {STATS.map((s) => (
-            <div key={s.label} className="bg-white rounded-2xl p-5 border border-ink-100 hover:border-brand-200 hover:-translate-y-0.5 transition group">
-              <div className="flex items-start justify-between mb-3">
-                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center`}>
-                  <s.icon size={20} className="text-white" />
+        {/* Stat héroïque + 3 satellites — pas de cards identiques, hiérarchie typo */}
+        <section className="mb-10">
+          {/* Hero stat : la métrique qui parle vraiment */}
+          <div className="border-t border-ink-100 pt-6">
+            <div className="flex items-baseline gap-4 flex-wrap">
+              <span className="text-[64px] md:text-[80px] font-bold tracking-[-0.04em] text-ink-700 leading-none tabular-nums">
+                {STAT_HERO.value.toLocaleString("fr-FR")}
+              </span>
+              <div className="pb-2">
+                <div className="text-sm font-semibold text-ink-600 uppercase tracking-wider">
+                  {STAT_HERO.label}
                 </div>
-                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-                  <TrendingUp size={11} /> {s.change}
-                </span>
+                <div className="text-sm text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+                  <TrendingUp size={14} /> {STAT_HERO.change}
+                </div>
               </div>
-              <div className="text-2xl font-bold text-ink-700">{s.value}</div>
-              <div className="text-xs text-ink-400 mt-0.5">{s.label}</div>
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* Satellites : liste typo discrète, pas de cards, divider entre */}
+          <div className="grid sm:grid-cols-3 mt-8 border-t border-ink-100">
+            {STAT_SATELLITES.map((s, i) => (
+              <Link
+                key={s.label}
+                href={s.href}
+                className={`group flex items-baseline justify-between py-4 ${
+                  i < STAT_SATELLITES.length - 1 ? "sm:border-r border-ink-100 sm:pr-6" : ""
+                } ${i > 0 ? "border-t sm:border-t-0 sm:pl-6" : ""} hover:text-brand-500 transition`}
+              >
+                <div>
+                  <div className="text-[28px] font-bold text-ink-700 group-hover:text-brand-500 tabular-nums transition">
+                    {s.value}
+                  </div>
+                  <div className="text-xs text-ink-400 mt-0.5 uppercase tracking-wider font-medium">
+                    {s.label}
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-ink-300 group-hover:text-brand-500 transition" />
+              </Link>
+            ))}
+          </div>
+        </section>
 
         {/* Grid 2/3 + 1/3 */}
         <div className="grid lg:grid-cols-[1fr_360px] gap-6">
@@ -155,7 +188,7 @@ export default async function MonProfilPage() {
 
           {/* Sidebar actions */}
           <aside className="space-y-4">
-            {/* Parrainage card — invite contacts (SMS forfait user, gratuit pour Bisecco) */}
+            {/* Parrainage card · invite contacts (SMS forfait user, gratuit pour Bisecco) */}
             <div className="bg-gradient-to-br from-brand-50 to-amber-50 rounded-3xl border border-brand-200 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-9 h-9 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-[0_4px_12px_rgba(240,122,47,0.3)]">
@@ -165,7 +198,7 @@ export default async function MonProfilPage() {
               </div>
               <p className="text-xs text-ink-600 leading-relaxed mb-3">
                 Sur Android, ton répertoire s&apos;ouvre direct. Sur iPhone, Messages se lance avec ton texte prêt.
-                Les SMS partent de ton forfait — c&apos;est gratuit pour toi comme pour Bisecco.
+                Les SMS partent de ton forfait · c&apos;est gratuit pour toi comme pour Bisecco.
               </p>
               <InviteButton referralUrl={referralUrl} variant="primary" className="w-full justify-center" />
               <Link

@@ -5,7 +5,7 @@ import { MetiersDirectory, type MetierWithCount } from "./MetiersDirectory";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Tous les métiers artisanaux — 290 spécialités vérifiées",
+  title: "Tous les métiers artisanaux · 290 spécialités vérifiées",
   description:
     "Plombier, électricien, maçon, menuisier, peintre, couvreur, boulanger, fromager… Découvrez les 290 métiers du réseau Bisecco. Trouvez un artisan vérifié SIREN près de chez vous.",
 };
@@ -74,7 +74,7 @@ export default async function MetiersPage() {
             </span>
 
             <h1 className="mt-6 text-[36px] sm:text-[52px] lg:text-[64px] leading-[1.05] font-extrabold tracking-[-0.025em]">
-              <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">
+              <span className="text-brand-500">
                 {metiers.length}
               </span>{" "}
               métiers artisanaux
@@ -89,7 +89,7 @@ export default async function MetiersPage() {
               <strong className="text-white">vitrailliste</strong>, en passant par le{" "}
               <strong className="text-white">plombier</strong>,{" "}
               <strong className="text-white">électricien</strong> ou{" "}
-              <strong className="text-white">boulanger</strong> — Bisecco référence{" "}
+              <strong className="text-white">boulanger</strong> · Bisecco référence{" "}
               <strong className="text-white">tous les métiers artisanaux français</strong> vérifiés SIREN.
             </p>
           </div>

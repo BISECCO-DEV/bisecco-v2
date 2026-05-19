@@ -7,7 +7,7 @@ import { fetchAllMetiers } from "@/lib/db/metiers";
 import { CVEditor } from "./CVEditor";
 
 export const metadata: Metadata = {
-  title: "Mon CV — Mon profil",
+  title: "Mon CV · Mon profil",
   description: "Créez ou modifiez votre CV Bisecco pour postuler aux offres d'emploi dans l'artisanat.",
   robots: { index: false, follow: false },
 };

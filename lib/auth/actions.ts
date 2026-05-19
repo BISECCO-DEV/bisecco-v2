@@ -401,7 +401,7 @@ export async function requestPasswordResetAction(
     const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
     authUserExists = list.users.some((u) => u.email?.toLowerCase() === email);
   } catch {
-    // ignore — on retombera sur le path "création"
+    // ignore · on retombera sur le path "création"
   }
 
   // Si pas dans auth.users, vérifier public.users (legacy)
@@ -434,7 +434,7 @@ export async function requestPasswordResetAction(
     }
   }
 
-  // Envoyer le mail de reset (dans tous les cas — Supabase no-op si user absent)
+  // Envoyer le mail de reset (dans tous les cas · Supabase no-op si user absent)
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/reinitialiser-mot-de-passe`,

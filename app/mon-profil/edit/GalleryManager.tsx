@@ -32,7 +32,7 @@ export function GalleryManager({ initial }: { initial: GalleryItem[] }) {
           break;
         }
       }
-      // Force un refetch via reload simple — sinon il faut re-récupérer la liste
+      // Force un refetch via reload simple · sinon il faut re-récupérer la liste
       window.location.reload();
     });
   };

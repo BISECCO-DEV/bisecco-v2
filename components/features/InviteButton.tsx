@@ -33,7 +33,7 @@ const SMS_MESSAGE = (url: string) =>
 const WHATSAPP_MESSAGE = (url: string) =>
   `Salut ! Je viens de decouvrir Bisecco, un annuaire d'artisans francais verifies (SIREN controle) et 100% gratuit. Je te recommande, ca peut t'etre utile 👇\n${url}`;
 
-const EMAIL_SUBJECT = "Decouvre Bisecco — annuaire d'artisans verifies";
+const EMAIL_SUBJECT = "Decouvre Bisecco · annuaire d'artisans verifies";
 const EMAIL_BODY = (url: string) =>
   `Salut !\n\nJe viens de decouvrir Bisecco, un annuaire d'artisans francais verifies (SIREN controle) et 100% gratuit.\n\nJe te recommande, ca peut vraiment t'etre utile :\n${url}\n\nA bientot !`;
 
@@ -206,7 +206,7 @@ export function InviteButton({
                   Inviter mes contacts
                 </h2>
                 <p className="mt-1 text-sm text-ink-500">
-                  Les SMS sont envoyes depuis ton forfait — Bisecco ne facture rien.
+                  Les SMS sont envoyes depuis ton forfait · Bisecco ne facture rien.
                 </p>
               </div>
               <button

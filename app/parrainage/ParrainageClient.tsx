@@ -69,7 +69,7 @@ export function ParrainageClient() {
       <InviteButton referralUrl={REFERRAL_URL} variant="primary" className="w-full justify-center" />
       <p className="mt-3 text-[0.72rem] text-ink-400 leading-relaxed">
         Sur Android, votre répertoire s&apos;ouvre directement. Sur iPhone, l&apos;app Messages se lance
-        avec votre texte prêt — vous choisissez vos contacts dedans.
+        avec votre texte prêt · vous choisissez vos contacts dedans.
         <strong className="text-ink-600"> Les SMS sont envoyés depuis votre forfait</strong>, Bisecco ne facture rien.
       </p>
     </div>

@@ -10,11 +10,11 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/db/current-user";
 
 export const metadata: Metadata = {
-  title: "Devenir Partenaire — Bisecco Pro",
+  title: "Devenir Partenaire · Bisecco Pro",
   description:
     "Rejoignez le 1er réseau social d'artisans français vérifiés SIREN. 100% gratuit, 0% commission, contact direct avec les clients. Inscription en 2 minutes.",
   openGraph: {
-    title: "Devenez partenaire Bisecco — 0% commission",
+    title: "Devenez partenaire Bisecco · 0% commission",
     description: "Réseau d'artisans vérifiés SIREN. Inscription gratuite, contact direct.",
   },
 };
@@ -137,7 +137,7 @@ export default async function PartenairesPage() {
               <h1 className="mt-6 text-[36px] sm:text-[48px] lg:text-[60px] leading-[1.05] font-extrabold tracking-[-0.025em]">
                 Le seul réseau qui ne prend
                 <br />
-                <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">
+                <span className="text-brand-500">
                   jamais de commission
                 </span>
                 <span className="text-brand-500">.</span>
@@ -426,7 +426,7 @@ export default async function PartenairesPage() {
         </div>
       </section>
 
-      {/* ═════════ ARTISANS EN LIGNE — SOCIAL PROOF ═════════ */}
+      {/* ═════════ ARTISANS EN LIGNE · SOCIAL PROOF ═════════ */}
       {featured.length > 0 && (
         <section className="py-20 sm:py-24 bg-gradient-to-b from-ink-50 to-white">
           <div className="container-default">
@@ -516,7 +516,7 @@ export default async function PartenairesPage() {
               },
               {
                 q: "Pourquoi vérifier le SIREN ?",
-                a: "Parce que c'est la garantie #1 pour vos futurs clients : ils voient que vous êtes une vraie entreprise déclarée. Sur les autres plateformes, n'importe qui peut créer un profil — chez nous, l'identité est contrôlée via l'API officielle gouv.fr.",
+                a: "Parce que c'est la garantie #1 pour vos futurs clients : ils voient que vous êtes une vraie entreprise déclarée. Sur les autres plateformes, n'importe qui peut créer un profil · chez nous, l'identité est contrôlée via l'API officielle gouv.fr.",
               },
               {
                 q: "Combien de temps pour être validé ?",
@@ -615,7 +615,7 @@ function GatedPartenaires({ user }: { user: CurrentUser | null }) {
 
             <h1 className="mt-6 text-[32px] sm:text-[44px] lg:text-[52px] leading-[1.05] font-extrabold tracking-[-0.025em]">
               Réservé aux{" "}
-              <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">
+              <span className="text-brand-500">
                 artisans vérifiés
               </span>
             </h1>
@@ -696,7 +696,7 @@ function GatedPartenaires({ user }: { user: CurrentUser | null }) {
         </div>
       </section>
 
-      {/* Bloc particulier — orientation alternative */}
+      {/* Bloc particulier · orientation alternative */}
       {!isParticulier && (
         <section className="py-14 bg-white border-t border-ink-100">
           <div className="container-default max-w-3xl text-center">

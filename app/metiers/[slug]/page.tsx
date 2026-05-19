@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const m = await fetchMetierBySlug(slug);
   if (!m) return { title: "Métier introuvable" };
   return {
-    title: `${m.name} — Trouvez un artisan vérifié`,
+    title: `${m.name} · Trouvez un artisan vérifié`,
     description: `Tous les ${m.name.toLowerCase()}s vérifiés sur Bisecco. SIREN contrôlé, avis clients réels, devis gratuit. Trouvez le bon pro près de chez vous.`,
     alternates: { canonical: `/metiers/${slug}` },
   };
@@ -111,7 +111,7 @@ export default async function MetierPage({ params }: Props) {
           ))}
         </section>
 
-        {/* Liste villes — SEO levier */}
+        {/* Liste villes · SEO levier */}
         <section>
           <h2 className="text-2xl font-bold text-ink-700 mb-2 tracking-tight">
             {metier.name} par ville

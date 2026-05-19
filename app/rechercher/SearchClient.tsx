@@ -33,7 +33,7 @@ export function SearchClient() {
     <>
       {/* Barre de recherche */}
       <div className="mt-8 bg-white rounded-2xl shadow-card border border-ink-100 p-2 flex flex-col md:flex-row items-stretch gap-2">
-        {/* Métier — combobox */}
+        {/* Métier · combobox */}
         <div className="flex-1 min-w-0">
           <MetierCombobox
             value={metier}

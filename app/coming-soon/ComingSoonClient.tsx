@@ -94,7 +94,7 @@ export function ComingSoonClient() {
                   <AlertCircle size={12} />
                   {subscribeError === "invalid_email"
                     ? "Email invalide"
-                    : "Une erreur est survenue — réessayez"}
+                    : "Une erreur est survenue · réessayez"}
                 </div>
               )}
               <p className="text-[0.66rem] text-white/35 text-center pt-1">
@@ -138,7 +138,7 @@ export function ComingSoonClient() {
               className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 text-white font-extrabold text-sm shadow-[0_10px_28px_-6px_rgba(240,122,47,0.5)] hover:-translate-y-0.5 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0"
             >
               <KeyRound size={14} />
-              {codeAttempts >= 5 ? "Trop d'essais — réessayez plus tard" : "Valider le code"}
+              {codeAttempts >= 5 ? "Trop d'essais · réessayez plus tard" : "Valider le code"}
             </button>
 
             {codeError === "invalid" && (

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!m) return { title: "Page introuvable" };
   const villeLabel = unslug(ville);
   return {
-    title: `${m.name} à ${villeLabel} — Devis gratuit, profils vérifiés`,
+    title: `${m.name} à ${villeLabel} · Devis gratuit, profils vérifiés`,
     description: `Trouvez un ${m.name.toLowerCase()} à ${villeLabel} parmi notre sélection d'artisans vérifiés. SIREN contrôlé, avis clients, devis gratuit en 2 minutes.`,
     alternates: { canonical: `/artisans/${metier}/${ville}` },
     openGraph: {
@@ -221,7 +221,7 @@ export default async function SeoLocalePage({ params }: Props) {
             </p>
             <p className="text-ink-500 mt-3 leading-relaxed">
               Chaque {m.name.toLowerCase()} référencé à {villeLabel} est noté par ses vrais
-              clients après chaque mission terminée. Les avis sont 100% authentiques — il est
+              clients après chaque mission terminée. Les avis sont 100% authentiques · il est
               impossible d&apos;acheter une note ou de poster un faux commentaire.
             </p>
 

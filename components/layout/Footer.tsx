@@ -85,10 +85,10 @@ export function Footer() {
               </span>
               <h2 className="mt-4 text-[26px] sm:text-[32px] lg:text-[40px] font-extrabold leading-[1.1] tracking-[-0.025em]">
                 Rejoignez la plateforme <br className="hidden sm:block" />
-                d&apos;artisanat <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent">de référence</span>.
+                d&apos;artisanat <span className="text-brand-500">de référence</span>.
               </h2>
               <p className="mt-3 text-white/65 text-[0.94rem] max-w-xl leading-relaxed">
-                Particulier en quête d&apos;un pro fiable ou artisan cherchant à développer votre activité — Bisecco est gratuit pour tout le monde.
+                Particulier en quête d&apos;un pro fiable ou artisan cherchant à développer votre activité · Bisecco est gratuit pour tout le monde.
               </p>
             </div>
 
@@ -132,7 +132,7 @@ export function Footer() {
       <div className="container-default py-14 lg:py-16 relative">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-8 lg:gap-6">
 
-          {/* Brand — 4 cols */}
+          {/* Brand · 4 cols */}
           <div className="col-span-2 md:col-span-3 lg:col-span-4">
             <Link href="/" className="inline-flex items-center gap-3 group">
               <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/15 shadow-[0_4px_14px_rgba(0,0,0,0.4)] bg-white">
@@ -216,7 +216,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Particuliers — 2 cols */}
+          {/* Particuliers · 2 cols */}
           <FooterCol
             icon={Users}
             iconColor="text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
@@ -224,7 +224,7 @@ export function Footer() {
             links={NAV_PARTICULIERS}
           />
 
-          {/* Artisans — 2 cols */}
+          {/* Artisans · 2 cols */}
           <div className="lg:col-span-2">
             <h4 className="inline-flex items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-brand-400 mb-4">
               <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-brand-500/10 border border-brand-500/25 text-brand-400">
@@ -256,7 +256,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Top métiers — 2 cols */}
+          {/* Top métiers · 2 cols */}
           <FooterCol
             icon={Briefcase}
             iconColor="text-blue-400 bg-blue-500/10 border-blue-500/20"
@@ -265,7 +265,7 @@ export function Footer() {
             seeAll={{ href: "/metiers", label: "Voir les 80+ métiers" }}
           />
 
-          {/* Top villes — 2 cols */}
+          {/* Top villes · 2 cols */}
           <FooterCol
             icon={Building2}
             iconColor="text-violet-400 bg-violet-500/10 border-violet-500/20"

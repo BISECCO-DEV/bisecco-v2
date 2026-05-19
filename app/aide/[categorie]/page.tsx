@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categorie } = await params;
   const cat = CATEGORIES[categorie];
   if (!cat) return { title: "Catégorie introuvable" };
-  return { title: `${cat.title} — Centre d'aide`, description: cat.description };
+  return { title: `${cat.title} · Centre d'aide`, description: cat.description };
 }
 
 export default async function AideCategoriePage({ params }: Props) {

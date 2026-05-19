@@ -18,7 +18,7 @@ export const REASON_LABELS: Record<typeof REASONS[number], string> = {
   other: "Autre raison",
 };
 
-/** Signaler un profil — supporte auth + anon */
+/** Signaler un profil · supporte auth + anon */
 export async function submitReportAction(
   _prev: ReportState,
   formData: FormData,

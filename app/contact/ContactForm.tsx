@@ -76,7 +76,7 @@ export function ContactForm() {
       onSubmit={onSubmit}
       className="bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(13,30,74,0.12)] border border-ink-100 p-6 sm:p-8 lg:p-10 space-y-7"
     >
-      {/* Subject selector — tiles */}
+      {/* Subject selector · tiles */}
       <fieldset>
         <legend className="text-[0.95rem] font-extrabold text-ink-700 mb-1">
           1. Quel est le sujet de votre demande ?

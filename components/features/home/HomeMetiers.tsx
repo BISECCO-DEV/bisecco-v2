@@ -41,7 +41,7 @@ export function HomeMetiers() {
           <h2 className="mt-5 text-[34px] sm:text-[44px] md:text-[52px] leading-[1.05] font-extrabold text-ink-700 tracking-[-0.025em]">
             Trouvez le bon{" "}
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
+              <span className="text-brand-500 animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
                 métier
               </span>
               <span className="text-brand-500">.</span>

@@ -66,7 +66,7 @@ export function ActiviteForm({ metiers, initial }: Props) {
         )}
         {metierLabel && metierId == null && (
           <p className="mt-1 text-xs text-amber-600 flex items-center gap-1">
-            <AlertCircle size={12} /> Métier non reconnu — sélectionnez-le dans la liste déroulante.
+            <AlertCircle size={12} /> Métier non reconnu · sélectionnez-le dans la liste déroulante.
           </p>
         )}
       </div>

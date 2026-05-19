@@ -13,7 +13,7 @@ import {
 import { DownloadButton } from "./DownloadButton";
 
 export const metadata: Metadata = {
-  title: "CVs reçus — Mon espace",
+  title: "CVs reçus · Mon espace",
   robots: { index: false, follow: false },
 };
 

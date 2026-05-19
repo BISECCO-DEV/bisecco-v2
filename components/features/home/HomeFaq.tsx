@@ -33,7 +33,7 @@ const FAQ: FaqItem[] = [
   },
   {
     q: "Combien de temps pour recevoir un devis ?",
-    a: "La majorité des artisans répondent en moins de 24 heures. Vous recevez généralement 2 à 5 propositions de devis par projet. Plus votre description est précise (avec photos, surface, urgence), plus la réponse est rapide — souvent en quelques heures.",
+    a: "La majorité des artisans répondent en moins de 24 heures. Vous recevez généralement 2 à 5 propositions de devis par projet. Plus votre description est précise (avec photos, surface, urgence), plus la réponse est rapide · souvent en quelques heures.",
     category: "Fonctionnement",
   },
   {
@@ -43,12 +43,12 @@ const FAQ: FaqItem[] = [
   },
   {
     q: "Bisecco prend-il une commission sur les chantiers ?",
-    a: "Non, aucune commission n'est prélevée sur vos chantiers ou paiements. Vous travaillez en direct avec l'artisan, sans aucun intermédiaire financier. C'est l'engagement écrit dans nos CGV — la différence fondamentale avec les autres plateformes.",
+    a: "Non, aucune commission n'est prélevée sur vos chantiers ou paiements. Vous travaillez en direct avec l'artisan, sans aucun intermédiaire financier. C'est l'engagement écrit dans nos CGV · la différence fondamentale avec les autres plateformes.",
     category: "Tarifs",
   },
   {
     q: "Mes données personnelles sont-elles sécurisées ?",
-    a: "Oui. Bisecco est hébergé en France et conforme RGPD. Vos données ne sont jamais revendues à des tiers, vos échanges sont chiffrés en transit (HTTPS), et vous pouvez à tout moment exporter ou supprimer toutes vos données depuis votre espace personnel — conformément au droit à l'oubli.",
+    a: "Oui. Bisecco est hébergé en France et conforme RGPD. Vos données ne sont jamais revendues à des tiers, vos échanges sont chiffrés en transit (HTTPS), et vous pouvez à tout moment exporter ou supprimer toutes vos données depuis votre espace personnel · conformément au droit à l'oubli.",
     category: "Données",
   },
   {
@@ -97,7 +97,7 @@ export function HomeFaq() {
           <h2 className="mt-5 text-[32px] sm:text-[42px] lg:text-[52px] leading-[1.05] font-extrabold text-ink-700 tracking-[-0.025em]">
             Tout ce qu&apos;il faut{" "}
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
+              <span className="text-brand-500 animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
                 savoir
               </span>
               <span className="text-brand-500">.</span>
@@ -163,7 +163,7 @@ export function HomeFaq() {
           })}
         </div>
 
-        {/* Accordion premium — 2 colonnes (1 col mobile) */}
+        {/* Accordion premium · 2 colonnes (1 col mobile) */}
         {(() => {
           const half = Math.ceil(filtered.length / 2);
           const leftCol = filtered.slice(0, half);
@@ -247,7 +247,7 @@ export function HomeFaq() {
   );
 }
 
-/** Une ligne FAQ — animation de hauteur avec ref + measure */
+/** Une ligne FAQ · animation de hauteur avec ref + measure */
 function FaqRow({
   index,
   item,
@@ -336,7 +336,7 @@ function FaqRow({
         </span>
       </button>
 
-      {/* Panel — animation hauteur smooth */}
+      {/* Panel · animation hauteur smooth */}
       <div
         id={`faq-panel-${index}`}
         role="region"

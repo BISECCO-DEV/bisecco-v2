@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const job = JOBS[slug];
   if (!job) return { title: "Offre introuvable" };
-  return { title: `${job.title} — Carrières`, description: job.description };
+  return { title: `${job.title} · Carrières`, description: job.description };
 }
 
 export default async function JobPage({ params }: Props) {

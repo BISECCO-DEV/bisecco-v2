@@ -68,7 +68,7 @@ export function HomeArtisanPitch() {
           <h2 className="mt-5 text-[34px] sm:text-[44px] md:text-[52px] leading-[1.05] font-extrabold text-white tracking-[-0.025em]">
             Vous êtes artisan&nbsp;?<br />
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-brand-300 via-brand-400 to-brand-500 bg-clip-text text-transparent animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
+              <span className="text-brand-500">
                 Voici ce qui change
               </span>
               <span className="text-brand-500">.</span>

@@ -24,7 +24,7 @@ export default function HomePage() {
     <>
       {/* ═══════════ HERO ═══════════ */}
       <section className="relative flex items-start md:items-center min-h-[78vh] md:min-h-[78vh] lg:min-h-[80vh] bg-[#05122e] overflow-hidden">
-        {/* Image de fond — <picture> responsive (mobile portrait / desktop landscape) */}
+        {/* Image de fond · <picture> responsive (mobile portrait / desktop landscape) */}
         <picture className="absolute inset-0" aria-hidden="true">
           <source media="(max-width: 768px)" srcSet="/hero-network-mobile.webp" />
           { }
@@ -36,7 +36,7 @@ export default function HomePage() {
             className="w-full h-full object-cover object-center"
           />
         </picture>
-        {/* Gradient horizontal — desktop : fond plein largeur naturel sans cassure */}
+        {/* Gradient horizontal · desktop : fond plein largeur naturel sans cassure */}
         <div
           className="absolute inset-0 hidden md:block"
           style={{
@@ -44,7 +44,7 @@ export default function HomePage() {
               "linear-gradient(90deg, #05122e 0%, #05122e 25%, rgba(5,18,46,0.92) 38%, rgba(5,18,46,0.65) 50%, rgba(5,18,46,0.30) 65%, rgba(5,18,46,0.05) 80%, transparent 100%)",
           }}
         />
-        {/* Gradient vertical — mobile : voile en haut pour lisibilité, image visible en bas */}
+        {/* Gradient vertical · mobile : voile en haut pour lisibilité, image visible en bas */}
         <div
           className="absolute inset-0 md:hidden"
           style={{
@@ -52,7 +52,7 @@ export default function HomePage() {
               "linear-gradient(180deg, rgba(5,18,46,0.92) 0%, rgba(5,18,46,0.82) 35%, rgba(5,18,46,0.55) 60%, rgba(5,18,46,0.20) 85%, transparent 100%)",
           }}
         />
-        {/* Légère vignette verticale pour la profondeur — desktop uniquement */}
+        {/* Légère vignette verticale pour la profondeur · desktop uniquement */}
         <div
           className="absolute inset-0 pointer-events-none hidden md:block"
           style={{
@@ -68,44 +68,19 @@ export default function HomePage() {
         <div className="container-default w-full pt-[130px] pb-12 sm:pt-[140px] sm:pb-16 md:pt-[160px] md:pb-24 text-white relative z-10">
           <div className="grid lg:grid-cols-2 gap-8">
             <div className="lg:pr-8 text-center md:text-left">
-              {/* H1 premium — staggered reveal + gradient shimmer + SVG draw-in */}
+              {/* H1 premium · staggered reveal + gradient shimmer + SVG draw-in */}
               <h1
                 className="text-[26px] xs:text-[30px] sm:text-[40px] md:text-[48px] lg:text-[56px] leading-[1.1] sm:leading-[1.06] font-extrabold tracking-[-0.025em] animate-reveal-up break-words"
                 style={{ animationDelay: "100ms" }}
               >
                 1<sup className="text-[0.55em] font-extrabold align-super">er</sup> réseau social d&apos;artisans,
                 <br className="hidden sm:inline" />
-                <span className="relative inline-block sm:whitespace-nowrap">
-                  <span
-                    className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent animate-gradient-flow"
-                    style={{ backgroundSize: "200% 100%" }}
-                  >
-                    développé pour les particuliers
-                  </span>
-                  <span className="text-brand-500">.</span>
-                  {/* Underline gradient — draw-in animé */}
-                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 8" preserveAspectRatio="none" fill="none">
-                    <path
-                      d="M2 6 Q 75 1, 150 4 T 298 5"
-                      stroke="url(#hero-underline)"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeDasharray="300"
-                      className="animate-draw-line"
-                    />
-                    <defs>
-                      <linearGradient id="hero-underline" x1="0" x2="1">
-                        <stop offset="0" stopColor="#f07a2f" stopOpacity="0" />
-                        <stop offset="0.3" stopColor="#f07a2f" />
-                        <stop offset="0.7" stopColor="#ff8b3f" />
-                        <stop offset="1" stopColor="#f07a2f" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
+                <span className="text-brand-500">
+                  développé pour les particuliers.
                 </span>
               </h1>
 
-              {/* Description — reveal après le titre */}
+              {/* Description · reveal après le titre */}
               <p
                 className="mt-5 sm:mt-7 text-[14px] sm:text-[17px] text-white/80 max-w-xl mx-auto md:mx-0 leading-[1.55] sm:leading-[1.6] animate-reveal-up"
                 style={{ animationDelay: "350ms" }}
@@ -114,7 +89,7 @@ export default function HomePage() {
                 {" "}Recevez vos premiers contacts cette semaine.
               </p>
 
-              {/* Trust chips — cascade stagger */}
+              {/* Trust chips · cascade stagger */}
               <div className="flex flex-wrap justify-center md:justify-start gap-1.5 sm:gap-2 mt-5 sm:mt-7">
                 {[
                   { icon: Zap,         label: "Devis 2 min" },
@@ -123,35 +98,29 @@ export default function HomePage() {
                 ].map((chip, i) => (
                   <span
                     key={chip.label}
-                    className="flex-shrink-0 inline-flex items-center gap-1 sm:gap-1.5 pl-1.5 pr-2 sm:pl-2.5 sm:pr-3.5 py-1 sm:py-1.5 rounded-full bg-white/[0.06] border border-white/[0.10] text-[12px] sm:text-[0.82rem] font-semibold text-white/90 backdrop-blur-sm whitespace-nowrap animate-reveal-up"
+                    className="flex-shrink-0 inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 text-[12px] sm:text-[0.82rem] font-semibold text-white whitespace-nowrap animate-reveal-up"
                     style={{ animationDelay: `${550 + i * 90}ms` }}
                   >
-                    <span className="inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-brand-500/20 text-brand-400">
-                      <chip.icon size={10} strokeWidth={2.8} />
-                    </span>
+                    <chip.icon size={12} strokeWidth={2.6} className="text-brand-400" />
                     {chip.label}
                   </span>
                 ))}
               </div>
 
-              {/* CTAs — staggered reveal + glow pulse + sheen sweep */}
+              {/* CTAs — reveal au mount, hover bg-color subtil, c'est tout. */}
               <div className="flex flex-nowrap items-center justify-center md:justify-start gap-2 sm:gap-3 mt-6 sm:mt-10">
                 <Link
                   href="/rechercher"
-                  className="group relative inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white font-bold text-[12px] sm:text-[14px] hover:-translate-y-0.5 transition-transform overflow-hidden whitespace-nowrap animate-reveal-up animate-glow-pulse"
-                  style={{ animationDelay: "850ms, 1800ms", animationFillMode: "both, none" }}
+                  className="group inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-[12px] sm:text-[14px] whitespace-nowrap animate-reveal-up transition-colors"
+                  style={{ animationDelay: "850ms" }}
                 >
-                  {/* Sheen sweep — passe en continu */}
-                  <span className="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none animate-sheen" aria-hidden />
-                  {/* Hover shimmer override */}
-                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" aria-hidden />
-                  <span className="relative">Trouver mon artisan</span>
-                  <ArrowRight size={13} strokeWidth={2.6} className="relative transition-transform duration-200 group-hover:translate-x-1 sm:hidden" />
-                  <ArrowRight size={15} strokeWidth={2.6} className="relative transition-transform duration-200 group-hover:translate-x-1 hidden sm:inline" />
+                  Trouver mon artisan
+                  <ArrowRight size={13} strokeWidth={2.6} className="transition-transform duration-200 group-hover:translate-x-0.5 sm:hidden" />
+                  <ArrowRight size={15} strokeWidth={2.6} className="transition-transform duration-200 group-hover:translate-x-0.5 hidden sm:inline" />
                 </Link>
                 <Link
                   href="/mon-profil/cv"
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-white/[0.06] backdrop-blur-md text-white font-bold text-[12px] sm:text-[14px] border border-white/[0.18] hover:bg-white/[0.12] hover:border-white/[0.28] transition-all whitespace-nowrap animate-reveal-up"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-xl text-white font-bold text-[12px] sm:text-[14px] border border-white/30 hover:border-white/60 transition-colors whitespace-nowrap animate-reveal-up"
                   style={{ animationDelay: "950ms" }}
                 >
                   Déposer mon CV
@@ -160,26 +129,26 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Live social proof — entrance delay + counter animation */}
+              {/* Live social proof · entrance delay + counter animation */}
             </div>
-            {/* Colonne droite vide — l'image hero-network occupe la zone */}
+            {/* Colonne droite vide · l'image hero-network occupe la zone */}
             <div className="hidden lg:block" />
           </div>
         </div>
         <ScrollIndicator targetId="gratuit" offset={110} label="Découvrir" />
       </section>
 
-      {/* ═══════════ COMMENT ÇA MARCHE — dual particulier/artisan avec tabs ═══════════ */}
+      {/* ═══════════ COMMENT ÇA MARCHE · dual particulier/artisan avec tabs ═══════════ */}
       <HomeHowItWorks />
 
-      {/* ═══════════ MÉTIERS POPULAIRES — grid SEO ═══════════ */}
+      {/* ═══════════ MÉTIERS POPULAIRES · grid SEO ═══════════ */}
       <HomeMetiers />
 
-      {/* ═══════════ RECHERCHE LOCALE — Carte interactive + Carousel ═══════════ */}
+      {/* ═══════════ RECHERCHE LOCALE · Carte interactive + Carousel ═══════════ */}
       <HomeLocalSearch />
 
 
-      {/* ═══════════ 100% GRATUIT — 2 cards (fond hex navy) ═══════════ */}
+      {/* ═══════════ 100% GRATUIT · 2 cards (fond hex navy) ═══════════ */}
       <section id="gratuit" className="relative overflow-hidden bg-[#05122e] py-24">
         {/* Pattern hexagonal en fond */}
         <div
@@ -211,10 +180,10 @@ export default function HomePage() {
 
           {/* 2 cards */}
           <div className="grid md:grid-cols-2 gap-6">
-            {/* PARTICULIERS — accent orange */}
+            {/* PARTICULIERS · accent orange */}
             <Reveal delay={100} direction="up">
               <div className="relative rounded-3xl p-8 bg-white/[0.03] border border-white/10 backdrop-blur-sm hover:bg-white/[0.06] hover:border-brand-500/30 hover:-translate-y-1.5 transition-all duration-300 group overflow-hidden h-full">
-                {/* Top accent bar — shimmer animé */}
+                {/* Top accent bar · shimmer animé */}
                 <div className="absolute top-0 left-8 right-8 h-px bg-[linear-gradient(90deg,transparent,#f07a2f,transparent)] bg-[length:200%_100%] animate-shimmer" />
                 {/* Halo qui apparaît au hover */}
                 <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-brand-500/15 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -259,7 +228,7 @@ export default function HomePage() {
               </div>
             </Reveal>
 
-            {/* ARTISANS — accent bleu */}
+            {/* ARTISANS · accent bleu */}
             <Reveal delay={200} direction="up">
               <div className="relative rounded-3xl p-8 bg-white/[0.03] border border-white/10 backdrop-blur-sm hover:bg-white/[0.06] hover:border-blue-400/30 hover:-translate-y-1.5 transition-all duration-300 group overflow-hidden h-full">
                 <div className="absolute top-0 left-8 right-8 h-px bg-[linear-gradient(90deg,transparent,#60a5fa,transparent)] bg-[length:200%_100%] animate-shimmer" style={{ animationDelay: "0.5s" }} />
@@ -328,7 +297,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ NOTRE MISSION — card navy + photo artisan ═══════════ */}
+      {/* ═══════════ NOTRE MISSION · card navy + photo artisan ═══════════ */}
       <section className="py-16 sm:py-20 bg-ink-50">
         <div className="container-default">
           <Reveal distance={24}>
@@ -345,7 +314,7 @@ export default function HomePage() {
               />
 
               <div className="relative grid lg:grid-cols-[1fr_1fr] gap-8 lg:gap-10 p-7 sm:p-10 lg:p-14 items-center">
-                {/* Colonne gauche — texte */}
+                {/* Colonne gauche · texte */}
                 <div className="relative">
                   <Reveal delay={100} distance={20}>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-300 text-[0.66rem] font-bold tracking-[0.14em] uppercase backdrop-blur-sm">
@@ -358,7 +327,7 @@ export default function HomePage() {
                     <h2 className="mt-5 text-[26px] sm:text-[32px] lg:text-[40px] leading-[1.1] font-extrabold text-white tracking-[-0.025em]">
                       Notre mission&nbsp;:{" "}
                       <span className="relative inline-block">
-                        <span className="bg-gradient-to-r from-brand-300 via-brand-400 to-brand-500 bg-clip-text text-transparent animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
+                        <span className="text-brand-500">
                           valoriser chaque professionnel
                         </span>
                         <span className="text-brand-500">.</span>
@@ -401,7 +370,7 @@ export default function HomePage() {
                   </Reveal>
                 </div>
 
-                {/* Colonne droite — photo artisan */}
+                {/* Colonne droite · photo artisan */}
                 <Reveal delay={250} distance={28}>
                   <div className="relative group">
                     {/* Glow derrière l'image */}
@@ -411,7 +380,7 @@ export default function HomePage() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1200&h=960&fit=crop&q=80"
-                        alt="Artisan professionnel au travail — Bisecco valorise chaque savoir-faire"
+                        alt="Artisan professionnel au travail · Bisecco valorise chaque savoir-faire"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         loading="lazy"
                       />
@@ -429,7 +398,7 @@ export default function HomePage() {
       {/* ═══════════ COMPARATIF vs CONCURRENCE ═══════════ */}
       <HomeComparison />
 
-      {/* ═══════════ TÉMOIGNAGES — Style éditorial pro ═══════════ */}
+      {/* ═══════════ TÉMOIGNAGES · Style éditorial pro ═══════════ */}
       <section className="py-28 bg-white relative overflow-hidden">
         <div className="absolute top-1/3 left-0 w-[500px] h-[500px] rounded-full bg-brand-500/[0.04] blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-blue-500/[0.04] blur-[100px] pointer-events-none" />
@@ -469,7 +438,7 @@ export default function HomePage() {
 
           {/* Bento grid */}
           <div className="grid md:grid-cols-12 gap-4">
-            {/* Card 1 — FEATURED LARGE (artisan, dark) */}
+            {/* Card 1 · FEATURED LARGE (artisan, dark) */}
             <Reveal className="md:col-span-7 md:row-span-2" delay={0}>
               <article className="relative h-full p-8 md:p-10 rounded-3xl bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 text-white overflow-hidden">
                 <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-brand-500/20 blur-3xl" />
@@ -488,7 +457,7 @@ export default function HomePage() {
                   <blockquote className="flex-1 text-[1.55rem] md:text-[1.7rem] font-medium leading-[1.35] tracking-[-0.01em]">
                     <span className="text-brand-400 text-3xl font-serif leading-none mr-1">&ldquo;</span>
                     Bisecco a transformé mon activité. En 3 mois, j&apos;ai{" "}
-                    <span className="bg-gradient-to-r from-brand-400 to-brand-500 bg-clip-text text-transparent font-bold">
+                    <span className="text-brand-500 font-bold">
                       triplé mes demandes de devis
                     </span>
                     . Plateforme propre, clients sérieux, zéro commission. Je ne reviendrai jamais sur Pages Jaunes.
@@ -518,7 +487,7 @@ export default function HomePage() {
               </article>
             </Reveal>
 
-            {/* Card 2 — particulier, blanche compact */}
+            {/* Card 2 · particulier, blanche compact */}
             <Reveal className="md:col-span-5" delay={120}>
               <article className="relative h-full p-7 rounded-3xl bg-white border border-ink-100 hover:border-brand-200 hover:-translate-y-0.5 transition group">
                 <div className="flex items-center justify-between mb-4">
@@ -546,7 +515,7 @@ export default function HomePage() {
               </article>
             </Reveal>
 
-            {/* Card 3 — particulier honnête (4★) */}
+            {/* Card 3 · particulier honnête (4★) */}
             <Reveal className="md:col-span-5" delay={240}>
               <article className="relative h-full p-7 rounded-3xl bg-white border border-ink-100 hover:border-brand-200 hover:-translate-y-0.5 transition">
                 <div className="flex items-center justify-between mb-4">
@@ -574,7 +543,7 @@ export default function HomePage() {
               </article>
             </Reveal>
 
-            {/* Card 4 — Petite citation card avec badge "Stat" */}
+            {/* Card 4 · Petite citation card avec badge "Stat" */}
             <Reveal className="md:col-span-4" delay={360}>
               <article className="relative h-full p-7 rounded-3xl bg-gradient-to-br from-brand-50 to-amber-50/30 border border-brand-200/60 hover:border-brand-300 hover:-translate-y-0.5 transition">
                 <div className="text-5xl font-bold text-brand-500 tracking-tight leading-none">×3</div>
@@ -588,7 +557,7 @@ export default function HomePage() {
               </article>
             </Reveal>
 
-            {/* Card 5 — Artisan court */}
+            {/* Card 5 · Artisan court */}
             <Reveal className="md:col-span-4" delay={480}>
               <article className="relative h-full p-7 rounded-3xl bg-white border border-ink-100 hover:border-brand-200 hover:-translate-y-0.5 transition">
                 <div className="flex items-center justify-between mb-3">
@@ -611,7 +580,7 @@ export default function HomePage() {
               </article>
             </Reveal>
 
-            {/* Card 6 — Source / lien lire plus */}
+            {/* Card 6 · Source / lien lire plus */}
             <Reveal className="md:col-span-4" delay={600}>
               <article className="relative h-full p-7 rounded-3xl bg-ink-700 text-white overflow-hidden flex flex-col">
                 <div className="absolute -bottom-12 -right-12 w-40 h-40 rounded-full bg-brand-500/20 blur-2xl" />
@@ -636,7 +605,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ PARTENAIRES OFFICIELS — fond hex navy ═══════════ */}
+      {/* ═══════════ PARTENAIRES OFFICIELS · fond hex navy ═══════════ */}
       <section className="relative py-20 sm:py-28 bg-[#0a1d44] overflow-hidden">
         {/* Pattern hexagones SVG */}
         <div
@@ -661,7 +630,7 @@ export default function HomePage() {
               <h2 className="mt-5 text-[32px] sm:text-[42px] lg:text-[52px] leading-[1.05] font-extrabold text-white tracking-[-0.025em]">
                 Ils nous font{" "}
                 <span className="relative inline-block">
-                  <span className="bg-gradient-to-r from-brand-300 via-brand-400 to-brand-500 bg-clip-text text-transparent animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
+                  <span className="text-brand-500">
                     confiance
                   </span>
                   <span className="text-brand-500">.</span>
@@ -697,7 +666,7 @@ export default function HomePage() {
             </div>
           </Reveal>
 
-          {/* ─── FEATURED — 3AS Partners (full width, premium) ─── */}
+          {/* ─── FEATURED · 3AS Partners (full width, premium) ─── */}
           <Reveal delay={100} distance={24}>
             <a
               href="https://www.3aspartners.com"
@@ -711,7 +680,7 @@ export default function HomePage() {
 
               <div className="relative grid md:grid-cols-[auto_1fr_auto] gap-6 sm:gap-8 lg:gap-12 items-center p-6 sm:p-8 lg:p-10">
 
-                {/* Colonne 1 — Logo + Badge officiel */}
+                {/* Colonne 1 · Logo + Badge officiel */}
                 <div className="relative flex items-center gap-5 md:block">
                   <div className="relative inline-block">
                     {/* Ring ambient autour du logo */}
@@ -739,7 +708,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Colonne 2 — Info détaillée */}
+                {/* Colonne 2 · Info détaillée */}
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
                     <h3 className="text-white font-extrabold text-[1.4rem] sm:text-[1.65rem] lg:text-[1.85rem] tracking-tight">3AS Partners</h3>
@@ -768,7 +737,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Colonne 3 — CTA + URL */}
+                {/* Colonne 3 · CTA + URL */}
                 <div className="flex flex-col items-stretch md:items-end gap-3 flex-shrink-0 w-full md:w-auto">
                   <span className="text-[0.78rem] text-white/45 font-mono inline-flex items-center gap-1.5">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2c2.5 2.5 4 6 4 10s-1.5 7.5-4 10c-2.5-2.5-4-6-4-10s1.5-7.5 4-10z"/></svg>
@@ -818,7 +787,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ VOUS ÊTES ARTISAN ? — pitch B2B dédié ═══════════ */}
+      {/* ═══════════ VOUS ÊTES ARTISAN ? · pitch B2B dédié ═══════════ */}
       <HomeArtisanPitch />
 
       {/* ═══════════ ARTICLES BLOG RÉCENTS ═══════════ */}

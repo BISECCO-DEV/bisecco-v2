@@ -130,7 +130,7 @@ export function HomeComparison() {
           <h2 className="mt-5 text-[34px] sm:text-[44px] md:text-[52px] leading-[1.05] font-extrabold text-ink-700 tracking-[-0.025em]">
             Pourquoi choisir{" "}
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
+              <span className="text-brand-500 animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
                 Bisecco
               </span>
               <span className="text-brand-500"> ?</span>
@@ -143,7 +143,7 @@ export function HomeComparison() {
 
         {/* Tableau comparatif premium */}
         <div className="relative rounded-3xl bg-white border border-ink-100 shadow-[0_20px_50px_-20px_rgba(13,30,74,0.18)] overflow-hidden">
-          {/* Highlight column Bisecco — gradient orange subtle en arrière-plan */}
+          {/* Highlight column Bisecco · gradient orange subtle en arrière-plan */}
           <div className="absolute top-0 bottom-0 left-1/2 sm:left-[33%] md:left-[28%] lg:left-[25%] w-1/2 sm:w-[22%] md:w-[24%] lg:w-[25%] bg-gradient-to-b from-brand-500/[0.04] via-brand-500/[0.02] to-transparent pointer-events-none border-x border-brand-100/40 hidden md:block" aria-hidden />
 
           {/* Header columns */}
@@ -218,7 +218,7 @@ export function HomeComparison() {
         {/* Note légale */}
         <p className="mt-5 text-center text-[0.74rem] text-ink-400 max-w-3xl mx-auto leading-relaxed">
           Comparaison réalisée à partir des grilles tarifaires publiques au {new Date().toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}.
-          Les services évoluent — vérifiez auprès des plateformes concernées.
+          Les services évoluent · vérifiez auprès des plateformes concernées.
         </p>
       </div>
     </section>

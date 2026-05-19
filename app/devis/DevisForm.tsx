@@ -10,10 +10,10 @@ import { MetierCombobox } from "@/components/ui/MetierCombobox";
 import { submitPublicQuoteAction } from "@/lib/quotes/public-actions";
 
 const URGENCY = [
-  { id: "asap",    emoji: "🚨", label: "Urgent",      sub: "Dans les 48h" },
-  { id: "week",    emoji: "⚡", label: "Cette semaine", sub: "Sous 7 jours" },
-  { id: "month",   emoji: "📅", label: "Ce mois-ci",  sub: "Sous 30 jours" },
-  { id: "flex",    emoji: "🌿", label: "Pas pressé",  sub: "Je prends le temps" },
+  { id: "asap",  label: "Urgent",        sub: "Dans les 48h" },
+  { id: "week",  label: "Cette semaine", sub: "Sous 7 jours" },
+  { id: "month", label: "Ce mois-ci",    sub: "Sous 30 jours" },
+  { id: "flex",  label: "Pas pressé",    sub: "Je prends le temps" },
 ];
 
 const BUDGET = [
@@ -125,7 +125,7 @@ export function DevisForm() {
       </div>
 
       <div className="p-8 md:p-10">
-        {/* ─── STEP 1 — Projet ─── */}
+        {/* ─── STEP 1 · Projet ─── */}
         {step === 1 && (
           <div className="space-y-5">
             <div>
@@ -173,7 +173,7 @@ export function DevisForm() {
           </div>
         )}
 
-        {/* ─── STEP 2 — Urgence + budget ─── */}
+        {/* ─── STEP 2 · Urgence + budget ─── */}
         {step === 2 && (
           <div className="space-y-6">
             <div>
@@ -189,17 +189,14 @@ export function DevisForm() {
                     key={u.id}
                     type="button"
                     onClick={() => update("urgency", u.id)}
-                    className={`flex items-start gap-3 p-4 rounded-xl text-left transition ${
+                    className={`block p-4 rounded-xl text-left transition ${
                       data.urgency === u.id
-                        ? "bg-brand-50 border-2 border-brand-500 shadow-[0_4px_12px_rgba(240,122,47,0.15)]"
+                        ? "bg-brand-50 border-2 border-brand-500"
                         : "bg-ink-50/60 border-2 border-ink-100 hover:border-brand-300"
                     }`}
                   >
-                    <span className="text-2xl">{u.emoji}</span>
-                    <div>
-                      <div className="font-bold text-ink-700 text-sm">{u.label}</div>
-                      <div className="text-xs text-ink-400">{u.sub}</div>
-                    </div>
+                    <div className="font-bold text-ink-700 text-base">{u.label}</div>
+                    <div className="text-xs text-ink-400 mt-0.5">{u.sub}</div>
                   </button>
                 ))}
               </div>
@@ -228,7 +225,7 @@ export function DevisForm() {
           </div>
         )}
 
-        {/* ─── STEP 3 — Photos ─── */}
+        {/* ─── STEP 3 · Photos ─── */}
         {step === 3 && (
           <div className="space-y-5">
             <div>
@@ -279,7 +276,7 @@ export function DevisForm() {
           </div>
         )}
 
-        {/* ─── STEP 4 — Contact ─── */}
+        {/* ─── STEP 4 · Contact ─── */}
         {step === 4 && (
           <div className="space-y-5">
             <div>

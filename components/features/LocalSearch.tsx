@@ -118,7 +118,7 @@ export function LocalSearch({ artisans }: LocalSearchProps = {}) {
           <h2 className="mt-5 text-[32px] sm:text-[42px] lg:text-[52px] leading-[1.05] font-extrabold text-white tracking-[-0.025em]">
             Trouvez les meilleurs{" "}
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-brand-300 via-brand-400 to-brand-500 bg-clip-text text-transparent animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
+              <span className="text-brand-500">
                 artisans
               </span>
             </span>
@@ -224,7 +224,7 @@ export function LocalSearch({ artisans }: LocalSearchProps = {}) {
               <div className="mt-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-200">
                 <div className="flex items-center gap-2">
                   <Navigation size={12} className="fill-current text-blue-400" />
-                  <span>Position détectée — tri par distance activé</span>
+                  <span>Position détectée · tri par distance activé</span>
                 </div>
               </div>
             )}
@@ -352,7 +352,7 @@ function ArtisanCard({
           : "bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20"
       }`}
     >
-      {/* Cover — vraie photo si dispo, sinon gradient */}
+      {/* Cover · vraie photo si dispo, sinon gradient */}
       <div className="relative h-24 bg-gradient-to-br from-ink-700 to-ink-800 overflow-hidden">
         {artisan.cover ? (
           <>

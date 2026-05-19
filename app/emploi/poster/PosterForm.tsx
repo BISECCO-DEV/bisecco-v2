@@ -22,7 +22,7 @@ export function PosterForm() {
 
   return (
     <form onSubmit={submit} className="bg-white rounded-3xl shadow-card border border-ink-100 p-7 md:p-9 space-y-6">
-      {/* Section 1 — Le poste */}
+      {/* Section 1 · Le poste */}
       <section>
         <h2 className="text-lg font-bold text-ink-700 mb-4 flex items-center gap-2">
           <Briefcase size={16} className="text-brand-500" /> Le poste
@@ -48,7 +48,7 @@ export function PosterForm() {
 
       <hr className="border-ink-100" />
 
-      {/* Section 2 — Lieu */}
+      {/* Section 2 · Lieu */}
       <section>
         <h2 className="text-lg font-bold text-ink-700 mb-4 flex items-center gap-2">
           <MapPin size={16} className="text-brand-500" /> Lieu de travail
@@ -61,7 +61,7 @@ export function PosterForm() {
 
       <hr className="border-ink-100" />
 
-      {/* Section 3 — Rémunération */}
+      {/* Section 3 · Rémunération */}
       <section>
         <h2 className="text-lg font-bold text-ink-700 mb-4 flex items-center gap-2">
           <Euro size={16} className="text-brand-500" /> Rémunération
@@ -71,12 +71,12 @@ export function PosterForm() {
           <Field label="Salaire max." type="number" placeholder="48000" />
           <Select label="Période" options={["an", "mois", "heure", "jour"]} />
         </div>
-        <p className="text-xs text-ink-400 mt-2">Les candidats voient une fourchette. Soyez transparent — ça attire mieux.</p>
+        <p className="text-xs text-ink-400 mt-2">Les candidats voient une fourchette. Soyez transparent · ça attire mieux.</p>
       </section>
 
       <hr className="border-ink-100" />
 
-      {/* Section 4 — Durée */}
+      {/* Section 4 · Durée */}
       <section>
         <h2 className="text-lg font-bold text-ink-700 mb-4 flex items-center gap-2">
           <Clock size={16} className="text-brand-500" /> Durée de publication
@@ -99,7 +99,7 @@ export function PosterForm() {
 
       <hr className="border-ink-100" />
 
-      {/* Section 5 — Validation */}
+      {/* Section 5 · Validation */}
       <section className="bg-emerald-50/60 rounded-2xl p-4 border border-emerald-200">
         <h3 className="font-bold text-ink-700 mb-1 text-sm flex items-center gap-2">
           <FileText size={14} className="text-emerald-600" /> Validation SIREN

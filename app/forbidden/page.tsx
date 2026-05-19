@@ -14,7 +14,7 @@ export default function ForbiddenPage() {
         <div className="w-20 h-20 rounded-2xl bg-brand-50 mx-auto flex items-center justify-center mb-5">
           <Lock className="text-brand-500" size={36} />
         </div>
-        <div className="text-6xl sm:text-7xl font-bold bg-gradient-to-br from-ink-700 to-brand-500 bg-clip-text text-transparent">
+        <div className="text-6xl sm:text-7xl font-bold text-ink-700">
           403
         </div>
         <h1 className="text-2xl font-bold text-ink-700 mt-2">Accès refusé</h1>

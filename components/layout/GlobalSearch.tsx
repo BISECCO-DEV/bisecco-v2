@@ -72,7 +72,7 @@ export function GlobalSearch() {
 
   return (
     <>
-      {/* Trigger icône — header navy (raccourci ⌘K conservé) */}
+      {/* Trigger icône · header navy (raccourci ⌘K conservé) */}
       <button
         type="button"
         onClick={() => setOpen(true)}

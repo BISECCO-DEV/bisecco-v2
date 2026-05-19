@@ -10,35 +10,35 @@ const config: Config = {
     extend: {
       colors: {
         // ─────────────────────────────────────────────────────────────
-        // Palette Bisecco — OKLCH avec teinte unifiée (impeccable shared laws)
+        // Palette Bisecco — OKLCH avec <alpha-value> placeholder pour
+        // que les opacity modifiers Tailwind v3 (bg-brand-500/20, etc.) marchent.
         // - brand : orange Bisecco (h≈40°), chroma réduite aux extrêmes
-        // - ink   : neutres teintés brand (chroma 0.005-0.02) = jamais blanc/noir pur
+        // - ink   : neutres teintés brand = jamais blanc/noir pur
         // ─────────────────────────────────────────────────────────────
         brand: {
-          50:  'oklch(97% 0.018 60)',   // ≈ #fff7ed
-          100: 'oklch(94% 0.034 58)',   // ≈ #ffedd5
-          200: 'oklch(87% 0.068 55)',   // ≈ #fed7aa
-          300: 'oklch(80% 0.105 52)',   // ≈ #fdba74
-          400: 'oklch(72% 0.150 47)',   // ≈ #fb923c
-          500: 'oklch(65% 0.180 45)',   // ≈ #f07a2f — couleur principale
-          600: 'oklch(58% 0.180 42)',   // ≈ #e8621a
-          700: 'oklch(50% 0.165 40)',   // ≈ #c2410c
-          800: 'oklch(42% 0.140 38)',   // ≈ #9a3412
-          900: 'oklch(35% 0.115 36)',   // ≈ #7c2d12
-          950: 'oklch(22% 0.075 34)',   // ≈ #431407
+          50:  'oklch(97% 0.018 60 / <alpha-value>)',
+          100: 'oklch(94% 0.034 58 / <alpha-value>)',
+          200: 'oklch(87% 0.068 55 / <alpha-value>)',
+          300: 'oklch(80% 0.105 52 / <alpha-value>)',
+          400: 'oklch(72% 0.150 47 / <alpha-value>)',
+          500: 'oklch(65% 0.180 45 / <alpha-value>)',  // couleur principale (≈ #f07a2f)
+          600: 'oklch(58% 0.180 42 / <alpha-value>)',
+          700: 'oklch(50% 0.165 40 / <alpha-value>)',
+          800: 'oklch(42% 0.140 38 / <alpha-value>)',
+          900: 'oklch(35% 0.115 36 / <alpha-value>)',
+          950: 'oklch(22% 0.075 34 / <alpha-value>)',
         },
         ink: {
-          // neutres teintés vers le brand (chroma 0.005-0.02), évite blanc/noir pur
-          50:  'oklch(97% 0.008 250)',  // ≈ #f4f7fc
-          100: 'oklch(92% 0.012 248)',  // ≈ #e4e9f3
-          200: 'oklch(83% 0.020 246)',  // ≈ #c8d3e6
-          300: 'oklch(70% 0.030 244)',  // ≈ #9aabbc
-          400: 'oklch(50% 0.040 242)',  // ≈ #5a6a8a
-          500: 'oklch(40% 0.045 240)',  // ≈ #3a4a6a
-          600: 'oklch(28% 0.055 238)',  // ≈ #1a2f55
-          700: 'oklch(22% 0.060 236)',  // ≈ #0f1e40
-          800: 'oklch(20% 0.062 234)',  // ≈ #081f4d
-          900: 'oklch(13% 0.050 232)',  // ≈ #05122e
+          50:  'oklch(97% 0.008 250 / <alpha-value>)',
+          100: 'oklch(92% 0.012 248 / <alpha-value>)',
+          200: 'oklch(83% 0.020 246 / <alpha-value>)',
+          300: 'oklch(70% 0.030 244 / <alpha-value>)',
+          400: 'oklch(50% 0.040 242 / <alpha-value>)',
+          500: 'oklch(40% 0.045 240 / <alpha-value>)',
+          600: 'oklch(28% 0.055 238 / <alpha-value>)',
+          700: 'oklch(22% 0.060 236 / <alpha-value>)',
+          800: 'oklch(20% 0.062 234 / <alpha-value>)',
+          900: 'oklch(13% 0.050 232 / <alpha-value>)',
         },
       },
       fontFamily: {

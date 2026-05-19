@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import {
   LayoutDashboard, Users, Briefcase, Star, Gift, Settings,
-  Shield, ExternalLink, LogOut,
+  Shield, ExternalLink, LogOut, Flag, FileText,
 } from "lucide-react";
 import { requireAdmin } from "@/lib/db/current-user";
 import { logoutAction } from "@/lib/auth/actions";
@@ -18,6 +18,8 @@ const NAV = [
   { href: "/admin/utilisateurs",   label: "Utilisateurs", icon: Users },
   { href: "/admin/metiers",        label: "Métiers",      icon: Briefcase },
   { href: "/admin/avis",           label: "Avis",         icon: Star },
+  { href: "/admin/signalements",   label: "Signalements", icon: Flag },
+  { href: "/admin/blog",           label: "Blog",         icon: FileText },
   { href: "/admin/parrainages",    label: "Parrainages",  icon: Gift },
   { href: "/admin/parametres",     label: "Paramètres",   icon: Settings },
 ];

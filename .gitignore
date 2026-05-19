@@ -23,3 +23,7 @@ Thumbs.db
 
 # Tests
 coverage/
+
+# Migration scripts — contiennent des données sensibles (emails + hashes)
+scripts/users-v1.csv
+scripts/users-v1-migration.sql

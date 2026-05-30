@@ -15,8 +15,8 @@ type Suggestion = {
 
 const STATIC_PAGES: Suggestion[] = [
   { type: "page", label: "Trouver un artisan",  sub: "Recherche carte interactive", href: "/rechercher",          icon: <MapPin size={14} /> },
-  { type: "page", label: "Tous les métiers",    sub: "288 métiers d'artisans",      href: "/metiers",             icon: <Briefcase size={14} /> },
-  { type: "page", label: "Tous les avis",       sub: "247 avis vérifiés",           href: "/avis",                icon: <Users size={14} /> },
+  { type: "page", label: "Tous les métiers",    sub: "Annuaire complet des métiers",      href: "/metiers",             icon: <Briefcase size={14} /> },
+  { type: "page", label: "Tous les avis",       sub: "Avis vérifiés des clients",           href: "/avis",                icon: <Users size={14} /> },
   { type: "page", label: "Blog",                sub: "Guides et conseils",          href: "/blog",                icon: <Newspaper size={14} /> },
   { type: "page", label: "Demander un devis",   sub: "Gratuit en 2 minutes",        href: "/devis",               icon: <FileText size={14} /> },
 ];

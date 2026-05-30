@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Sparkles, ShieldCheck, Globe, KeyRound, Mail } from "lucide-react";
+import { Sparkles, ShieldCheck, KeyRound, Mail } from "lucide-react";
 import { ComingSoonClient } from "./ComingSoonClient";
 
 export const metadata: Metadata = {
   title: "Bisecco · Bientôt disponible sur bisecco.fr",
   description:
-    "Bisecco · Le 1er réseau social d'artisans français vérifiés SIREN, développé pour les particuliers. Inscrivez-vous pour être prévenu du lancement.",
+    "Bisecco · Le 1er réseau social d'artisans français vérifiés SIREN. Nouvelle version d'ici quelques jours.",
   robots: { index: false, follow: false },
 };
 
@@ -118,26 +118,15 @@ export default function ComingSoonPage() {
           </div>
 
           {/* Titre */}
-          <h1 className="text-center text-[34px] sm:text-[48px] lg:text-[60px] leading-[1.05] font-extrabold tracking-[-0.025em]">
-            Service technique
-            <br />
-            <span className="text-brand-500">
-              Bisecco
-            </span>
+          <h1 className="text-center text-[32px] sm:text-[44px] lg:text-[54px] leading-[1.1] font-extrabold tracking-[-0.025em]">
+            <span className="text-brand-500">BISECCO</span> évolue.
           </h1>
 
-          <p className="mt-6 text-center text-white/70 text-base sm:text-lg leading-relaxed max-w-md mx-auto">
-            <strong className="text-white">Bisecco</strong> est accessible sur{" "}
-            <a
-              href="https://bisecco.fr"
-              className="text-brand-400 font-bold hover:underline inline-flex items-center gap-1"
-            >
-              <Globe size={14} /> bisecco.fr
-            </a>
-          </p>
-          <p className="mt-2 text-center text-white/55 text-sm max-w-md mx-auto">
-            Le 1<sup>er</sup> réseau social d&apos;artisans français vérifiés SIREN, développé pour
-            les particuliers.
+          <p className="mt-6 text-center text-white/70 text-base sm:text-lg leading-relaxed max-w-xl mx-auto">
+            Notre plateforme est actuellement en maintenance afin de déployer une{" "}
+            <strong className="text-white">Version 2 plus complète</strong>, avec de nouvelles
+            fonctionnalités et services dédiés aux <strong className="text-white">particuliers</strong> et aux{" "}
+            <strong className="text-white">artisans</strong>.
           </p>
 
           {/* Composant client : code + email */}

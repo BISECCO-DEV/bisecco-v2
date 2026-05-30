@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Menu, X, ChevronRight, Search, Bell, LogOut, Shield, MessageSquare, Users } from "lucide-react";
 import { MAIN_NAV, SECONDARY_NAV, isActive } from "@/lib/nav";
 import { logoutAction } from "@/lib/auth/actions";
+import { CtaButton } from "@/components/ui/CtaButton";
 
 export type MobileMenuUser = {
   name: string;
@@ -140,22 +141,13 @@ export function MobileMenu({ user }: MobileMenuProps = {}) {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <Link
-                  href="/connexion"
-                  onClick={() => setOpen(false)}
-                  className="inline-flex items-center justify-center h-11 rounded-xl bg-white/[0.06] border border-white/[0.14] text-white font-bold text-[0.88rem] hover:bg-white/[0.12] hover:border-white/[0.22] active:scale-[0.98] transition"
-                >
+              <div className="grid grid-cols-2 gap-2" onClick={() => setOpen(false)}>
+                <CtaButton href="/connexion" variant="white" size="md" className="w-full justify-center">
                   Se connecter
-                </Link>
-                <Link
-                  href="/inscription"
-                  onClick={() => setOpen(false)}
-                  className="group relative inline-flex items-center justify-center h-11 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white font-extrabold text-[0.88rem] shadow-[0_6px_18px_-4px_rgba(240,122,47,0.55),inset_0_1px_0_rgba(255,255,255,0.25)] active:scale-[0.98] transition overflow-hidden"
-                >
-                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent" aria-hidden />
-                  <span className="relative">S&apos;inscrire</span>
-                </Link>
+                </CtaButton>
+                <CtaButton href="/inscription" variant="primary" size="md" className="w-full justify-center">
+                  S&apos;inscrire
+                </CtaButton>
               </div>
             )}
 

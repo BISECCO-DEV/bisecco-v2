@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Newspaper, ArrowRight, Clock, Calendar } from "lucide-react";
+import { Newspaper, ArrowRight, Clock, Calendar, ArrowUpRight } from "lucide-react";
 import { BLOG_POSTS } from "@/lib/blog";
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -12,44 +12,52 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export function HomeBlogTeasers() {
-  // 3 articles les plus récents
   const recent = [...BLOG_POSTS]
     .sort((a, b) => b.dateIso.localeCompare(a.dateIso))
     .slice(0, 3);
 
   return (
-    <section className="relative py-20 sm:py-24 bg-white overflow-hidden">
-      {/* Décors */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[400px] rounded-full bg-brand-500/[0.04] blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-blue-500/[0.04] blur-[100px] pointer-events-none" />
+    <section className="relative py-20 sm:py-28 bg-[#0a1d44] overflow-hidden">
+      {/* Pattern hexagones · cohérent avec autres sections dark DA */}
+      <div
+        className="absolute inset-0 opacity-[0.06] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='84' height='96' viewBox='0 0 84 96'><path d='M42 0L84 24v48L42 96 0 72V24z' fill='none' stroke='%23ffffff' stroke-width='1.2'/></svg>")`,
+          backgroundSize: "84px 96px",
+        }}
+      />
+      {/* Halos lumineux */}
+      <div className="absolute top-0 left-1/4 w-[600px] h-[500px] rounded-full bg-brand-500/[0.12] blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-blue-500/[0.10] blur-[140px] pointer-events-none" />
 
       <div className="container-default relative">
-        {/* Head */}
+        {/* ═══════ HEAD ═══════ */}
         <div className="flex items-end justify-between gap-4 flex-wrap mb-10 sm:mb-12">
           <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[0.7rem] font-bold tracking-[0.14em] uppercase">
-              <Newspaper size={11} strokeWidth={2.8} className="text-brand-500" />
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-300 text-[0.7rem] font-bold tracking-[0.14em] uppercase backdrop-blur-sm">
+              <Newspaper size={11} strokeWidth={2.8} className="text-brand-400" />
               Blog & conseils
             </span>
-            <h2 className="mt-5 text-[28px] sm:text-[36px] md:text-[44px] leading-[1.05] font-extrabold text-ink-700 tracking-[-0.025em]">
+            <h2 className="mt-5 text-[32px] lg:text-[38px] leading-[1.25] font-semibold text-white tracking-[-0.025em]">
               Articles récents
               <span className="text-brand-500">.</span>
             </h2>
-            <p className="mt-3 text-[0.95rem] sm:text-[1rem] text-ink-500 leading-relaxed">
-              Guides pratiques, conseils experts, actualités artisanat · mis à jour <strong className="text-ink-700">chaque semaine</strong>.
+            <p className="mt-3 text-[0.95rem] sm:text-[1rem] text-white/65 leading-relaxed">
+              Guides pratiques, conseils experts, actualités artisanat ·
+              mis à jour <strong className="text-white">chaque semaine</strong>.
             </p>
           </div>
 
           <Link
             href="/blog"
-            className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-ink-50 border border-ink-200 text-ink-700 font-bold text-[0.86rem] hover:bg-white hover:border-brand-300 hover:text-brand-600 transition"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 hover:border-brand-400/50 text-white text-[0.88rem] font-bold backdrop-blur-sm transition-colors"
           >
             Voir tous les articles
-            <ArrowRight size={13} strokeWidth={2.6} className="group-hover:translate-x-0.5 transition-transform" />
+            <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>
 
-        {/* Grid 3 articles */}
+        {/* ═══════ GRID 3 ARTICLES ═══════ */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {recent.map((post, i) => {
             const catColor = CATEGORY_COLORS[post.category] ?? CATEGORY_COLORS["Guide"];
@@ -57,7 +65,7 @@ export function HomeBlogTeasers() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-ink-100 hover:border-brand-200 hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-15px_rgba(13,30,74,0.18)] transition-all animate-reveal-up"
+                className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-white/10 hover:border-brand-400/50 hover:-translate-y-1.5 hover:shadow-[0_30px_60px_-20px_rgba(240,122,47,0.35)] transition-all animate-reveal-up"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
                 {/* Cover */}
@@ -66,8 +74,8 @@ export function HomeBlogTeasers() {
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                     style={{ backgroundImage: `url(${post.cover})` }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/30 to-transparent" />
-                  <span className={`absolute top-3 left-3 inline-flex items-center px-2.5 py-1 rounded-full ${catColor} border text-[0.66rem] font-extrabold uppercase tracking-[0.1em] shadow-[0_2px_8px_rgba(0,0,0,0.12)]`}>
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 to-transparent" />
+                  <span className={`absolute top-3 left-3 inline-flex items-center px-2.5 py-1 rounded-full ${catColor} border text-[0.66rem] font-extrabold uppercase tracking-[0.1em] shadow-[0_2px_8px_rgba(0,0,0,0.18)]`}>
                     {post.category}
                   </span>
                 </div>

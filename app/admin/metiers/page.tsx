@@ -92,7 +92,7 @@ export default async function AdminMetiersPage({ searchParams }: { searchParams:
           <div>
             <label className="block text-[0.7rem] font-bold text-ink-500 uppercase tracking-wider mb-1.5">Catégorie</label>
             <select name="category" required defaultValue={editing?.category ?? ""} className="w-full px-3 py-2.5 rounded-xl border border-ink-200 text-sm bg-white focus:border-brand-500 outline-none">
-              <option value="">— Choisir —</option>
+              <option value="">· Choisir ·</option>
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>

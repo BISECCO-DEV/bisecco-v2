@@ -10,7 +10,7 @@ import { MobileMenu } from "./MobileMenu";
 import { UserMenu, type UserMenuProps } from "./UserMenu";
 import { MAIN_NAV, isActive } from "@/lib/nav";
 
-type HeaderProps = { user: UserMenuProps["user"]; unreadNotifications?: number };
+type HeaderProps = { user: UserMenuProps["user"]; unreadNotifications?: number; currentUserId?: number | null };
 
 // Pages où le header doit être TRANSPARENT en haut (hero overlay)
 // puis devient navy opaque au scroll.
@@ -18,7 +18,7 @@ const OVERLAY_HERO_ROUTES = ["/"];
 
 const SCROLL_THRESHOLD = 24;
 
-export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
+export function Header({ user, unreadNotifications = 0, currentUserId = null }: HeaderProps) {
   const pathname = usePathname();
   const isOverlayPage = OVERLAY_HERO_ROUTES.includes(pathname);
   const isAdminPage = pathname?.startsWith("/admin") ?? false;
@@ -66,7 +66,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
       {/* Voile ambiant · donne de la présence au header transparent (mode overlay uniquement) */}
       {isTransparent && (
         <div
-          className="fixed top-0 left-0 right-0 z-[49] h-[180px] pointer-events-none transition-opacity duration-300"
+          className="fixed top-0 left-0 right-0 z-[49] h-[180px] pointer-events-none transition-opacity duration-300 lg:hidden"
           style={{
             background:
               "linear-gradient(180deg, rgba(5,18,46,0.55) 0%, rgba(5,18,46,0.30) 50%, rgba(5,18,46,0.05) 85%, transparent 100%)",
@@ -79,7 +79,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
       <header
         className={`fixed left-0 right-0 z-50 transition-all duration-300 ${
           isTransparent
-            ? "top-[32px] sm:top-[36px] bg-transparent border-b border-transparent shadow-none"
+            ? "top-[32px] sm:top-[36px] bg-transparent border-b border-transparent shadow-none lg:bg-ink-800/95 lg:backdrop-blur-xl lg:border-white/[0.08] lg:shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_2px_12px_rgba(0,0,0,0.18)]"
             : "top-[32px] sm:top-[36px] bg-ink-800/95 backdrop-blur-xl border-b border-white/[0.08] shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_2px_12px_rgba(0,0,0,0.18)]"
         }`}
       >
@@ -136,7 +136,7 @@ export function Header({ user, unreadNotifications = 0 }: HeaderProps) {
             <GlobalSearch />
 
             <div className="hidden lg:block">
-              <NotificationsDropdown unreadCount={unreadNotifications} />
+              <NotificationsDropdown unreadCount={unreadNotifications} currentUserId={currentUserId} />
             </div>
 
             <UserMenu user={user} />

@@ -37,7 +37,7 @@ type Props = {
   gallery: GalleryItem[];
   metiers: { id: number; name: string }[];
   artisanProfile: {
-    metier_id: number | null;
+    metier_ids: number[];
     company_name: string;
     service_radius: number | null;
     availability: string;
@@ -91,7 +91,7 @@ export function EditProfileForm({
           <ActiviteForm
             metiers={metiers}
             initial={{
-              metier_id: artisanProfile?.metier_id ?? null,
+              metier_ids: artisanProfile?.metier_ids ?? [],
               company_name: artisanProfile?.company_name ?? "",
               service_radius: artisanProfile?.service_radius ?? null,
               availability: artisanProfile?.availability ?? "",

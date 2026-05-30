@@ -2,8 +2,8 @@
 
 import { useRef, useState, useTransition } from "react";
 import Image from "next/image";
-import { Upload, CheckCircle2, AlertCircle, Loader2, User as UserIcon } from "lucide-react";
-import { uploadAvatarAction, uploadCoverAction, type UploadPhotoState } from "@/lib/profile/actions";
+import { Upload, CheckCircle2, AlertCircle, Loader2, User as UserIcon, Trash2 } from "lucide-react";
+import { uploadAvatarAction, uploadCoverAction, removeAvatarAction, removeCoverAction, type UploadPhotoState } from "@/lib/profile/actions";
 
 type Variant = "avatar" | "cover";
 
@@ -34,6 +34,15 @@ export function PhotoUploader({ variant, initialUrl }: Props) {
 
   const onClick = () => inputRef.current?.click();
 
+  const onRemove = () => {
+    if (!confirm(`Supprimer cette ${isAvatar ? "photo de profil" : "photo de couverture"} ?`)) return;
+    startTransition(async () => {
+      const result = isAvatar ? await removeAvatarAction() : await removeCoverAction();
+      setState(result);
+      if (result.ok) setCurrentUrl(null);
+    });
+  };
+
   if (isAvatar) {
     return (
       <div className="flex items-center gap-4">
@@ -50,14 +59,26 @@ export function PhotoUploader({ variant, initialUrl }: Props) {
           )}
         </div>
         <div className="space-y-2">
-          <button
-            type="button"
-            onClick={onClick}
-            disabled={pending}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-ink-50 border border-ink-200 hover:border-brand-500 text-sm font-bold text-ink-700 transition disabled:opacity-50"
-          >
-            <Upload size={14} /> {currentUrl ? "Changer la photo" : "Télécharger"}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={onClick}
+              disabled={pending}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-ink-50 border border-ink-200 hover:border-brand-500 text-sm font-bold text-ink-700 transition disabled:opacity-50"
+            >
+              <Upload size={14} /> {currentUrl ? "Changer" : "Télécharger"}
+            </button>
+            {currentUrl && (
+              <button
+                type="button"
+                onClick={onRemove}
+                disabled={pending}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold transition disabled:opacity-50"
+              >
+                <Trash2 size={14} /> Supprimer
+              </button>
+            )}
+          </div>
           <p className="text-xs text-ink-400">JPG, PNG, WebP · 5 Mo max</p>
           <FeedbackLine state={state} />
         </div>
@@ -79,27 +100,38 @@ export function PhotoUploader({ variant, initialUrl }: Props) {
   // Cover
   return (
     <div className="space-y-2">
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={pending}
-        className="relative block w-full aspect-[4/1] rounded-2xl border-2 border-dashed border-ink-200 hover:border-brand-500 bg-ink-50/30 hover:bg-brand-50/20 transition flex items-center justify-center text-center overflow-hidden disabled:opacity-50"
-      >
-        {currentUrl ? (
-          <Image src={currentUrl} alt="Couverture" fill sizes="1200px" className="object-cover" unoptimized />
-        ) : (
-          <div>
-            <Upload size={24} className="text-ink-300 mx-auto mb-2" />
-            <div className="text-sm font-bold text-ink-500">Cliquez pour télécharger</div>
-            <div className="text-xs text-ink-400 mt-1">JPG, PNG, WebP · 16:4 idéal</div>
-          </div>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={pending}
+          className="relative block w-full aspect-[4/1] rounded-2xl border-2 border-dashed border-ink-200 hover:border-brand-500 bg-ink-50/30 hover:bg-brand-50/20 transition flex items-center justify-center text-center overflow-hidden disabled:opacity-50"
+        >
+          {currentUrl ? (
+            <Image src={currentUrl} alt="Couverture" fill sizes="1200px" className="object-cover" unoptimized />
+          ) : (
+            <div>
+              <Upload size={24} className="text-ink-300 mx-auto mb-2" />
+              <div className="text-sm font-bold text-ink-500">Cliquez pour télécharger</div>
+              <div className="text-xs text-ink-400 mt-1">JPG, PNG, WebP · 16:4 idéal</div>
+            </div>
+          )}
+          {pending && (
+            <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+              <Loader2 size={28} className="text-brand-500 animate-spin" />
+            </div>
+          )}
+        </button>
+        {currentUrl && !pending && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/95 border border-red-200 text-red-600 text-xs font-bold hover:bg-red-50 transition shadow-md"
+          >
+            <Trash2 size={13} /> Supprimer
+          </button>
         )}
-        {pending && (
-          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-            <Loader2 size={28} className="text-brand-500 animate-spin" />
-          </div>
-        )}
-      </button>
+      </div>
       <FeedbackLine state={state} />
       <input
         ref={inputRef}

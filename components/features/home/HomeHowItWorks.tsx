@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
-  Zap, UserPlus, Camera, MessageCircle, Search, FileText, CheckCircle2,
-  ArrowRight, Hammer, Users,
+  Zap, UserPlus, Camera, MessageCircle, Search,
+  ArrowRight, Hammer, Users, Sparkles,
 } from "lucide-react";
+import { CtaButton } from "@/components/ui/CtaButton";
 
 type Audience = "particulier" | "artisan";
 
@@ -21,22 +21,22 @@ const STEPS_PARTICULIER: Step[] = [
   {
     num: "01",
     icon: Search,
-    title: "Décrivez votre projet",
-    text: "Métier, ville, descriptif. 2 minutes. Pas d'inscription.",
+    title: "Recherchez votre artisan",
+    text: "Métier, ville, mots-clés. Filtres précis. Pas d'inscription nécessaire.",
     highlight: "2 min",
   },
   {
     num: "02",
-    icon: FileText,
-    title: "Recevez 2 à 5 devis",
-    text: "Des artisans vérifiés SIREN vous écrivent en direct. Vous comparez, vous décidez.",
-    highlight: "Sous 24h",
+    icon: MessageCircle,
+    title: "Contactez en direct",
+    text: "Messagerie intégrée avec chaque artisan vérifié SIREN. Pas d'intermédiaire.",
+    highlight: "Sans frais",
   },
   {
     num: "03",
-    icon: CheckCircle2,
-    title: "Choisissez & démarrez",
-    text: "Vous traitez en direct avec l'artisan. Bisecco ne prend rien.",
+    icon: Hammer,
+    title: "Démarrez vos travaux",
+    text: "Vous traitez en direct avec l'artisan. Bisecco ne prend aucune commission.",
     highlight: "0 % commission",
   },
 ];
@@ -105,7 +105,7 @@ export function HomeHowItWorks() {
             <Zap size={11} strokeWidth={2.8} className="text-brand-500" />
             En 3 étapes
           </span>
-          <h2 className="mt-5 text-[34px] sm:text-[44px] md:text-[52px] leading-[1.05] font-extrabold text-ink-700 tracking-[-0.025em]">
+          <h2 className="mt-5 text-[32px] lg:text-[38px] leading-[1.25] font-semibold text-ink-700 tracking-[-0.025em]">
             Comment ça marche
             <span className="text-brand-500">.</span>
           </h2>
@@ -165,44 +165,117 @@ export function HomeHowItWorks() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-5 sm:gap-6 relative">
-            {steps.map(({ num, icon: Icon, title, text, highlight }, i) => (
-              <div
-                key={`${audience}-${num}`}
-                className="group relative h-full bg-white rounded-3xl p-7 sm:p-8 border border-ink-100/80 shadow-[0_4px_20px_rgba(13,30,74,0.06)] hover:shadow-[0_20px_40px_-12px_rgba(13,30,74,0.18)] hover:-translate-y-1.5 hover:border-brand-200 transition-all duration-300 overflow-hidden animate-reveal-up"
-                style={{ animationDelay: `${i * 100}ms` }}
-              >
-                {/* Halo coin top-right */}
-                <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br from-brand-500/10 to-transparent opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none" />
+            {steps.map(({ num, icon: Icon, title, text, highlight }, i) => {
+              const isFinal = i === steps.length - 1;
+              return (
+                <div
+                  key={`${audience}-${num}`}
+                  className={`group relative h-full bg-white rounded-3xl p-7 sm:p-8 border shadow-[0_4px_20px_rgba(13,30,74,0.06)] hover:shadow-[0_20px_40px_-12px_rgba(13,30,74,0.18)] hover:-translate-y-1.5 transition-all duration-300 overflow-hidden animate-reveal-up ${
+                    isFinal
+                      ? "border-emerald-200/80 hover:border-emerald-300 ring-1 ring-emerald-100/60"
+                      : "border-ink-100/80 hover:border-brand-200"
+                  }`}
+                  style={{ animationDelay: `${i * 100}ms` }}
+                >
+                  {/* Halo coin top-right */}
+                  <div
+                    className={`absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none ${
+                      isFinal
+                        ? "bg-gradient-to-br from-emerald-400/20 to-transparent"
+                        : "bg-gradient-to-br from-brand-500/10 to-transparent"
+                    }`}
+                  />
 
-                {/* Watermark numéro */}
-                <div className="absolute top-5 right-6 text-[68px] font-extrabold leading-none text-brand-50 group-hover:text-brand-100 group-hover:scale-110 transition-all duration-500 select-none pointer-events-none tracking-[-0.04em]">
-                  {num}
+                  {/* ✨ Étape finale : gradient shimmer qui balaye + sparkles */}
+                  {isFinal && (
+                    <>
+                      {/* Sweep gradient au hover */}
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1400ms] ease-out bg-gradient-to-r from-transparent via-emerald-50/60 to-transparent pointer-events-none" />
+                      {/* Sparkles flottants */}
+                      <Sparkles
+                        size={11}
+                        className="absolute top-6 right-[88px] text-emerald-400/70 animate-pulse pointer-events-none"
+                        style={{ animationDelay: "0.4s" }}
+                      />
+                      <Sparkles
+                        size={9}
+                        className="absolute bottom-12 right-4 text-amber-400/70 animate-pulse pointer-events-none"
+                        style={{ animationDelay: "1.1s" }}
+                      />
+                      <Sparkles
+                        size={13}
+                        className="absolute top-[100px] left-4 text-brand-400/60 animate-pulse pointer-events-none"
+                        style={{ animationDelay: "0.7s" }}
+                      />
+                    </>
+                  )}
+
+                  {/* Watermark numéro */}
+                  <div
+                    className={`absolute top-5 right-6 text-[68px] font-extrabold leading-none group-hover:scale-110 transition-all duration-500 select-none pointer-events-none tracking-[-0.04em] ${
+                      isFinal
+                        ? "text-emerald-50 group-hover:text-emerald-100"
+                        : "text-brand-50 group-hover:text-brand-100"
+                    }`}
+                  >
+                    {num}
+                  </div>
+
+                  {/* Icône badge */}
+                  <div
+                    className={`relative inline-flex items-center justify-center w-14 h-14 rounded-2xl text-white transition-transform duration-300 mb-5 group-hover:scale-110 ${
+                      isFinal
+                        ? "bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-[0_8px_20px_-4px_rgba(16,185,129,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:rotate-0 "
+                        : "bg-gradient-to-br from-brand-500 to-brand-600 shadow-[0_8px_20px_-4px_rgba(240,122,47,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:rotate-3"
+                    }`}
+                  >
+                    <Icon size={22} strokeWidth={2.2} />
+                    {/* Ring pulsante (étape finale) ou statique */}
+                    {isFinal ? (
+                      <>
+                        <span className="absolute inset-0 rounded-2xl ring-4 ring-emerald-500/15 group-hover:ring-emerald-500/35 transition" />
+                        <span className="absolute inset-0 rounded-2xl ring-2 ring-emerald-400/40 animate-ping [animation-duration:2.5s] pointer-events-none" />
+                      </>
+                    ) : (
+                      <span className="absolute inset-0 rounded-2xl ring-4 ring-brand-500/15 group-hover:ring-brand-500/30 transition" />
+                    )}
+                  </div>
+
+                  {/* Title + chip */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3
+                      className={`font-extrabold text-[1.18rem] sm:text-[1.25rem] text-ink-700 transition tracking-tight ${
+                        isFinal ? "group-hover:text-emerald-700" : "group-hover:text-brand-600"
+                      }`}
+                    >
+                      {title}
+                    </h3>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[0.65rem] font-bold uppercase tracking-wider ${
+                        isFinal
+                          ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
+                          : "bg-emerald-50 border border-emerald-200 text-emerald-700"
+                      }`}
+                    >
+                      ✓ {highlight}
+                    </span>
+                  </div>
+
+                  <p className="text-[0.92rem] text-ink-500 mt-3 leading-relaxed relative">{text}</p>
+
+                  <div
+                    className={`mt-5 pt-4 border-t border-dashed flex items-center justify-between text-[0.82rem] font-bold opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ${
+                      isFinal
+                        ? "border-emerald-100 text-emerald-600"
+                        : "border-ink-100 text-brand-500"
+                    }`}
+                  >
+                    <span>{isFinal ? "Mission accomplie" : "Étape suivante"}</span>
+                    <ArrowRight size={14} strokeWidth={2.6} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-
-                {/* Icône badge */}
-                <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-[0_8px_20px_-4px_rgba(240,122,47,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 mb-5">
-                  <Icon size={22} strokeWidth={2.2} />
-                  <span className="absolute inset-0 rounded-2xl ring-4 ring-brand-500/15 group-hover:ring-brand-500/30 transition" />
-                </div>
-
-                {/* Title + chip */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-extrabold text-[1.18rem] sm:text-[1.25rem] text-ink-700 group-hover:text-brand-600 transition tracking-tight">
-                    {title}
-                  </h3>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[0.65rem] font-bold uppercase tracking-wider">
-                    ✓ {highlight}
-                  </span>
-                </div>
-
-                <p className="text-[0.92rem] text-ink-500 mt-3 leading-relaxed">{text}</p>
-
-                <div className="mt-5 pt-4 border-t border-dashed border-ink-100 flex items-center justify-between text-[0.82rem] font-bold text-brand-500 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                  <span>Étape suivante</span>
-                  <ArrowRight size={14} strokeWidth={2.6} className="group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -212,14 +285,14 @@ export function HomeHowItWorks() {
             <span className="text-[0.92rem] text-ink-600 font-medium">
               Prêt à <strong className="text-ink-800">{audience === "particulier" ? "trouver votre artisan ?" : "démarrer en 2 minutes ?"}</strong>
             </span>
-            <Link
+            <CtaButton
               href={config.cta.href}
-              className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white font-extrabold text-[0.88rem] shadow-[0_8px_20px_-4px_rgba(240,122,47,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-4px_rgba(240,122,47,0.6)] transition-all"
+              variant="primary"
+              size="md"
+              icon={audience === "particulier" ? Search : UserPlus}
             >
-              {audience === "particulier" ? <Search size={14} strokeWidth={2.4} /> : <UserPlus size={14} strokeWidth={2.4} />}
               {config.cta.label}
-              <ArrowRight size={14} strokeWidth={2.6} className="group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+            </CtaButton>
           </div>
           <p className="mt-3 text-[0.78rem] text-ink-400">
             Gratuit · Sans carte bancaire · Désinscription en 1 clic

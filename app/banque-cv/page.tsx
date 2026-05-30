@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
 type SearchParams = Promise<{ metier?: string; ville?: string; q?: string }>;
 
 function timeAgo(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "·";
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
   if (days < 1) return "Aujourd'hui";
   if (days < 7) return `Il y a ${days}j`;

@@ -5,7 +5,11 @@ import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { pushNotification } from "@/lib/notifications/actions";
+import { sendMail } from "@/lib/mail/mailer";
+import { newQuoteEmail } from "@/lib/mail/templates";
 import { URGENCY, BUDGET, type Urgency, type BudgetRange } from "./constants";
+
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 export type QuoteState = { error?: string; success?: string; quoteId?: number } | undefined;
 
@@ -103,6 +107,29 @@ export async function submitQuoteAction(
     "/mon-profil/devis",
     "📋",
   );
+
+  // Email à l'artisan ciblé
+  const { data: artisanInfo } = await admin
+    .from("users")
+    .select("email, name")
+    .eq("id", artisanId)
+    .maybeSingle();
+  let metierName = "";
+  if (metierId) {
+    const { data: metier } = await admin.from("metiers").select("name").eq("id", metierId).maybeSingle();
+    metierName = metier?.name ?? "";
+  }
+  if (artisanInfo?.email && artisanInfo.name) {
+    const tpl = newQuoteEmail({
+      artisanName: artisanInfo.name,
+      particulierName: me.name ?? "Un client",
+      metierName: metierName || title,
+      city,
+      description,
+      quoteUrl: `${APP_URL_BASE}/mon-profil/devis/${created.id}`,
+    });
+    await sendMail({ to: artisanInfo.email, subject: tpl.subject, html: tpl.html, text: tpl.text, replyTo: contactEmail });
+  }
 
   revalidatePath("/mon-profil/devis");
   redirect(`/devis/confirme?id=${created.id}`);

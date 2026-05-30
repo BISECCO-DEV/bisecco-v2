@@ -82,7 +82,7 @@ export function GalleryManager({ initial }: { initial: GalleryItem[] }) {
               type="button"
               onClick={() => onRemove(it.id)}
               disabled={pending}
-              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition disabled:opacity-50"
+              className="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg opacity-100 sm:opacity-90 hover:opacity-100 hover:scale-105 transition disabled:opacity-50"
               aria-label="Supprimer"
             >
               <X size={14} />

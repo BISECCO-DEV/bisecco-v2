@@ -40,10 +40,24 @@ const config: Config = {
           800: 'oklch(20% 0.062 234 / <alpha-value>)',
           900: 'oklch(13% 0.050 232 / <alpha-value>)',
         },
+        // ─────────────────────────────────────────────────────────────
+        // Tokens dashboard Admin v2 (inspiration ihos.fr · ton chaleureux)
+        // ─────────────────────────────────────────────────────────────
+        sand: {
+          50:  '#f6f4ef',  // bg admin
+          100: '#efece4',  // bg-soft (table head, hover)
+          200: '#e6e2d6',  // line
+          300: '#d8d2c2',  // line-strong
+        },
+        // Couleurs sémantiques (statuts, KPIs, badges)
+        ok:     { DEFAULT: '#15803d', soft: '#dcfce7' },
+        warn:   { DEFAULT: '#b45309', soft: '#fef3c7' },
+        info:   { DEFAULT: '#1d4ed8', soft: '#dbeafe' },
+        violet: { DEFAULT: '#6d28d9', soft: '#ede9fe' },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-sans)', 'Inter', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         // hierarchy ≥ 1.25 ratio entre steps (impeccable shared law)
@@ -76,6 +90,7 @@ const config: Config = {
         'dash':          'dashFlow 30s linear infinite',
         'reveal-up':     'revealUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both',
         'scroll-dot':    'scrollDot 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+        'toast-progress': 'toastProgress 5s linear forwards',
         // SUPPRIMÉ (animations décoratives sans purpose) :
         //   pulse-slow, bounce-slow, float, float-slow, shimmer, tilt,
         //   gradient-flow, draw-line, glow-pulse, sheen
@@ -95,6 +110,10 @@ const config: Config = {
           '0%':   { transform: 'translateY(0)', opacity: '1' },
           '60%':  { transform: 'translateY(14px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        toastProgress: {
+          '0%':   { width: '100%' },
+          '100%': { width: '0%' },
         },
       },
     },

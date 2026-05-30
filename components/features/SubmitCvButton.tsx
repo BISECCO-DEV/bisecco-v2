@@ -62,19 +62,20 @@ export function SubmitCvButton({
 
       {open && (
         <div
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-ink-900/60 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-[100] flex items-stretch sm:items-center justify-center bg-ink-900/60 backdrop-blur-sm animate-fade-in"
           role="dialog"
           aria-modal="true"
           onClick={() => !submitting && setOpen(false)}
         >
           <div
-            className="w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto"
+            className="w-full sm:max-w-lg bg-white sm:rounded-3xl shadow-2xl animate-slide-up h-full sm:h-auto sm:max-h-[92vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-6 pt-6 pb-4 border-b border-ink-100 flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-extrabold text-ink-700">Envoyer mon CV</h2>
-                <p className="mt-1 text-sm text-ink-500">
+            {/* Header sticky en haut */}
+            <div className="px-5 sm:px-6 pt-5 pb-4 border-b border-ink-100 flex items-start justify-between gap-3 flex-shrink-0">
+              <div className="min-w-0">
+                <h2 className="text-lg sm:text-xl font-extrabold text-ink-700">Envoyer mon CV</h2>
+                <p className="mt-1 text-xs sm:text-sm text-ink-500 truncate">
                   À <strong className="text-ink-700">{recipientName}</strong> · PDF, 5 MB max
                 </p>
               </div>
@@ -82,14 +83,14 @@ export function SubmitCvButton({
                 type="button"
                 onClick={() => setOpen(false)}
                 disabled={submitting}
-                className="p-1.5 rounded-lg hover:bg-ink-50 text-ink-400 hover:text-ink-700 transition disabled:opacity-40"
+                className="p-1.5 rounded-lg hover:bg-ink-50 text-ink-400 hover:text-ink-700 transition disabled:opacity-40 flex-shrink-0"
                 aria-label="Fermer"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <form action={submitCvAction} onSubmit={() => setSubmitting(true)} className="p-6 space-y-4">
+            <form action={submitCvAction} onSubmit={() => setSubmitting(true)} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
               <input type="hidden" name="recipient_id" value={recipientId} />
               <input type="hidden" name="_back" value={backUrl} />
 

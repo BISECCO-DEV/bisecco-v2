@@ -7,37 +7,33 @@ import {
 import { InviteButton } from "@/components/features/InviteButton";
 import { requireUser } from "@/lib/db/current-user";
 import { logoutAction } from "@/lib/auth/actions";
+import { fetchOnboardingStatus } from "@/lib/db/onboarding";
+import { OnboardingChecklist } from "@/components/features/OnboardingChecklist";
+import { fetchUserStats, fetchUserActivity, type UserActivity } from "@/lib/db/user-dashboard";
 
 export const metadata: Metadata = {
   title: "Mon espace",
   robots: { index: false, follow: false },
 };
 
-// Hero-metric template cassé : on garde UNE stat héroïque (vues = signal le plus
-// parlant) et 3 satellites discrètes en liste typographique.
-const STAT_HERO = {
-  label: "Vues du profil ce mois",
-  value: 1284,
-  change: "+12% vs mois dernier",
-  icon: Eye,
+// Icônes et couleurs par type d'activité (mapping côté JSX)
+const ACTIVITY_VISUALS: Record<UserActivity["type"], { icon: typeof MessageCircle; color: string; bg: string }> = {
+  message: { icon: MessageCircle, color: "text-blue-500",    bg: "bg-blue-50" },
+  devis:   { icon: FileText,      color: "text-brand-500",   bg: "bg-brand-50" },
+  review:  { icon: Star,          color: "text-yellow-500",  bg: "bg-yellow-50" },
+  view:    { icon: Eye,           color: "text-emerald-500", bg: "bg-emerald-50" },
 };
-
-const STAT_SATELLITES = [
-  { label: "Messages reçus",  value: 7,    icon: MessageCircle, href: "/messagerie" },
-  { label: "Devis reçus",     value: 24,   icon: FileText,      href: "/mon-profil/devis" },
-  { label: "Note moyenne",    value: "4.8 / 5",  icon: Star,    href: "/mon-profil/avis" },
-];
-
-const ACTIVITIES = [
-  { id: 1, type: "message", href: "/messagerie",         title: "Nouveau message de Marie L.", time: "Il y a 5 min", icon: MessageCircle, color: "text-blue-500", bg: "bg-blue-50" },
-  { id: 2, type: "devis",   href: "/mon-profil/devis",   title: "Nouvelle demande de devis · Rénovation salle de bain", time: "Il y a 2h", icon: FileText, color: "text-brand-500", bg: "bg-brand-50" },
-  { id: 3, type: "review",  href: "/mon-profil/avis",    title: "Vous avez reçu un avis 5★ de Pierre M.", time: "Hier", icon: Star, color: "text-yellow-500", bg: "bg-yellow-50" },
-  { id: 4, type: "view",    href: "/mon-profil/activite", title: "Sophie K. a consulté votre profil", time: "Hier", icon: Eye, color: "text-emerald-500", bg: "bg-emerald-50" },
-];
 
 export default async function MonProfilPage() {
   const user = await requireUser();
   const isValidated = user.validation_status === "approved";
+  const onboarding = user.id ? await fetchOnboardingStatus(user.id, user.role) : null;
+  const stats = user.id ? await fetchUserStats(user.id, user.role) : null;
+  const activities = user.id ? await fetchUserActivity(user.id, user.role, 8) : [];
+  const isArtisan = user.role === "artisan";
+  const viewsDelta = stats && stats.prevMonthViews > 0
+    ? Math.round(((stats.profileViews - stats.prevMonthViews) / stats.prevMonthViews) * 100)
+    : (stats?.profileViews ?? 0) > 0 ? 100 : 0;
   const avatarUrl =
     user.profile_photo ??
     `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name)}`;
@@ -47,9 +43,10 @@ export default async function MonProfilPage() {
   const completion = Math.round(
     (fields.filter(Boolean).length / fields.length) * 100,
   );
+  const baseUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
   const referralUrl = user.referral_code
-    ? `https://bisecco.fr/r/${user.referral_code}`
-    : "https://bisecco.fr/inscription";
+    ? `${baseUrl}/r/${user.referral_code}`
+    : `${baseUrl}/inscription`;
 
   return (
     <div className="bg-ink-50 min-h-screen">
@@ -113,48 +110,90 @@ export default async function MonProfilPage() {
           </div>
         </div>
 
-        {/* Stat héroïque + 3 satellites — pas de cards identiques, hiérarchie typo */}
-        <section className="mb-10">
-          {/* Hero stat : la métrique qui parle vraiment */}
-          <div className="border-t border-ink-100 pt-6">
-            <div className="flex items-baseline gap-4 flex-wrap">
-              <span className="text-[64px] md:text-[80px] font-bold tracking-[-0.04em] text-ink-700 leading-none tabular-nums">
-                {STAT_HERO.value.toLocaleString("fr-FR")}
-              </span>
-              <div className="pb-2">
-                <div className="text-sm font-semibold text-ink-600 uppercase tracking-wider">
-                  {STAT_HERO.label}
-                </div>
-                <div className="text-sm text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-                  <TrendingUp size={14} /> {STAT_HERO.change}
+        {/* Onboarding · visible tant que < 100% */}
+        {onboarding && onboarding.percent < 100 && (
+          <section className="mb-8">
+            <OnboardingChecklist status={onboarding} />
+          </section>
+        )}
+
+        {/* Stat héroïque + satellites · vraies données Supabase */}
+        {stats && (
+          <section className="mb-10">
+            {/* Hero stat : vues du profil ce mois (artisan) ou message d'accueil (particulier) */}
+            <div className="border-t border-ink-100 pt-6">
+              <div className="flex items-baseline gap-4 flex-wrap">
+                <span className="text-[64px] md:text-[80px] font-bold tracking-[-0.04em] text-ink-700 leading-none tabular-nums">
+                  {stats.profileViews.toLocaleString("fr-FR")}
+                </span>
+                <div className="pb-2">
+                  <div className="text-sm font-semibold text-ink-600 uppercase tracking-wider">
+                    Vues du profil ce mois
+                  </div>
+                  {stats.profileViews > 0 ? (
+                    <div className={`text-sm font-semibold mt-1 flex items-center gap-1 ${viewsDelta >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                      <TrendingUp size={14} /> {viewsDelta >= 0 ? "+" : ""}{viewsDelta}% vs mois dernier
+                    </div>
+                  ) : (
+                    <div className="text-sm text-ink-400 mt-1">
+                      Aucune vue pour l&apos;instant
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Satellites : liste typo discrète, pas de cards, divider entre */}
-          <div className="grid sm:grid-cols-3 mt-8 border-t border-ink-100">
-            {STAT_SATELLITES.map((s, i) => (
+            {/* Satellites : 3 stats secondaires (artisan) ou 2 (particulier) */}
+            <div className={`grid mt-8 border-t border-ink-100 ${isArtisan ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
               <Link
-                key={s.label}
-                href={s.href}
-                className={`group flex items-baseline justify-between py-4 ${
-                  i < STAT_SATELLITES.length - 1 ? "sm:border-r border-ink-100 sm:pr-6" : ""
-                } ${i > 0 ? "border-t sm:border-t-0 sm:pl-6" : ""} hover:text-brand-500 transition`}
+                href="/messagerie"
+                className="group flex items-baseline justify-between py-4 sm:border-r border-ink-100 sm:pr-6 hover:text-brand-500 transition"
               >
                 <div>
                   <div className="text-[28px] font-bold text-ink-700 group-hover:text-brand-500 tabular-nums transition">
-                    {s.value}
+                    {stats.unreadMessages}
                   </div>
                   <div className="text-xs text-ink-400 mt-0.5 uppercase tracking-wider font-medium">
-                    {s.label}
+                    {stats.unreadMessages > 0 ? "Messages non lus" : "Aucun message non lu"}
                   </div>
                 </div>
                 <ChevronRight size={14} className="text-ink-300 group-hover:text-brand-500 transition" />
               </Link>
-            ))}
-          </div>
-        </section>
+
+              <Link
+                href="/mon-profil/devis"
+                className={`group flex items-baseline justify-between py-4 hover:text-brand-500 transition border-t sm:border-t-0 sm:pl-6 ${isArtisan ? "sm:border-r border-ink-100 sm:pr-6" : ""}`}
+              >
+                <div>
+                  <div className="text-[28px] font-bold text-ink-700 group-hover:text-brand-500 tabular-nums transition">
+                    {stats.totalQuotes}
+                  </div>
+                  <div className="text-xs text-ink-400 mt-0.5 uppercase tracking-wider font-medium">
+                    {isArtisan ? "Devis reçus" : "Demandes envoyées"}
+                  </div>
+                </div>
+                <ChevronRight size={14} className="text-ink-300 group-hover:text-brand-500 transition" />
+              </Link>
+
+              {isArtisan && (
+                <Link
+                  href="/mon-profil/avis"
+                  className="group flex items-baseline justify-between py-4 hover:text-brand-500 transition border-t sm:border-t-0 sm:pl-6"
+                >
+                  <div>
+                    <div className="text-[28px] font-bold text-ink-700 group-hover:text-brand-500 tabular-nums transition">
+                      {stats.avgRating !== null ? `${stats.avgRating} / 5` : "·"}
+                    </div>
+                    <div className="text-xs text-ink-400 mt-0.5 uppercase tracking-wider font-medium">
+                      {stats.reviewsCount > 0 ? `Note moyenne (${stats.reviewsCount} avis)` : "Aucun avis"}
+                    </div>
+                  </div>
+                  <ChevronRight size={14} className="text-ink-300 group-hover:text-brand-500 transition" />
+                </Link>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Grid 2/3 + 1/3 */}
         <div className="grid lg:grid-cols-[1fr_360px] gap-6">
@@ -166,24 +205,42 @@ export default async function MonProfilPage() {
                 Tout voir →
               </Link>
             </div>
-            <div className="space-y-2">
-              {ACTIVITIES.map((a) => (
-                <Link
-                  key={a.id}
-                  href={a.href}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-ink-50 transition text-left"
-                >
-                  <div className={`w-10 h-10 rounded-lg ${a.bg} flex items-center justify-center flex-shrink-0`}>
-                    <a.icon size={16} className={a.color} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-ink-700 text-sm truncate">{a.title}</div>
-                    <div className="text-xs text-ink-400 mt-0.5">{a.time}</div>
-                  </div>
-                  <ChevronRight size={14} className="text-ink-300 flex-shrink-0" />
-                </Link>
-              ))}
-            </div>
+            {activities.length === 0 ? (
+              <div className="text-center py-10">
+                <div className="w-14 h-14 rounded-2xl bg-ink-50 grid place-items-center mx-auto mb-4">
+                  <Eye size={22} className="text-ink-300" strokeWidth={2} />
+                </div>
+                <p className="text-ink-500 text-sm leading-relaxed max-w-xs mx-auto">
+                  Aucune activité pour l&apos;instant.
+                  {isArtisan
+                    ? " Complétez votre profil pour attirer vos premiers clients."
+                    : " Trouvez votre premier artisan pour démarrer."}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {activities.map((a) => {
+                  const v = ACTIVITY_VISUALS[a.type];
+                  const Icon = v.icon;
+                  return (
+                    <Link
+                      key={a.id}
+                      href={a.href}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-ink-50 transition text-left"
+                    >
+                      <div className={`w-10 h-10 rounded-lg ${v.bg} flex items-center justify-center flex-shrink-0`}>
+                        <Icon size={16} className={v.color} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-ink-700 text-sm truncate">{a.title}</div>
+                        <div className="text-xs text-ink-400 mt-0.5">{a.time}</div>
+                      </div>
+                      <ChevronRight size={14} className="text-ink-300 flex-shrink-0" />
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
           {/* Sidebar actions */}

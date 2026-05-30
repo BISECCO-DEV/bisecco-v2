@@ -122,7 +122,7 @@ export default async function CVPublicPage({ params }: Props) {
                     <div key={e.id} className="relative pl-5 border-l-2 border-brand-200">
                       <div className="absolute -left-[7px] top-1 w-3 h-3 rounded-full bg-brand-500 border-2 border-white" />
                       <div className="font-extrabold text-ink-700">{e.poste || "Poste"}</div>
-                      <div className="text-sm text-ink-500">{e.entreprise || "—"}</div>
+                      <div className="text-sm text-ink-500">{e.entreprise || "·"}</div>
                       <div className="text-xs text-ink-400 mt-0.5">
                         {e.debut} {e.fin ? `→ ${e.fin}` : ""}
                       </div>

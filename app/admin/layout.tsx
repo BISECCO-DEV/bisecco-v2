@@ -3,91 +3,137 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import {
   LayoutDashboard, Users, Briefcase, Star, Gift, Settings,
-  Shield, ExternalLink, LogOut, Flag, FileText,
+  Shield, ExternalLink, LogOut, Flag, FileText, MessageSquare,
+  Calendar,
 } from "lucide-react";
 import { requireAdmin } from "@/lib/db/current-user";
 import { logoutAction } from "@/lib/auth/actions";
+import { CtaButton } from "@/components/ui/CtaButton";
 
 export const metadata: Metadata = {
   title: { default: "Admin", template: "%s · Admin Bisecco" },
   robots: { index: false, follow: false },
 };
 
-const NAV = [
-  { href: "/admin",                label: "Dashboard",    icon: LayoutDashboard, exact: true },
-  { href: "/admin/utilisateurs",   label: "Utilisateurs", icon: Users },
-  { href: "/admin/metiers",        label: "Métiers",      icon: Briefcase },
-  { href: "/admin/avis",           label: "Avis",         icon: Star },
-  { href: "/admin/signalements",   label: "Signalements", icon: Flag },
-  { href: "/admin/blog",           label: "Blog",         icon: FileText },
-  { href: "/admin/parrainages",    label: "Parrainages",  icon: Gift },
-  { href: "/admin/parametres",     label: "Paramètres",   icon: Settings },
+type NavItem = { href: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+
+const NAV_SECTIONS: Array<{ section: string; items: NavItem[] }> = [
+  {
+    section: "Pilotage",
+    items: [
+      { href: "/admin",                label: "Dashboard",    icon: LayoutDashboard, exact: true },
+      { href: "/admin/utilisateurs",   label: "Utilisateurs", icon: Users },
+      { href: "/admin/metiers",        label: "Métiers",      icon: Briefcase },
+      { href: "/admin/stats",          label: "Agenda",       icon: Calendar },
+    ],
+  },
+  {
+    section: "Modération",
+    items: [
+      { href: "/admin/chat-live",    label: "Chat live",    icon: MessageSquare },
+      { href: "/admin/avis",         label: "Avis",         icon: Star },
+      { href: "/admin/signalements", label: "Signalements", icon: Flag },
+    ],
+  },
+  {
+    section: "Croissance",
+    items: [
+      { href: "/admin/blog",        label: "Blog",        icon: FileText },
+      { href: "/admin/parrainages", label: "Parrainages", icon: Gift },
+      { href: "/admin/parametres",  label: "Paramètres",  icon: Settings },
+    ],
+  },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin();
+  const adminInitial = admin.name.charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-ink-50 flex">
-      {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 bg-ink-900 text-white sticky top-0 h-screen">
-        {/* Logo */}
-        <div className="p-5 border-b border-white/10">
-          <Link href="/admin" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl overflow-hidden">
-              <Image src="/logo.jpg" alt="Bisecco" width={36} height={36} />
-            </div>
-            <div>
-              <div className="font-extrabold tracking-wider text-sm">BISECCO</div>
-              <div className="text-[0.62rem] text-brand-400 font-bold tracking-[0.18em] uppercase">Admin</div>
-            </div>
-          </Link>
-        </div>
+    <div className="min-h-screen bg-sand-50 grid lg:grid-cols-[260px_1fr]">
+      {/* ═══════════ SIDEBAR DESKTOP ═══════════ */}
+      <aside className="hidden lg:flex flex-col bg-ink-900 text-white sticky top-0 h-screen p-6 gap-7">
+        {/* Brand */}
+        <Link href="/admin" className="flex items-center gap-3 px-1.5">
+          <div className="w-9 h-9 rounded-xl overflow-hidden bg-gradient-to-br from-brand-500 to-orange-300 grid place-items-center shadow-[0_6px_16px_rgba(240,122,47,0.35)]">
+            <Image src="/logo.jpg" alt="" width={36} height={36} className="rounded-xl" />
+          </div>
+          <div>
+            <div className="font-display font-semibold text-[1.15rem] tracking-tight leading-none">Bisecco</div>
+            <div className="text-[0.6rem] tracking-[0.18em] text-brand-400 uppercase font-bold mt-1">Console Admin</div>
+          </div>
+        </Link>
 
-        {/* Nav */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-white/70 hover:bg-white/5 hover:text-white transition"
-            >
-              <item.icon size={16} />
-              {item.label}
-            </Link>
+        {/* Nav sections */}
+        <nav className="flex-1 overflow-y-auto flex flex-col gap-6">
+          {NAV_SECTIONS.map((section) => (
+            <div key={section.section} className="flex flex-col gap-1">
+              <div className="text-[0.6rem] tracking-[0.18em] uppercase text-white/40 font-semibold px-3 mb-1.5">
+                {section.section}
+              </div>
+              {section.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.84rem] font-medium text-white/65 hover:bg-white/[0.04] hover:text-white transition"
+                >
+                  <item.icon size={15} strokeWidth={2} className="flex-shrink-0" />
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
 
-        {/* User card */}
-        <div className="p-3 border-t border-white/10">
-          <div className="px-3 py-2 rounded-lg bg-white/5">
-            <div className="flex items-center gap-2">
-              <Shield size={14} className="text-brand-400" />
-              <div className="text-[0.72rem] font-bold text-white truncate">{admin.name}</div>
-            </div>
-            <div className="text-[0.66rem] text-white/50 mt-0.5 truncate">{admin.email}</div>
+        {/* Support card */}
+        <div className="rounded-xl border border-brand-500/20 bg-gradient-to-br from-brand-500/[0.12] to-brand-500/[0.04] p-4 flex flex-col gap-2.5">
+          <div className="flex items-center gap-2">
+            <span className="relative flex w-2 h-2">
+              <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75" />
+              <span className="relative inline-flex rounded-full w-2 h-2 bg-emerald-500" />
+            </span>
+            <div className="text-[0.78rem] font-semibold text-white">Support 24/7</div>
           </div>
-          <div className="mt-2 space-y-1">
+          <div className="text-[0.72rem] text-white/55 leading-relaxed">
+            Équipe technique disponible à tout moment pour la plateforme.
+          </div>
+          <CtaButton href="/admin/chat-live" variant="primary" size="sm" className="w-full justify-between">
+            Démarrer un chat
+          </CtaButton>
+        </div>
+
+        {/* User card */}
+        <div className="pt-4 border-t border-white/[0.06]">
+          <div className="flex items-center gap-2.5 px-1.5 mb-2">
+            <span className="w-8 h-8 rounded-full bg-gradient-to-br from-violet to-pink-500 grid place-items-center font-display font-semibold text-[0.74rem] text-white flex-shrink-0">
+              {adminInitial}
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="text-[0.78rem] font-medium text-white truncate">{admin.name}</div>
+              <div className="text-[0.66rem] text-white/40 truncate">{admin.email}</div>
+            </div>
+          </div>
+          <div className="space-y-0.5">
             <Link
               href="/"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-[0.72rem] font-semibold text-white/60 hover:text-white hover:bg-white/5 transition"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[0.7rem] font-medium text-white/55 hover:text-white hover:bg-white/[0.05] transition"
             >
-              <ExternalLink size={12} /> Voir le site
+              <ExternalLink size={11} /> Voir le site
             </Link>
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[0.72rem] font-semibold text-white/60 hover:text-red-300 hover:bg-red-500/10 transition"
+                className="w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-[0.7rem] font-medium text-white/55 hover:text-red-300 hover:bg-red-500/[0.08] transition"
               >
-                <LogOut size={12} /> Déconnexion
+                <LogOut size={11} /> Déconnexion
               </button>
             </form>
           </div>
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 min-w-0">
+      {/* ═══════════ MAIN ═══════════ */}
+      <main className="min-w-0">
         {/* Mobile top bar */}
         <header className="lg:hidden sticky top-0 z-20 bg-ink-900 text-white px-4 py-3 flex items-center justify-between">
           <Link href="/admin" className="flex items-center gap-2 font-bold">
@@ -98,7 +144,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         {/* Mobile nav scrollable */}
         <nav className="lg:hidden bg-ink-900/95 backdrop-blur px-3 py-2 flex gap-1 overflow-x-auto sticky top-[44px] z-10 border-b border-white/10">
-          {NAV.map((item) => (
+          {NAV_SECTIONS.flatMap((s) => s.items).map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -109,7 +155,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           ))}
         </nav>
 
-        <div className="p-5 sm:p-8">{children}</div>
+        <div className="p-5 sm:p-8 lg:p-9">{children}</div>
       </main>
     </div>
   );

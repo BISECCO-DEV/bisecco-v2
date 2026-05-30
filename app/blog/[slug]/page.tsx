@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock, Calendar, Share2, Tag } from "lucide-react";
 import { BLOG_POSTS, findPost, relatedPosts, type ContentBlock } from "@/lib/blog";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo/schemas";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -128,9 +129,15 @@ export default async function BlogPost({ params }: Props) {
     keywords: post.tags.join(", "),
   };
 
+  const breadcrumbs = breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Blog", url: "/blog" },
+    { name: post.title, url: `/blog/${post.slug}` },
+  ]);
+
   return (
     <>
-      <JsonLd data={articleSchema} />
+      <JsonLd data={[articleSchema, breadcrumbs]} />
 
       <div className="bg-gradient-to-b from-white via-white to-ink-50/40">
         {/* Cover hero */}

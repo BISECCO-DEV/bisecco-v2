@@ -350,7 +350,7 @@ export default async function PartenairesPage() {
                 <tbody className="divide-y divide-ink-100">
                   {[
                     { c: "Inscription", a: "Payante", b: "Payante", k: "0 €" },
-                    { c: "Commission sur chantier", a: "5-15 %", b: "—", k: "0 %" },
+                    { c: "Commission sur chantier", a: "5-15 %", b: "·", k: "0 %" },
                     { c: "Contact direct client", a: "❌ via plateforme", b: "Téléphone", k: "✓ Messagerie + tel" },
                     { c: "Vérification SIREN", a: "Optionnelle", b: "❌", k: "✓ API gouv.fr" },
                     { c: "Visibilité locale SEO", a: "Limitée", b: "Payante", k: "✓ Auto-indexée" },
@@ -483,6 +483,9 @@ export default async function PartenairesPage() {
                       <span className="inline-flex items-center gap-1 text-ink-500">
                         <MapPin size={11} /> {a.city}
                       </span>
+                    </div>
+                    <div className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-ink-50 border border-ink-200 text-ink-700 text-xs font-bold group-hover:bg-brand-500 group-hover:border-brand-500 group-hover:text-white transition w-full justify-center">
+                      Voir le profil <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
                     </div>
                   </div>
                 </Link>

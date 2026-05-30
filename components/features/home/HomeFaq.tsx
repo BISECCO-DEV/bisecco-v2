@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import {
-  MessageCircle, ShieldCheck, Sparkles, HelpCircle, Plus, ArrowRight,
+  MessageCircle, ShieldCheck, Sparkles, HelpCircle, Plus,
   Mail, Headphones,
 } from "lucide-react";
+import { CtaButton } from "@/components/ui/CtaButton";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { faqSchema } from "@/lib/seo/schemas";
 
 type FaqCategory = "Tous" | "Tarifs" | "Sécurité" | "Fonctionnement" | "Données";
 
@@ -73,8 +75,12 @@ export function HomeFaq() {
 
   const filtered = FAQ.filter((f) => category === "Tous" || f.category === category);
 
+  // Schema.org FAQPage : top 8 questions pour rich snippet Google
+  const faqLd = faqSchema(FAQ.slice(0, 8).map((f) => ({ question: f.q, answer: f.a })));
+
   return (
     <section className="relative py-20 sm:py-28 bg-gradient-to-b from-white via-ink-50/40 to-white overflow-hidden">
+      <JsonLd data={faqLd} />
       {/* Décors */}
       <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] rounded-full bg-brand-500/[0.05] blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 -right-32 w-[500px] h-[500px] rounded-full bg-blue-500/[0.05] blur-[140px] pointer-events-none" />
@@ -94,7 +100,7 @@ export function HomeFaq() {
             <MessageCircle size={11} strokeWidth={2.8} className="text-brand-500" />
             Questions fréquentes
           </span>
-          <h2 className="mt-5 text-[32px] sm:text-[42px] lg:text-[52px] leading-[1.05] font-extrabold text-ink-700 tracking-[-0.025em]">
+          <h2 className="mt-5 text-[32px] lg:text-[38px] leading-[1.25] font-semibold text-ink-700 tracking-[-0.025em]">
             Tout ce qu&apos;il faut{" "}
             <span className="relative inline-block">
               <span className="text-brand-500 animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
@@ -223,21 +229,12 @@ export function HomeFaq() {
                 Notre équipe support est là pour vous aider. Réponse garantie sous 24h ouvrées.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <Link
-                  href="/contact"
-                  className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white font-extrabold text-[0.88rem] shadow-[0_8px_20px_-4px_rgba(240,122,47,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] hover:-translate-y-0.5 hover:shadow-[0_12px_28px_-4px_rgba(240,122,47,0.6)] transition-all"
-                >
-                  <Mail size={14} strokeWidth={2.4} />
+                <CtaButton href="/contact" variant="primary" size="md" icon={Mail}>
                   Nous contacter
-                  <ArrowRight size={13} strokeWidth={2.6} className="group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-                <Link
-                  href="/aide"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.08] border border-white/15 text-white font-bold text-[0.88rem] hover:bg-white/[0.14] transition"
-                >
-                  <HelpCircle size={14} strokeWidth={2.4} />
+                </CtaButton>
+                <CtaButton href="/aide" variant="white" size="md" icon={HelpCircle}>
                   Centre d&apos;aide complet
-                </Link>
+                </CtaButton>
               </div>
             </div>
           </div>

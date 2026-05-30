@@ -7,6 +7,7 @@ import {
   Gift, Shield, ChevronDown, MessageCircle, Users, Inbox,
 } from "lucide-react";
 import { logoutAction } from "@/lib/auth/actions";
+import { CtaButton } from "@/components/ui/CtaButton";
 
 export type UserMenuProps = {
   user: {
@@ -33,26 +34,17 @@ export function UserMenu({ user }: UserMenuProps) {
     return () => document.removeEventListener("mousedown", onClick);
   }, [open]);
 
-  // Non connecté → boutons Inscription + Connexion
+  // Non connecté → boutons Inscription + Connexion (style ihos)
   if (!user) {
     return (
-      <>
-        <Link
-          href="/inscription"
-          className="hidden lg:inline-flex items-center gap-2 h-10 px-4 xl:px-5 rounded-lg text-[0.86rem] font-bold text-white bg-white/[0.12] border border-white/[0.22] backdrop-blur-md hover:bg-white/[0.18] hover:border-white/[0.32] transition"
-        >
-          <UserPlus size={15} strokeWidth={2.2} />
-          <span>Inscription</span>
-        </Link>
-
-        <Link
-          href="/connexion"
-          className="hidden lg:inline-flex items-center gap-2 h-10 px-4 xl:px-5 rounded-lg text-[0.86rem] font-extrabold text-white bg-gradient-to-br from-brand-500 to-brand-600 border border-brand-400/40 shadow-[0_4px_14px_rgba(240,122,47,0.42)] hover:shadow-[0_6px_20px_rgba(240,122,47,0.55)] hover:-translate-y-0.5 transition-all"
-        >
-          <LogIn size={15} strokeWidth={2.4} />
-          <span>Connexion</span>
-        </Link>
-      </>
+      <div className="hidden lg:flex items-center gap-2">
+        <CtaButton href="/inscription" variant="white" size="sm" icon={UserPlus}>
+          Inscription
+        </CtaButton>
+        <CtaButton href="/connexion" variant="primary" size="sm" icon={LogIn}>
+          Connexion
+        </CtaButton>
+      </div>
     );
   }
 

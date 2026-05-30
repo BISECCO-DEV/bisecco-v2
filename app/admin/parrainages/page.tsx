@@ -128,7 +128,7 @@ export default async function AdminParrainagesPage() {
                           <Link href={`/admin/utilisateurs/${r.referrer.id}`} className="text-ink-700 font-bold hover:text-brand-600 text-xs">
                             {r.referrer.name}
                           </Link>
-                        ) : <span className="text-ink-300">—</span>}
+                        ) : <span className="text-ink-300">·</span>}
                       </td>
                       <td className="px-4 py-2">
                         {r.referred_user ? (
@@ -138,7 +138,7 @@ export default async function AdminParrainagesPage() {
                         ) : <span className="text-ink-300 text-xs">Anonyme</span>}
                       </td>
                       <td className="px-4 py-2"><span className="font-mono text-xs text-ink-600">{r.referral_code}</span></td>
-                      <td className="px-4 py-2"><span className="text-[0.66rem] text-ink-500">{r.channel ?? "—"}</span></td>
+                      <td className="px-4 py-2"><span className="text-[0.66rem] text-ink-500">{r.channel ?? "·"}</span></td>
                       <td className="px-4 py-2"><StatusBadge status={r.status} /></td>
                       <td className="px-4 py-2 text-[0.7rem] text-ink-500">
                         {new Date(r.created_at).toLocaleDateString("fr-FR")}

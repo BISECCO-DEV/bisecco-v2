@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MapPin, Search, Navigation, ArrowRight, Loader2 } from "lucide-react";
 import type { Artisan } from "./LocalSearchMap";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
+import { artisanProfilePath } from "@/lib/utils";
 
 const LocalSearchMap = dynamic(
   () => import("./LocalSearchMap").then((m) => m.LocalSearchMap),
@@ -40,6 +41,8 @@ function distanceKm(a: [number, number], b: [number, number]): number {
 type LocalSearchProps = {
   /** Liste d'artisans à afficher (depuis Supabase). Si vide ou non fourni → fallback démo */
   artisans?: Artisan[];
+  /** ID du user courant (pour le bouton Contacter). null = non connecté */
+  currentUserId?: number | null;
 };
 
 export function LocalSearch({ artisans }: LocalSearchProps = {}) {
@@ -115,16 +118,13 @@ export function LocalSearch({ artisans }: LocalSearchProps = {}) {
             <MapPin size={11} strokeWidth={2.6} className="text-brand-400" />
             Recherche locale
           </span>
-          <h2 className="mt-5 text-[32px] sm:text-[42px] lg:text-[52px] leading-[1.05] font-extrabold text-white tracking-[-0.025em]">
-            Trouvez les meilleurs{" "}
-            <span className="relative inline-block">
-              <span className="text-brand-500">
-                artisans
-              </span>
+          <h2 className="mt-5 text-[38px] leading-[1.1] font-extrabold text-white tracking-[-0.025em]">
+            <span className="block">
+              Trouvez les meilleurs <span className="text-brand-500">artisans</span>
             </span>
-            <br className="hidden sm:block" />
-            <span className="text-white"> près de chez vous</span>
-            <span className="text-brand-500">.</span>
+            <span className="block">
+              près de chez vous<span className="text-brand-500">.</span>
+            </span>
           </h2>
           <p className="mt-5 text-[0.96rem] sm:text-[1.05rem] text-white/65 leading-relaxed max-w-xl mx-auto">
             Cherchez par <strong className="text-white">métier</strong> et
@@ -312,7 +312,6 @@ export function LocalSearch({ artisans }: LocalSearchProps = {}) {
                       isHovered={hoveredId === a.id}
                       onHover={() => setHoveredId(a.id)}
                       onLeave={() => setHoveredId(null)}
-                      onClick={() => setFocusTarget([a.lat, a.lng])}
                     />
                   );
                 })}
@@ -332,21 +331,19 @@ function ArtisanCard({
   isHovered,
   onHover,
   onLeave,
-  onClick,
 }: {
   artisan: Artisan;
   distance: number | null;
   isHovered: boolean;
   onHover: () => void;
   onLeave: () => void;
-  onClick: () => void;
 }) {
   return (
-    <div
+    <Link
+      href={artisanProfilePath(artisan.company || artisan.name, artisan.id)}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      onClick={onClick}
-      className={`group snap-start flex-shrink-0 w-[260px] rounded-2xl overflow-hidden border cursor-pointer transition-all duration-300 ${
+      className={`group snap-start flex-shrink-0 w-[260px] rounded-2xl overflow-hidden border transition-all duration-300 block ${
         isHovered
           ? "bg-white/10 border-brand-500/50 -translate-y-1.5 shadow-[0_20px_50px_rgba(240,122,47,0.25)]"
           : "bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20"
@@ -399,16 +396,12 @@ function ArtisanCard({
         </div>
 
         <div className="flex items-center justify-end mt-3 pt-3 border-t border-white/10">
-          <Link
-            href={`/profil/${artisan.id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="text-brand-400 text-[0.72rem] font-bold hover:text-brand-300 inline-flex items-center gap-0.5"
-          >
-            Voir le profil <ArrowRight size={11} />
-          </Link>
+          <span className="text-brand-400 text-[0.72rem] font-bold inline-flex items-center gap-0.5 group-hover:text-brand-300">
+            Voir le profil et contacter <ArrowRight size={11} />
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

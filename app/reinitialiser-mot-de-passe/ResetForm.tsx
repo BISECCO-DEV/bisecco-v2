@@ -1,27 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Lock, Eye, EyeOff, CheckCircle2, AlertTriangle, ArrowRight, AlertCircle } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { verifyResetTokenAction, completePasswordResetAction } from "@/lib/auth/actions";
 
 export function ResetForm() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
+
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [show, setShow] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sessionStatus, setSessionStatus] = useState<"checking" | "ok" | "invalid">("checking");
+  const [tokenStatus, setTokenStatus] = useState<"checking" | "ok" | "invalid">("checking");
+  const [tokenError, setTokenError] = useState<string>("");
 
-  // Supabase pose la session via le fragment URL (#access_token=...) au chargement.
-  // On vérifie qu'on a bien une session active.
+  // Vérifie le token au chargement
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getSession().then(({ data }) => {
-      setSessionStatus(data.session ? "ok" : "invalid");
+    if (!token) {
+      setTokenStatus("invalid");
+      setTokenError("Lien invalide : aucun token fourni.");
+      return;
+    }
+    verifyResetTokenAction(token).then((res) => {
+      if (res.ok) {
+        setTokenStatus("ok");
+      } else {
+        setTokenStatus("invalid");
+        setTokenError(res.error);
+      }
     });
-  }, []);
+  }, [token]);
 
   const strength = (() => {
     if (password.length === 0) return { score: 0, label: "", color: "" };
@@ -46,30 +59,26 @@ export function ResetForm() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.updateUser({ password });
-
+    const res = await completePasswordResetAction(token, password);
     setLoading(false);
-    if (error) {
-      setError(error.message);
+    if (!res.ok) {
+      setError(res.error);
       return;
     }
     setDone(true);
   };
 
-  if (sessionStatus === "checking") {
-    return (
-      <div className="text-center text-ink-400 text-sm py-8">Vérification du lien…</div>
-    );
+  if (tokenStatus === "checking") {
+    return <div className="text-center text-ink-400 text-sm py-8">Vérification du lien…</div>;
   }
 
-  if (sessionStatus === "invalid") {
+  if (tokenStatus === "invalid") {
     return (
       <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
         <AlertTriangle size={28} className="text-red-500 mx-auto mb-3" />
         <h2 className="font-bold text-red-700">Lien invalide ou expiré</h2>
         <p className="text-sm text-red-600 mt-2">
-          Ce lien de réinitialisation n&apos;est plus valable. Demandez-en un nouveau.
+          {tokenError || "Ce lien de réinitialisation n'est plus valable. Demandez-en un nouveau."}
         </p>
         <Link href="/recuperation-compte" className="btn-primary mt-5 inline-flex text-sm">
           Recommencer
@@ -86,10 +95,10 @@ export function ResetForm() {
         </div>
         <h2 className="text-xl font-bold text-ink-700">Mot de passe modifié</h2>
         <p className="text-ink-500 mt-2 text-sm leading-relaxed">
-          Vous êtes connecté avec votre nouveau mot de passe.
+          Votre nouveau mot de passe est actif. Vous pouvez vous connecter.
         </p>
-        <Link href="/mon-profil" className="btn-primary mt-7 inline-flex">
-          Aller à mon espace <ArrowRight size={14} />
+        <Link href="/connexion" className="btn-primary mt-7 inline-flex">
+          Se connecter <ArrowRight size={14} />
         </Link>
       </div>
     );

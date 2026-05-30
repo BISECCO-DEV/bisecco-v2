@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   MapPin, Star, ShieldCheck, MessageCircle,
-  CheckCircle2, Award, Briefcase, Clock, ArrowLeft, Share2, Heart,
-  ThumbsUp, Camera, Send,
+  CheckCircle2, Award, Briefcase, Clock, ArrowLeft, Heart,
+  ThumbsUp, Camera,
 } from "lucide-react";
 import { fetchArtisanProfileDetail } from "@/lib/db/artisans";
 import { getCurrentUser } from "@/lib/db/current-user";
@@ -14,6 +14,13 @@ import { ReviewForm } from "@/components/features/ReviewForm";
 import { ReportProfileForm } from "@/components/features/ReportProfileForm";
 import { hasFavorited } from "@/lib/favorites/actions";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
+import { ContactButton } from "@/components/features/ContactButton";
+import { ShareButton } from "@/components/features/ShareButton";
+import { extractClientNumber } from "@/lib/utils";
+import { CtaButton } from "@/components/ui/CtaButton";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { LiveViewersCounter } from "@/components/features/LiveViewersCounter";
+import { breadcrumbSchema } from "@/lib/seo/schemas";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -40,7 +47,8 @@ function computeRatingDistribution(reviews: { rating: number }[]): { stars: numb
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const detail = await fetchArtisanProfileDetail(id);
+  const clientNumber = extractClientNumber(id) ?? id;
+  const detail = await fetchArtisanProfileDetail(clientNumber);
   if (!detail) return { title: "Profil introuvable" };
   const a = detail.artisan;
   const metierLabel = a.metiers[0]?.name ?? "Artisan";
@@ -57,9 +65,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProfilPage({ params }: Props) {
   const { id } = await params;
+  const clientNumber = extractClientNumber(id) ?? id;
   const artisanIdNum = parseInt(id, 10);
   const [detail, currentUser, dbUser, alreadyFavorited] = await Promise.all([
-    fetchArtisanProfileDetail(id),
+    fetchArtisanProfileDetail(clientNumber),
     getCurrentUser(),
     getCurrentDbUser(),
     isNaN(artisanIdNum) ? Promise.resolve(false) : hasFavorited(artisanIdNum),
@@ -70,7 +79,18 @@ export default async function ProfilPage({ params }: Props) {
 
   const { artisan: a, services, gallery, reviews } = detail;
   const metierLabel = a.metiers[0]?.name ?? "Artisan";
-  const companyName = a.company_name ?? a.name;
+
+  // Extraction intelligente : si company_name est rempli, on l'utilise.
+  // Sinon, si le name legacy contient " - " (ex: "Pedro DUPONT - Dupont Maçonnerie"),
+  // on en déduit société + gérant. Sinon, name = gérant et pas de société séparée.
+  const hasLegacyDash = !a.company_name && a.name.includes(" - ");
+  const extractedCompany = hasLegacyDash ? a.name.split(" - ").slice(1).join(" - ").trim() : null;
+  const extractedGerant = hasLegacyDash ? a.name.split(" - ")[0]?.trim() ?? a.name : a.name;
+
+  const companyName = a.company_name?.trim() || extractedCompany || a.name;
+  const gerantName = a.company_name?.trim() ? a.name : extractedGerant;
+  const hasSeparateCompany = !!(a.company_name?.trim() || extractedCompany);
+
   const cityLabel = a.city ?? "France";
 
   const coverUrl =
@@ -83,13 +103,75 @@ export default async function ProfilPage({ params }: Props) {
   const reviewCount = a.review_count;
   const ratingDistribution = computeRatingDistribution(reviews);
 
+  // ─── Schema.org LocalBusiness · gros boost SEO local + citations IA ────
+  const profileUrl = `https://bisecco.fr/profil/${id}`;
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": profileUrl,
+    name: companyName,
+    description: a.description ?? `${metierLabel} à ${cityLabel}, vérifié SIREN sur Bisecco.`,
+    url: profileUrl,
+    image: avatarUrl,
+    address: a.city
+      ? {
+          "@type": "PostalAddress",
+          addressLocality: a.city,
+          addressCountry: "FR",
+        }
+      : undefined,
+    geo:
+      a.latitude && a.longitude
+        ? {
+            "@type": "GeoCoordinates",
+            latitude: a.latitude,
+            longitude: a.longitude,
+          }
+        : undefined,
+    aggregateRating: reviewCount > 0
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: rating.toFixed(1),
+          reviewCount,
+          bestRating: 5,
+          worstRating: 1,
+        }
+      : undefined,
+    review: reviews.slice(0, 5).map((r) => ({
+      "@type": "Review",
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: r.rating,
+        bestRating: 5,
+      },
+      author: { "@type": "Person", name: r.author_name ?? "Client Bisecco" },
+      reviewBody: r.comment,
+      datePublished: r.created_at,
+    })),
+    knowsAbout: a.metiers.map((m) => m.name),
+    areaServed: a.city ? { "@type": "City", name: a.city } : "France",
+    sameAs: a.client_number ? [`https://bisecco.fr/profil/${a.client_number}`] : undefined,
+  };
+
+  const breadcrumbs = breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Artisans", url: "/rechercher" },
+    { name: a.name, url: `/profil/${id}` },
+  ]);
+
   return (
-    <div className="bg-ink-50 min-h-screen pb-20">
-      <div
-        className="relative h-[280px] md:h-[340px] bg-cover bg-center bg-ink-200"
-        style={{ backgroundImage: `url(${coverUrl})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-ink-50" />
+    <>
+      <JsonLd data={[localBusinessSchema, breadcrumbs]} />
+      <div className="bg-ink-50 min-h-screen pb-20">
+      {/* Cover photo · vraie balise <img> pour meilleur contrôle d'affichage */}
+      <div className="relative w-full h-[340px] md:h-[420px] lg:h-[460px] bg-ink-200 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={coverUrl}
+          alt={`Couverture de ${companyName}`}
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-ink-50" />
         <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-10">
           <Link
             href="/rechercher"
@@ -98,9 +180,10 @@ export default async function ProfilPage({ params }: Props) {
             <ArrowLeft size={16} /> Retour
           </Link>
           <div className="flex gap-2">
-            <button className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md flex items-center justify-center text-ink-700 hover:bg-white shadow-card transition" aria-label="Partager">
-              <Share2 size={16} />
-            </button>
+            <ShareButton
+              title={`${a.name} sur Bisecco`}
+              text={`Découvrez ${a.name}${a.company_name ? ` (${a.company_name})` : ""} sur Bisecco · artisan vérifié SIREN`}
+            />
             {canFavorite ? (
               <FavoriteButton artisanId={artisanIdNum} initialFavorited={alreadyFavorited} compact />
             ) : (
@@ -112,83 +195,151 @@ export default async function ProfilPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="container-default max-w-6xl -mt-24 relative z-10">
-        <div className="bg-white rounded-3xl shadow-card border border-ink-100 p-6 md:p-8">
-          <div className="flex flex-col md:flex-row items-start md:items-end gap-5 -mt-20 md:-mt-24 pb-6 border-b border-ink-100">
-            <div className="w-32 h-32 rounded-3xl border-4 border-white overflow-hidden flex-shrink-0 shadow-card bg-ink-100">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={avatarUrl} alt={a.name} className="w-full h-full object-cover" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl md:text-3xl font-bold text-ink-700">{companyName}</h1>
+      <div className="container-default max-w-6xl -mt-20 relative z-10">
+        {/* ═══════ HEADER REFONDU · 2025 ═══════ */}
+        <div className="bg-white rounded-3xl shadow-[0_30px_60px_-25px_rgba(13,30,74,0.18)] border border-sand-200">
+          {/* Bandeau supérieur : avatar + identité société */}
+          <div className="px-6 md:px-10 pt-10 pb-6 md:pt-12 md:pb-8">
+            <div className="flex flex-col md:flex-row md:items-start gap-6">
+              {/* Avatar carré arrondi (logo société) avec halo si vérifié */}
+              <div className="relative flex-shrink-0 -mt-16 md:-mt-20">
                 {a.siren && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-                    <ShieldCheck size={12} /> SIREN vérifié
+                  <span className="absolute -inset-2 rounded-3xl bg-gradient-to-br from-brand-500/25 via-emerald-400/15 to-transparent blur-md" aria-hidden />
+                )}
+                <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-2xl border-4 border-white shadow-[0_12px_30px_-8px_rgba(13,30,74,0.35)] overflow-hidden bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={avatarUrl}
+                    alt={companyName}
+                    className="w-full h-full object-contain bg-white"
+                  />
+                </div>
+                {a.siren && (
+                  <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-[3px] border-white grid place-items-center shadow-md">
+                    <ShieldCheck size={12} className="text-white" strokeWidth={2.6} />
                   </span>
                 )}
               </div>
-              {a.company_name && a.name !== a.company_name && (
-                <p className="text-ink-500 mt-1 font-medium">{a.name}</p>
-              )}
-              <div className="flex items-center gap-3 text-sm text-ink-400 mt-2 flex-wrap">
-                <span className="inline-flex items-center gap-1 font-semibold text-brand-500">
-                  <Briefcase size={14} /> {metierLabel}
-                </span>
-                <span>·</span>
-                <span className="flex items-center gap-1"><MapPin size={14} /> {cityLabel}</span>
-                {reviewCount > 0 && (
-                  <>
-                    <span>·</span>
-                    <span className="flex items-center gap-1">
-                      <Star size={14} fill="#f07a2f" className="text-brand-500" />
-                      <strong className="text-ink-700">{rating.toFixed(1)}</strong>
-                      <span>({reviewCount} avis)</span>
+
+              {/* Identité texte */}
+              <div className="flex-1 min-w-0">
+                {/* Eyebrow : métier en orange uppercase */}
+                <div className="inline-flex items-center gap-1.5 text-[0.7rem] font-bold tracking-[0.16em] uppercase text-brand-500">
+                  <Briefcase size={11} strokeWidth={2.6} />
+                  {metierLabel}
+                </div>
+
+                {/* Titre · société */}
+                <h1 className="font-display font-semibold text-[28px] md:text-[40px] leading-[1.05] tracking-[-0.025em] text-ink-900 mt-1.5">
+                  {companyName}
+                </h1>
+
+                {/* Sous-titre · gérant + ville */}
+                <div className="mt-2 text-[0.92rem] text-ink-500 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {hasSeparateCompany && gerantName !== companyName && (
+                    <>
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className="text-ink-400">Gérant&nbsp;·</span>
+                        <strong className="font-semibold text-ink-700">{gerantName}</strong>
+                      </span>
+                      <span className="text-ink-300">·</span>
+                    </>
+                  )}
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin size={13} className="text-ink-400" /> {cityLabel}
+                  </span>
+                  {a.availability && (
+                    <>
+                      <span className="text-ink-300">·</span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock size={13} className="text-ink-400" /> {a.availability}
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* Badges + note */}
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  {a.siren && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[0.72rem] font-bold">
+                      <ShieldCheck size={11} strokeWidth={2.6} /> SIREN vérifié
                     </span>
-                  </>
+                  )}
+                  {reviewCount > 0 && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[0.72rem] font-bold">
+                      <Star size={11} fill="#f07a2f" strokeWidth={0} className="text-brand-500" />
+                      {rating.toFixed(1)} · {reviewCount} avis
+                    </span>
+                  )}
+                  <LiveViewersCounter profileKey={a.client_number ?? String(a.id)} />
+                </div>
+              </div>
+
+              {/* CTAs principaux à droite */}
+              <div className="flex flex-col gap-2 w-full md:w-auto md:min-w-[210px]">
+                <Link
+                  href={`/devis?artisan=${id}`}
+                  className="group inline-flex items-center justify-between gap-2 pl-5 pr-2.5 py-3 bg-brand-500 text-white font-semibold text-[0.92rem] hover:bg-brand-600 hover:-translate-y-0.5 transition-all shadow-[0_8px_20px_-4px_rgba(240,122,47,0.45)]"
+                  style={{ borderRadius: "12px 12px 12px 0" }}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <MessageCircle size={14} strokeWidth={2.4} /> Demander un devis
+                  </span>
+                  <span className="inline-flex w-7 h-7 rounded-md bg-white/20 grid place-items-center">→</span>
+                </Link>
+                {currentUser?.id !== a.id && (
+                  <ContactButton
+                    recipientId={a.id}
+                    recipientName={a.name.split(" - ")[0] ?? a.name}
+                    variant="outline"
+                    isLoggedIn={!!currentUser}
+                    loginRedirect={`/profil/${id}`}
+                  />
                 )}
-                {a.availability && (
-                  <>
-                    <span>·</span>
-                    <span className="flex items-center gap-1"><Clock size={14} /> {a.availability}</span>
-                  </>
+                {currentUser?.id !== a.id && (
+                  <SubmitCvButton
+                    recipientId={a.id}
+                    recipientName={a.company_name ?? a.name}
+                    backUrl={`/profil/${id}`}
+                    defaultName={currentUser?.name ?? ""}
+                    defaultEmail={currentUser?.email ?? ""}
+                    defaultPhone={currentUser?.phone ?? ""}
+                  />
                 )}
               </div>
-            </div>
-            <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full md:w-auto">
-              <Link href={`/devis?artisan=${id}`} className="btn-primary">
-                <MessageCircle size={16} /> Demander un devis
-              </Link>
-              <Link href={`/messagerie/${id}`} className="btn-outline">
-                <Send size={16} /> Message
-              </Link>
-              {currentUser?.id !== a.id && (
-                <SubmitCvButton
-                  recipientId={a.id}
-                  recipientName={a.company_name ?? a.name}
-                  backUrl={`/profil/${id}`}
-                  defaultName={currentUser?.name ?? ""}
-                  defaultEmail={currentUser?.email ?? ""}
-                  defaultPhone={currentUser?.phone ?? ""}
-                />
-              )}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+          {/* Stats banner · 4 cards horizontales */}
+          <div className="grid grid-cols-2 md:grid-cols-4 border-t border-sand-200 bg-sand-50/40 rounded-b-3xl overflow-hidden">
             {[
-              { label: "Note", value: rating > 0 ? rating.toFixed(1) : "—", sub: reviewCount > 0 ? `${reviewCount} avis` : "Nouveau", icon: Star, color: "text-brand-500" },
-              { label: "Métiers", value: String(a.metiers.length), sub: "spécialités", icon: Award, color: "text-blue-500" },
-              { label: "Réponse", value: a.availability ?? "—", sub: "disponibilité", icon: Clock, color: "text-emerald-500" },
-              { label: "Zone", value: cityLabel.split(" ")[0]!, sub: a.siren ? "SIREN OK" : "—", icon: MapPin, color: "text-purple-500" },
-            ].map((s) => (
-              <div key={s.label} className="bg-ink-50/60 rounded-2xl p-4 border border-ink-100">
-                <s.icon size={18} className={`${s.color} mb-2`} />
-                <div className="text-xl font-bold text-ink-700 truncate">{s.value}</div>
-                <div className="text-xs text-ink-400">{s.label} <span className="text-ink-300">· {s.sub}</span></div>
+              { label: "Note moyenne", value: rating > 0 ? rating.toFixed(1) : "·", sub: reviewCount > 0 ? `sur ${reviewCount} avis` : "Aucun avis", icon: Star, color: "text-brand-500", bg: "bg-brand-50" },
+              { label: "Spécialités",   value: String(a.metiers.length),         sub: a.metiers.length > 1 ? "métiers couverts" : "métier principal", icon: Award, color: "text-info", bg: "bg-info-soft" },
+              { label: "Disponibilité", value: a.availability ?? "Sur demande", sub: a.availability ? "à confirmer" : "contacter",                     icon: Clock, color: "text-ok",   bg: "bg-ok-soft" },
+              { label: "Zone d'action", value: cityLabel.split(" ")[0]!,          sub: a.siren ? "SIREN actif" : "vérification en cours",            icon: MapPin, color: "text-violet", bg: "bg-violet-soft" },
+            ].map((s, i) => (
+              <div
+                key={s.label}
+                className={`p-5 ${i < 3 ? "md:border-r border-sand-200" : ""} ${i < 2 ? "border-b md:border-b-0 border-sand-200" : ""}`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-9 h-9 rounded-lg ${s.bg} grid place-items-center flex-shrink-0`}>
+                    <s.icon size={15} className={s.color} strokeWidth={2.2} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-display font-semibold text-[1.15rem] text-ink-900 leading-tight truncate">
+                      {s.value}
+                    </div>
+                    <div className="text-[0.66rem] font-semibold tracking-[0.08em] uppercase text-ink-400 mt-1">
+                      {s.label}
+                    </div>
+                    <div className="text-[0.78rem] text-ink-500 mt-0.5 truncate">{s.sub}</div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+        </div>
 
           <div className="grid lg:grid-cols-[1fr_360px] gap-8 mt-8">
             <div className="space-y-10">
@@ -342,12 +493,23 @@ export default async function ProfilPage({ params }: Props) {
                 <div className="relative">
                   <h3 className="font-bold">Contacter {a.name.split(" ")[0]}</h3>
                   <p className="text-white/65 text-sm mt-1">Réponse rapide garantie via la messagerie sécurisée Bisecco.</p>
-                  <Link href={`/devis?artisan=${id}`} className="mt-5 inline-flex w-full items-center justify-center gap-2 px-5 py-3 rounded-xl bg-brand-500 text-white font-bold hover:bg-brand-600 transition">
-                    <MessageCircle size={16} /> Demander un devis
-                  </Link>
-                  <Link href={`/messagerie/${id}`} className="mt-2 inline-flex w-full items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white font-semibold hover:bg-white/15 transition">
-                    Envoyer un message
-                  </Link>
+                  <div className="mt-5 flex">
+                    <CtaButton href={`/devis?artisan=${id}`} variant="primary" size="md" icon={MessageCircle} className="w-full justify-between">
+                      Demander un devis
+                    </CtaButton>
+                  </div>
+                  {currentUser?.id !== a.id && (
+                    <div className="mt-2">
+                      <ContactButton
+                        recipientId={a.id}
+                        recipientName={a.name.split(" - ")[0] ?? a.name}
+                        variant="button"
+                        isLoggedIn={!!currentUser}
+                        loginRedirect={`/profil/${id}`}
+                        className="!w-full !justify-center !bg-white/10 !border !border-white/20 hover:!bg-white/15"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -399,8 +561,8 @@ export default async function ProfilPage({ params }: Props) {
               <ReportProfileForm reportedUserId={artisanIdNum} isGuest={!dbUser} />
             </div>
           )}
-        </div>
       </div>
     </div>
+    </>
   );
 }

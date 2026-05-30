@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import {
   Mail,
   Lock,
@@ -12,10 +12,14 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { signupAction } from "@/lib/auth/actions";
+import { lookupSirenAction } from "@/lib/siren/actions";
 import { MultiMetierPicker, type MetierPick } from "@/components/ui/MultiMetierPicker";
+import { CtaButton } from "@/components/ui/CtaButton";
 
 type Role = "artisan" | "particulier";
 
@@ -25,14 +29,85 @@ const TRUST = [
   "100 % gratuit",
 ];
 
-export function SignupForm() {
+type SirenStatus =
+  | { state: "idle" }
+  | { state: "checking" }
+  | { state: "found"; companyName: string; city: string | null }
+  | { state: "not_found" }
+  | { state: "closed" }
+  | { state: "invalid" };
+
+type SignupFormProps = {
+  /** Mode contrôlé : si fourni, le rôle est piloté de l'extérieur */
+  role?: Role;
+  onRoleChange?: (role: Role) => void;
+};
+
+export function SignupForm({ role: roleProp, onRoleChange }: SignupFormProps = {}) {
   const [state, action, pending] = useActionState(signupAction, undefined);
-  const [role, setRole] = useState<Role>("artisan");
+  const [roleInternal, setRoleInternal] = useState<Role>("artisan");
+  const role = roleProp ?? roleInternal;
+  const setRole = (r: Role) => {
+    if (onRoleChange) onRoleChange(r);
+    else setRoleInternal(r);
+  };
   const [metiers, setMetiers] = useState<MetierPick[]>([]);
-  const [showPwd, setShowPwd] = useState(false);
-  const [showPwd2, setShowPwd2] = useState(false);
+  // (showPwd / showPwd2 sont gérés en interne par PasswordField pour éviter
+  // les re-render de tout le form à chaque toggle de l'œil)
+
+  // SIREN lookup auto · pré-remplit company_name + city
+  const [siren, setSiren] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [city, setCity] = useState("");
+  const [sirenStatus, setSirenStatus] = useState<SirenStatus>({ state: "idle" });
+  const sirenLookupRef = useRef<AbortController | null>(null);
 
   const isArtisan = role === "artisan";
+
+  // Debounce SIREN lookup : 600ms après dernière frappe, si 9 chiffres
+  useEffect(() => {
+    const cleaned = siren.replace(/\s/g, "");
+    if (cleaned.length === 0) {
+      setSirenStatus({ state: "idle" });
+      return;
+    }
+    if (cleaned.length < 9) return;
+    if (!/^\d{9}$/.test(cleaned)) {
+      setSirenStatus({ state: "invalid" });
+      return;
+    }
+
+    setSirenStatus({ state: "checking" });
+
+    // Abort previous in-flight lookup
+    sirenLookupRef.current?.abort();
+    const ctrl = new AbortController();
+    sirenLookupRef.current = ctrl;
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await lookupSirenAction(cleaned);
+        if (ctrl.signal.aborted) return;
+        if (res.ok) {
+          setSirenStatus({ state: "found", companyName: res.companyName, city: res.city });
+          // Auto-fill ONLY si vide (ne pas écraser ce que l'utilisateur a déjà tapé)
+          setCompanyName((prev) => (prev.trim() === "" ? res.companyName : prev));
+          if (res.city) setCity((prev) => (prev.trim() === "" ? res.city! : prev));
+        } else {
+          setSirenStatus({
+            state: res.error === "closed" ? "closed" : res.error === "invalid" ? "invalid" : "not_found",
+          });
+        }
+      } catch {
+        if (!ctrl.signal.aborted) setSirenStatus({ state: "not_found" });
+      }
+    }, 600);
+
+    return () => {
+      clearTimeout(timer);
+      ctrl.abort();
+    };
+  }, [siren]);
 
   return (
     <>
@@ -44,12 +119,12 @@ export function SignupForm() {
           </span>
           Type de compte
         </span>
-        <span className="text-ink-200">—</span>
+        <span className="text-ink-200">·</span>
         <span className="flex items-center gap-1.5 text-ink-300">
           <span className="w-6 h-6 rounded-full bg-ink-100 flex items-center justify-center text-[0.7rem]">2</span>
           Vos infos
         </span>
-        <span className="text-ink-200">—</span>
+        <span className="text-ink-200">·</span>
         <span className="flex items-center gap-1.5 text-ink-300">
           <span className="w-6 h-6 rounded-full bg-ink-100 flex items-center justify-center text-[0.7rem]">3</span>
           Validation
@@ -109,10 +184,13 @@ export function SignupForm() {
               />
               <Field
                 label="Nom de la société"
+                hint={sirenStatus.state === "found" ? "auto-rempli" : undefined}
                 icon={<Building2 size={15} />}
                 name="company_name"
-                placeholder="Dupont Maçonnerie"
+                placeholder="Renseigné via le SIREN"
                 required
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
               />
             </div>
 
@@ -126,10 +204,51 @@ export function SignupForm() {
                   required
                   pattern="[0-9]{9}"
                   maxLength={9}
+                  value={siren}
+                  onChange={(e) => setSiren(e.target.value.replace(/[^0-9]/g, ""))}
+                  trailing={
+                    sirenStatus.state === "checking" ? (
+                      <Loader2 size={16} className="text-ink-400 animate-spin" />
+                    ) : sirenStatus.state === "found" ? (
+                      <CheckCircle2 size={16} className="text-emerald-500" />
+                    ) : sirenStatus.state === "not_found" || sirenStatus.state === "closed" || sirenStatus.state === "invalid" ? (
+                      <AlertCircle size={16} className="text-red-500" />
+                    ) : null
+                  }
                 />
-                <p className="text-[0.74rem] text-ink-400 mt-1.5 pl-1">
-                  Votre profil sera vérifié sous 24h.
-                </p>
+                {/* Feedback dynamique */}
+                {sirenStatus.state === "found" && (
+                  <p className="text-[0.74rem] text-emerald-600 mt-1.5 pl-1 flex items-center gap-1.5">
+                    <CheckCircle2 size={11} />
+                    <span className="font-semibold">{sirenStatus.companyName}</span>
+                    {sirenStatus.city && <span className="text-ink-400">· {sirenStatus.city}</span>}
+                  </p>
+                )}
+                {sirenStatus.state === "not_found" && (
+                  <p className="text-[0.74rem] text-red-600 mt-1.5 pl-1">
+                    Aucune entreprise trouvée avec ce SIREN.
+                  </p>
+                )}
+                {sirenStatus.state === "closed" && (
+                  <p className="text-[0.74rem] text-red-600 mt-1.5 pl-1">
+                    Cette entreprise est référencée mais cessée.
+                  </p>
+                )}
+                {sirenStatus.state === "invalid" && (
+                  <p className="text-[0.74rem] text-red-600 mt-1.5 pl-1">
+                    SIREN invalide (9 chiffres requis).
+                  </p>
+                )}
+                {sirenStatus.state === "idle" && (
+                  <p className="text-[0.74rem] text-ink-400 mt-1.5 pl-1">
+                    Le nom de la société se remplit automatiquement.
+                  </p>
+                )}
+                {sirenStatus.state === "checking" && (
+                  <p className="text-[0.74rem] text-ink-500 mt-1.5 pl-1">
+                    Recherche en cours…
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-[0.78rem] font-bold text-ink-600 mb-1.5">
@@ -170,16 +289,17 @@ export function SignupForm() {
             icon={<Mail size={15} />}
             name="email"
             type="email"
-            placeholder="bisecco.support@gmail.com"
+            placeholder="vous@exemple.fr"
             required
           />
           <Field
             label="Téléphone"
-            hint="optionnel"
             icon={<Phone size={15} />}
             name="phone"
             type="tel"
             placeholder="06 00 00 00 00"
+            required
+            pattern="[0-9 +().\\-]{8,}"
           />
         </div>
 
@@ -194,48 +314,25 @@ export function SignupForm() {
           />
           <Field
             label="Ville"
+            hint={isArtisan && sirenStatus.state === "found" && sirenStatus.city ? "auto-rempli" : undefined}
             icon={<MapPin size={15} />}
             name="city"
             placeholder="Paris"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
           />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-3">
-          <Field
+          <PasswordField
             label="Mot de passe"
-            icon={<Lock size={15} />}
             name="password"
-            type={showPwd ? "text" : "password"}
             placeholder="••••••••"
-            required
-            minLength={8}
-            trailing={
-              <button
-                type="button"
-                onClick={() => setShowPwd(!showPwd)}
-                className="text-ink-300 hover:text-ink-600"
-              >
-                {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
-            }
           />
-          <Field
+          <PasswordField
             label="Confirmer le mot de passe"
-            icon={<Lock size={15} />}
             name="password_confirmation"
-            type={showPwd2 ? "text" : "password"}
             placeholder="Retapez votre mot de passe"
-            required
-            minLength={8}
-            trailing={
-              <button
-                type="button"
-                onClick={() => setShowPwd2(!showPwd2)}
-                className="text-ink-300 hover:text-ink-600"
-              >
-                {showPwd2 ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
-            }
           />
         </div>
 
@@ -260,18 +357,16 @@ export function SignupForm() {
           </span>
         </label>
 
-        {/* Submit CTA (gros bouton orange) */}
-        <button
-          type="submit"
-          disabled={pending}
-          className="btn-primary w-full text-base py-4 disabled:opacity-50 mt-1"
-        >
-          {pending
-            ? "Création…"
-            : isArtisan
-              ? "Créer mon profil professionnel →"
-              : "Créer mon compte →"}
-        </button>
+        {/* Submit CTA (style ihos asymétrique) */}
+        <div className="mt-1 flex">
+          <CtaButton type="submit" variant="primary" size="lg" disabled={pending} className="w-full justify-between">
+            {pending
+              ? "Création…"
+              : isArtisan
+                ? "Créer mon profil professionnel"
+                : "Créer mon compte"}
+          </CtaButton>
+        </div>
 
         {/* Trust signals */}
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-4 border-t border-ink-100">
@@ -312,6 +407,8 @@ type FieldProps = {
   maxLength?: number;
   minLength?: number;
   trailing?: React.ReactNode;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 function Field({
@@ -335,6 +432,48 @@ function Field({
           className="flex-1 bg-transparent py-2.5 outline-none text-[0.9rem] text-ink-700 placeholder:text-ink-300"
         />
         {trailing}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Champ mot de passe auto-contenu : le toggle œil ne fait re-render que ce composant,
+ * pas tout le SignupForm. Évite le bug du value perdu / focus perdu.
+ */
+function PasswordField({
+  label,
+  name,
+  placeholder,
+}: {
+  label: string;
+  name: string;
+  placeholder?: string;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <label className="block text-[0.8rem] font-bold text-ink-600 mb-1.5">{label}</label>
+      <div className="flex items-center gap-2 px-3 border-2 border-ink-200 rounded-xl bg-ink-50/70 focus-within:border-brand-500 focus-within:bg-white transition">
+        <Lock size={15} className="text-ink-300 flex-shrink-0" />
+        <input
+          name={name}
+          type={show ? "text" : "password"}
+          placeholder={placeholder}
+          required
+          minLength={8}
+          autoComplete={name === "password" ? "new-password" : "new-password"}
+          className="flex-1 bg-transparent py-2.5 outline-none text-[0.9rem] text-ink-700 placeholder:text-ink-300"
+        />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="text-ink-400 hover:text-brand-500 transition p-1 flex-shrink-0"
+          aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+          tabIndex={-1}
+        >
+          {show ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
       </div>
     </div>
   );

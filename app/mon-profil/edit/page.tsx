@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { EditProfileForm } from "./EditProfileForm";
 import { requireUser } from "@/lib/db/current-user";
 import { fetchAllMetiers } from "@/lib/db/metiers";
-import { getMyArtisanProfile, listMyServices } from "@/lib/profile/artisan";
+import { getMyArtisanProfile, getMyArtisanMetierIds, listMyServices } from "@/lib/profile/artisan";
 import { listMyGallery } from "@/lib/profile/gallery";
 
 export const metadata: Metadata = {
@@ -16,10 +16,11 @@ export default async function EditProfilePage() {
   const user = await requireUser();
   const isArtisan = user.role === "artisan";
 
-  const [gallery, metiers, artisanProfile, services] = await Promise.all([
+  const [gallery, metiers, artisanProfile, artisanMetierIds, services] = await Promise.all([
     listMyGallery(),
     isArtisan ? fetchAllMetiers() : Promise.resolve([]),
     isArtisan ? getMyArtisanProfile() : Promise.resolve(null),
+    isArtisan ? getMyArtisanMetierIds() : Promise.resolve([]),
     isArtisan ? listMyServices() : Promise.resolve([]),
   ]);
 
@@ -49,7 +50,7 @@ export default async function EditProfilePage() {
           artisanProfile={
             artisanProfile
               ? {
-                  metier_id: artisanProfile.metier_id,
+                  metier_ids: artisanMetierIds,
                   company_name: artisanProfile.company_name ?? "",
                   service_radius: artisanProfile.service_radius,
                   availability: artisanProfile.availability ?? "",

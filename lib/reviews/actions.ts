@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { pushNotification } from "@/lib/notifications/actions";
+import { sendMail } from "@/lib/mail/mailer";
+import { newReviewEmail } from "@/lib/mail/templates";
+
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 export type ReviewState = { error?: string; success?: string } | undefined;
 
@@ -112,6 +116,27 @@ export async function approveReviewAction(reviewId: number) {
       artisanUserId ? `/profil/${artisanUserId}` : "/mon-profil/avis",
       "✅",
     );
+
+    // Email à l'artisan ciblé pour l'informer du nouvel avis publié
+    if (artisanUserId) {
+      const { data: full } = await admin
+        .from("reviews")
+        .select("rating, comment, artisan_profiles(users(name, email, client_number))")
+        .eq("id", reviewId)
+        .maybeSingle();
+      type ProfileUser = { name: string | null; email: string | null; client_number: string | null };
+      const profileUsersRaw = full && (full as unknown as { artisan_profiles: { users: ProfileUser | ProfileUser[] } | null }).artisan_profiles?.users;
+      const profileUser: ProfileUser | undefined = Array.isArray(profileUsersRaw) ? profileUsersRaw[0] : profileUsersRaw ?? undefined;
+      if (profileUser?.email && profileUser.name) {
+        const tpl = newReviewEmail({
+          profileName: profileUser.name,
+          rating: (full as unknown as { rating: number }).rating,
+          comment: (full as unknown as { comment: string | null }).comment,
+          profileUrl: `${APP_URL_BASE}/profil/${profileUser.client_number ?? artisanUserId}`,
+        });
+        await sendMail({ to: profileUser.email, subject: tpl.subject, html: tpl.html, text: tpl.text });
+      }
+    }
   }
 
   revalidatePath("/admin/avis");

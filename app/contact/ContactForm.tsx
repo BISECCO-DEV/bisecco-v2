@@ -2,44 +2,58 @@
 
 import { useState } from "react";
 import {
-  Send, User, Mail, Building2, HelpCircle, Briefcase, Newspaper,
-  CheckCircle2, AlertCircle, MessageSquare,
+  Send, User, Mail, MessageSquare, ShieldCheck,
+  CheckCircle2, AlertCircle, ChevronDown,
 } from "lucide-react";
+import { submitContactAction } from "@/lib/contact/actions";
+import { CtaButton } from "@/components/ui/CtaButton";
 
-type Subject = {
-  id: string;
-  label: string;
-  description: string;
-  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
-  badge?: string;
-};
+const MAX_MESSAGE = 2000;
 
-const SUBJECTS: Subject[] = [
-  { id: "support",      label: "Support",       description: "J'ai un problème ou une question",          icon: HelpCircle },
-  { id: "partenariat",  label: "Partenariat",   description: "Co-marketing, intégration, distribution",   icon: Briefcase },
-  { id: "presse",       label: "Presse",        description: "Interview, communiqué, kit média",          icon: Newspaper, badge: "<4h" },
-  { id: "recrutement",  label: "Recrutement",   description: "Rejoindre l'équipe Bisecco",                icon: Building2 },
+const USER_TYPES = [
+  "Particulier",
+  "Artisan",
+  "Autre",
 ];
 
-const MAX_MESSAGE = 1500;
+const SUBJECTS = [
+  "Question générale",
+  "Problème technique",
+  "Inscription / compte",
+  "Vérification SIREN",
+  "Partenariat",
+  "Suggestion / amélioration",
+  "Autre",
+];
 
 export function ContactForm() {
-  const [subject, setSubject] = useState("support");
   const [message, setMessage] = useState("");
+  const [rgpdConsent, setRgpdConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    if (!rgpdConsent) {
+      setError("Merci d'accepter le traitement de vos données (RGPD).");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      // Demo : simulation latence backend
-      await new Promise((r) => setTimeout(r, 1200));
-      setSubmitted(true);
+      const fd = new FormData(e.currentTarget);
+      fd.set("message", message);
+      const res = await submitContactAction(fd);
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        setError(res.error);
+      }
     } catch {
-      setError("Une erreur est survenue. Réessaie ou écris-nous directement à contact@bisecco.fr.");
+      setError("Une erreur est survenue. Réessayez ou écrivez-nous à contact@bisecco.fr.");
     } finally {
       setSubmitting(false);
     }
@@ -53,15 +67,15 @@ export function ContactForm() {
         </div>
         <h2 className="text-2xl font-extrabold text-ink-700 tracking-tight">Message envoyé !</h2>
         <p className="mt-3 text-ink-500 text-[0.95rem] leading-relaxed max-w-md mx-auto">
-          Merci pour votre message. Notre équipe vous répondra sous <strong className="text-ink-700">24h ouvrées</strong>,
-          parfois plus vite. Vérifiez votre boîte mail (et le dossier spam, au cas où).
+          Merci pour votre message. Notre équipe vous répondra sous{" "}
+          <strong className="text-ink-700">24h ouvrées</strong>.
         </p>
         <button
           type="button"
           onClick={() => {
             setSubmitted(false);
             setMessage("");
-            setSubject("support");
+            setRgpdConsent(false);
           }}
           className="mt-7 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ink-50 border border-ink-200 text-ink-700 font-bold text-[0.88rem] hover:bg-white hover:border-brand-500 hover:text-brand-500 transition"
         >
@@ -73,212 +87,183 @@ export function ContactForm() {
 
   return (
     <form
+      id="contact-form"
       onSubmit={onSubmit}
-      className="bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(13,30,74,0.12)] border border-ink-100 p-6 sm:p-8 lg:p-10 space-y-7"
+      className="bg-white rounded-3xl shadow-[0_10px_40px_-15px_rgba(13,30,74,0.12)] border border-ink-100 p-6 lg:p-9 space-y-5"
     >
-      {/* Subject selector · tiles */}
-      <fieldset>
-        <legend className="text-[0.95rem] font-extrabold text-ink-700 mb-1">
-          1. Quel est le sujet de votre demande ?
-        </legend>
-        <p className="text-[0.82rem] text-ink-400 mb-4">Cela nous aide à router vers la bonne personne plus rapidement.</p>
+      {/* On garde "subject" fixe pour la compatibilité backend, le vrai sujet métier est dans "objet" */}
+      <input type="hidden" name="subject" value="support" />
 
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
-          {SUBJECTS.map((s) => {
-            const Icon = s.icon;
-            const active = subject === s.id;
-            return (
-              <label key={s.id} className="cursor-pointer">
-                <input
-                  type="radio"
-                  name="subject"
-                  value={s.id}
-                  checked={active}
-                  onChange={() => setSubject(s.id)}
-                  className="sr-only peer"
-                />
-                <div
-                  className={`relative h-full p-3.5 rounded-2xl border-2 transition-all ${
-                    active
-                      ? "border-brand-500 bg-gradient-to-br from-brand-50/80 to-white shadow-[0_8px_20px_-8px_rgba(240,122,47,0.35)]"
-                      : "border-ink-100 bg-white hover:border-brand-200 hover:bg-ink-50/40"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <span
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition ${
-                        active
-                          ? "bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-[0_4px_10px_rgba(240,122,47,0.4),inset_0_1px_0_rgba(255,255,255,0.25)]"
-                          : "bg-ink-50 text-ink-500"
-                      }`}
-                    >
-                      <Icon size={16} strokeWidth={2.2} />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={`font-extrabold text-[0.88rem] ${active ? "text-brand-700" : "text-ink-700"}`}>
-                          {s.label}
-                        </span>
-                        {s.badge && (
-                          <span className="text-[0.6rem] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                            {s.badge}
-                          </span>
-                        )}
-                      </div>
-                      <div className={`text-[0.74rem] mt-0.5 leading-snug ${active ? "text-ink-600" : "text-ink-400"}`}>
-                        {s.description}
-                      </div>
-                    </div>
-                  </div>
-                  {/* checkmark */}
-                  {active && (
-                    <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-brand-500 text-white flex items-center justify-center">
-                      <CheckCircle2 size={11} strokeWidth={3} />
-                    </span>
-                  )}
-                </div>
-              </label>
-            );
-          })}
-        </div>
-      </fieldset>
-
-      {/* Step 2 : infos perso */}
-      <fieldset>
-        <legend className="text-[0.95rem] font-extrabold text-ink-700 mb-4">
-          2. Vos coordonnées
-        </legend>
-        <div className="space-y-4">
-          <div className="grid sm:grid-cols-2 gap-3">
-            <Field icon={User} label="Prénom" name="firstName" placeholder="Marie" required />
-            <Field icon={User} label="Nom"    name="lastName"  placeholder="Dupont" required />
-          </div>
-          <Field icon={Mail} type="email" label="Email" name="email" placeholder="marie.dupont@email.fr" required hint="Pour vous recontacter sous 24h" />
-          <Field icon={Building2} label="Entreprise / Société" name="company" placeholder="Optionnel" />
-        </div>
-      </fieldset>
-
-      {/* Step 3 : message */}
-      <fieldset>
-        <legend className="text-[0.95rem] font-extrabold text-ink-700 mb-4">
-          3. Votre message
-        </legend>
-        <div>
-          <label className="block">
-            <span className="text-[0.82rem] font-semibold text-ink-600 mb-1.5 inline-flex items-center gap-1.5">
-              <MessageSquare size={12} className="text-ink-400" />
-              Détaillez votre demande
-              <span className="text-red-500">*</span>
-            </span>
-            <textarea
-              name="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value.slice(0, MAX_MESSAGE))}
-              required
-              rows={6}
-              placeholder="Décrivez votre demande, votre contexte et toute information utile…"
-              className="w-full px-4 py-3 rounded-xl border-2 border-ink-200 bg-ink-50 focus:border-brand-500 focus:bg-white outline-none text-[0.92rem] resize-y leading-relaxed transition"
-            />
-            <div className="flex items-center justify-between mt-1.5">
-              <span className="text-[0.72rem] text-ink-400">Minimum 20 caractères</span>
-              <span className={`text-[0.72rem] font-semibold tabular-nums ${message.length > MAX_MESSAGE * 0.9 ? "text-amber-600" : "text-ink-400"}`}>
-                {message.length} / {MAX_MESSAGE}
-              </span>
-            </div>
-          </label>
-        </div>
-      </fieldset>
-
-      {/* Consents */}
-      <div className="space-y-2.5 pt-2">
-        <label className="flex items-start gap-2.5 cursor-pointer">
-          <input
-            type="checkbox"
-            required
-            className="mt-0.5 w-4 h-4 rounded border-ink-300 text-brand-500 focus:ring-brand-500 focus:ring-offset-0 flex-shrink-0"
-          />
-          <span className="text-[0.82rem] text-ink-500 leading-snug">
-            J&apos;accepte que mes informations soient utilisées pour traiter ma demande, conformément à la{" "}
-            <a href="/politique-confidentialite" className="text-brand-500 font-bold hover:underline">
-              politique de confidentialité
-            </a>.
-          </span>
-        </label>
-        <label className="flex items-start gap-2.5 cursor-pointer">
-          <input
-            type="checkbox"
-            className="mt-0.5 w-4 h-4 rounded border-ink-300 text-brand-500 focus:ring-brand-500 focus:ring-offset-0 flex-shrink-0"
-          />
-          <span className="text-[0.82rem] text-ink-500 leading-snug">
-            Je souhaite recevoir occasionnellement des actualités Bisecco (1 email par mois max, désinscription en 1 clic).
-          </span>
-        </label>
+      <div className="space-y-1.5">
+        <h2 className="text-2xl font-extrabold text-ink-700 tracking-tight">Envoyez-nous un message</h2>
+        <p className="text-[0.92rem] text-ink-500">Remplissez le formulaire ci-dessous, nous vous répondons rapidement.</p>
       </div>
 
-      {/* Error */}
+      {/* Ligne 1 : Nom + Email */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <FloatingField label="Nom complet" required>
+          <input
+            type="text"
+            name="fullName"
+            required
+            placeholder=" "
+            className="peer w-full pt-5 pb-2 px-4 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none text-sm transition"
+            onChange={(e) => {
+              // Split fullName en first/last pour le backend
+              const v = e.target.value.trim();
+              const parts = v.split(/\s+/);
+              const first = e.currentTarget.form?.elements.namedItem("firstName") as HTMLInputElement | null;
+              const last = e.currentTarget.form?.elements.namedItem("lastName") as HTMLInputElement | null;
+              if (first) first.value = parts[0] ?? "";
+              if (last) last.value = parts.slice(1).join(" ") || parts[0] || "";
+            }}
+          />
+        </FloatingField>
+        <FloatingField label="Email" required>
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder=" "
+            className="peer w-full pt-5 pb-2 px-4 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none text-sm transition"
+          />
+        </FloatingField>
+      </div>
+
+      {/* Champs cachés pour matcher l'action existante */}
+      <input type="hidden" name="firstName" />
+      <input type="hidden" name="lastName" />
+
+      {/* Téléphone + Société (sur 2 colonnes) */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <FloatingField label="Téléphone" required>
+          <input
+            type="tel"
+            name="phone"
+            required
+            placeholder=" "
+            pattern="^[0-9 +().-]{8,20}$"
+            className="peer w-full pt-5 pb-2 px-4 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none text-sm transition"
+          />
+        </FloatingField>
+        <FloatingField label="Société (optionnel)">
+          <input
+            type="text"
+            name="company"
+            placeholder=" "
+            className="peer w-full pt-5 pb-2 px-4 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none text-sm transition"
+          />
+        </FloatingField>
+      </div>
+
+      {/* Vous êtes */}
+      <FloatingField label="Vous êtes" required>
+        <div className="relative">
+          <select
+            name="userType"
+            required
+            defaultValue=""
+            className="peer w-full pt-5 pb-2 px-4 pr-10 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none text-sm appearance-none cursor-pointer transition"
+          >
+            <option value="" disabled hidden></option>
+            {USER_TYPES.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+          <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
+        </div>
+      </FloatingField>
+
+      {/* Sujet */}
+      <FloatingField label="Sujet" required>
+        <div className="relative">
+          <select
+            name="objet"
+            required
+            defaultValue=""
+            className="peer w-full pt-5 pb-2 px-4 pr-10 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none text-sm appearance-none cursor-pointer transition"
+          >
+            <option value="" disabled hidden></option>
+            {SUBJECTS.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+          <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
+        </div>
+      </FloatingField>
+
+      {/* Message */}
+      <FloatingField label="Votre message" required>
+        <textarea
+          name="message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value.slice(0, MAX_MESSAGE))}
+          required
+          minLength={10}
+          rows={5}
+          placeholder=" "
+          className="peer w-full pt-6 pb-3 px-4 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none text-sm resize-y transition"
+        />
+        <span className="absolute bottom-3 right-4 text-[0.7rem] text-ink-400 font-medium pointer-events-none">
+          {message.length} / {MAX_MESSAGE}
+        </span>
+      </FloatingField>
+
+      {/* RGPD compact */}
+      <label className={`flex items-start gap-3 text-[0.82rem] cursor-pointer p-3 rounded-xl transition ${rgpdConsent ? "bg-emerald-50/40" : "bg-ink-50/40 hover:bg-ink-50/70"}`}>
+        <input
+          type="checkbox"
+          checked={rgpdConsent}
+          onChange={(e) => setRgpdConsent(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded border-2 border-ink-300 text-brand-500 focus:ring-brand-500 cursor-pointer flex-shrink-0"
+        />
+        <span className="flex-1 text-ink-600 leading-snug">
+          <ShieldCheck size={12} className="inline -mt-0.5 mr-1 text-emerald-500" />
+          J&apos;accepte que mes données soient utilisées pour répondre à ma demande. <strong className="text-ink-700">Aucun partage avec un tiers.</strong> Conforme RGPD.
+        </span>
+      </label>
+
       {error && (
-        <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[0.86rem]">
-          <AlertCircle size={16} strokeWidth={2.4} className="flex-shrink-0 mt-0.5" />
-          <span>{error}</span>
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+          <AlertCircle size={14} /> {error}
         </div>
       )}
 
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={submitting || message.length < 20}
-        className="group relative inline-flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white font-extrabold text-[0.95rem] shadow-[0_10px_28px_-6px_rgba(240,122,47,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] hover:-translate-y-0.5 hover:shadow-[0_14px_36px_-6px_rgba(240,122,47,0.6),inset_0_1px_0_rgba(255,255,255,0.3)] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-all overflow-hidden"
-      >
-        <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent" aria-hidden />
-        {submitting ? (
-          <>
-            <span className="relative inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            <span className="relative">Envoi en cours…</span>
-          </>
-        ) : (
-          <>
-            <Send size={16} strokeWidth={2.4} className="relative" />
-            <span className="relative">Envoyer mon message</span>
-          </>
-        )}
-      </button>
-
-      <p className="text-center text-[0.75rem] text-ink-400">
-        En envoyant ce formulaire, vous acceptez nos{" "}
-        <a href="/cgv" className="text-ink-600 font-semibold hover:underline">CGV</a>
-        {" "}et notre{" "}
-        <a href="/politique-confidentialite" className="text-ink-600 font-semibold hover:underline">politique de confidentialité</a>.
-      </p>
+      <div className="flex">
+        <CtaButton
+          type="submit"
+          variant="primary"
+          size="lg"
+          icon={Send}
+          disabled={submitting || !rgpdConsent}
+          className="w-full justify-between"
+        >
+          {submitting ? "Envoi en cours…" : "Envoyer le message"}
+        </CtaButton>
+      </div>
     </form>
   );
 }
 
-type FieldProps = {
-  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
+/* ═══════ Floating label field ═══════ */
+function FloatingField({
+  label,
+  required,
+  children,
+}: {
   label: string;
-  name: string;
-  type?: string;
-  placeholder?: string;
   required?: boolean;
-  hint?: string;
-};
-
-function Field({ icon: Icon, label, name, type = "text", placeholder, required, hint }: FieldProps) {
+  children: React.ReactNode;
+}) {
   return (
-    <label className="block">
-      <span className="text-[0.82rem] font-semibold text-ink-600 mb-1.5 inline-flex items-center gap-1.5">
-        <Icon size={12} className="text-ink-400" />
-        {label}
-        {required && <span className="text-red-500">*</span>}
+    <label className="block relative">
+      {children}
+      <span className="absolute left-4 top-1.5 text-[0.7rem] font-semibold text-ink-500 pointer-events-none uppercase tracking-wider">
+        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
       </span>
-      <input
-        type={type}
-        name={name}
-        required={required}
-        placeholder={placeholder}
-        className="w-full px-4 py-2.5 rounded-xl border-2 border-ink-200 bg-ink-50 focus:border-brand-500 focus:bg-white outline-none text-[0.92rem] transition"
-      />
-      {hint && <span className="text-[0.72rem] text-ink-400 mt-1 inline-block">{hint}</span>}
     </label>
   );
 }
+
+// Re-exports utiles
+export { User, Mail, MessageSquare };

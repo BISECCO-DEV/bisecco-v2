@@ -86,12 +86,31 @@ export function EmploiClient() {
       {/* Liste offres */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-ink-100 p-10 text-center text-ink-400 text-sm">
-            Aucune offre ne correspond à votre recherche.{" "}
-            <button onClick={() => { setQuery(""); setCity(""); setContract("Tous"); }} className="text-brand-500 font-bold hover:underline">
-              Réinitialiser les filtres
-            </button>
-          </div>
+          JOB_OFFERS.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-ink-100 p-12 text-center">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center mb-4">
+                <span className="text-brand-500 text-2xl">📣</span>
+              </div>
+              <h3 className="font-bold text-ink-700 text-base">Aucune offre pour le moment</h3>
+              <p className="text-sm text-ink-500 mt-2 max-w-md mx-auto leading-relaxed">
+                Les premières offres d&apos;emploi vont être publiées prochainement. Revenez bientôt · ou
+                inscrivez-vous pour être prévenu dès qu&apos;un poste correspond à votre profil.
+              </p>
+              <a
+                href="/inscription"
+                className="inline-flex items-center gap-1.5 mt-5 px-4 py-2 rounded-lg bg-brand-500 text-white text-sm font-bold hover:bg-brand-600 transition"
+              >
+                Créer un compte gratuit →
+              </a>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-ink-100 p-10 text-center text-ink-400 text-sm">
+              Aucune offre ne correspond à votre recherche.{" "}
+              <button onClick={() => { setQuery(""); setCity(""); setContract("Tous"); }} className="text-brand-500 font-bold hover:underline">
+                Réinitialiser les filtres
+              </button>
+            </div>
+          )
         ) : (
           filtered.map((j) => (
             <Link

@@ -151,12 +151,12 @@ async function DbCheck() {
               {sampleUsers.map((u) => (
                 <tr key={u.id} className="border-t border-ink-100">
                   <td className="px-2 py-1 font-mono">{u.id}</td>
-                  <td className="px-2 py-1 font-mono">{u.client_number ?? "—"}</td>
+                  <td className="px-2 py-1 font-mono">{u.client_number ?? "·"}</td>
                   <td className="px-2 py-1 font-semibold">{u.name}</td>
                   <td className="px-2 py-1 text-ink-500">{u.email}</td>
                   <td className="px-2 py-1">{u.role}</td>
-                  <td className="px-2 py-1">{u.validation_status ?? "—"}</td>
-                  <td className="px-2 py-1 font-mono">{u.siren ?? "—"}</td>
+                  <td className="px-2 py-1">{u.validation_status ?? "·"}</td>
+                  <td className="px-2 py-1 font-mono">{u.siren ?? "·"}</td>
                 </tr>
               ))}
             </tbody>

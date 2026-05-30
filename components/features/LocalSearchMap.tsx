@@ -7,6 +7,8 @@ import "leaflet/dist/leaflet.css";
 
 export type Artisan = {
   id: string;
+  /** ID numérique du user (pour messagerie). Optionnel : si absent (démo), pas de bouton contacter. */
+  user_id?: number;
   name: string;
   company: string;
   metier: string;

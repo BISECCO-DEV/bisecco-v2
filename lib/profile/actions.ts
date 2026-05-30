@@ -181,3 +181,40 @@ export async function uploadCoverAction(
 ): Promise<UploadPhotoState> {
   return uploadPhoto("cover", formData);
 }
+
+/**
+ * Supprime l'avatar ou la couverture du user connecté
+ * (efface tous les fichiers possibles dans le bucket + met la colonne à null)
+ */
+async function removePhoto(kind: PhotoKind): Promise<UploadPhotoState> {
+  const user = await getCurrentUser();
+  if (!user || user.id == null) {
+    return { error: "Vous devez être connecté." };
+  }
+
+  const admin = createSupabaseAdminClient();
+
+  // Liste tous les fichiers possibles (différentes extensions)
+  const toRemove = ALLOWED_MIMES.map((m) => `${user.auth_id}/${kind}.${extFromMime(m)}`);
+  await admin.storage.from(BUCKET).remove(toRemove);
+
+  const column = kind === "avatar" ? "profile_photo" : "cover_photo";
+  const { error } = await admin
+    .from("users")
+    .update({ [column]: null, updated_at: new Date().toISOString() })
+    .eq("id", user.id);
+
+  if (error) return { error: "Échec de la suppression en base." };
+
+  revalidatePath("/mon-profil");
+  revalidatePath("/mon-profil/edit");
+  return { ok: true };
+}
+
+export async function removeAvatarAction(): Promise<UploadPhotoState> {
+  return removePhoto("avatar");
+}
+
+export async function removeCoverAction(): Promise<UploadPhotoState> {
+  return removePhoto("cover");
+}

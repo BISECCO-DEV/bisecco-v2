@@ -30,13 +30,12 @@ export default function EmploiPage() {
             Apprentissages, CDI, alternances : trouvez un emploi dans l&apos;artisanat près de chez vous. Pas de spam, pas de fausses annonces · les entreprises sont vérifiées via leur SIREN.
           </p>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 pt-8 border-t border-white/10">
+          {/* Stats · affichées dès qu'il y aura de vraies offres */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 pt-8 border-t border-white/10">
             {[
-              { value: "1 247", label: "Offres actives" },
-              { value: "288",   label: "Métiers couverts" },
-              { value: "100%",  label: "Entreprises vérifiées" },
-              { value: "<24h",  label: "Mise en relation" },
+              { value: "176",   label: "Métiers couverts" },
+              { value: "100%",  label: "Entreprises vérifiées SIREN" },
+              { value: "Direct", label: "Pas d'intermédiaire" },
             ].map((s) => (
               <div key={s.label}>
                 <div className="text-2xl md:text-3xl font-bold tracking-tight">{s.value}</div>
@@ -88,7 +87,7 @@ export default function EmploiPage() {
         {/* Pourquoi Bisecco emploi */}
         <section className="mt-14 grid md:grid-cols-3 gap-4">
           {[
-            { icon: TrendingUp, title: "200 000+ postes",   text: "à pourvoir dans l'artisanat français (chiffres CMA France 2024)." },
+            { icon: TrendingUp, title: "200 000+ postes",   text: "à pourvoir dans l'artisanat français (CMA France 2024). Bisecco met en relation direct." },
             { icon: Award,      title: "SIREN vérifié",      text: "100% des recruteurs ont leur entreprise contrôlée. Aucune offre fantôme." },
             { icon: MapPin,     title: "Près de chez vous",   text: "Filtre par ville, code postal, rayon d'intervention. Métiers locaux d'abord." },
           ].map((c) => (

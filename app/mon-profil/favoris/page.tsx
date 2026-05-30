@@ -128,7 +128,7 @@ export default async function FavorisPage() {
                       )}
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <h3 className="font-bold text-ink-700">{a.name ?? "—"}</h3>
+                      <h3 className="font-bold text-ink-700">{a.name ?? "·"}</h3>
                       {verified && <ShieldCheck size={12} className="text-emerald-500" />}
                     </div>
                     {company && <p className="text-sm text-ink-500">{company}</p>}

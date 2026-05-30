@@ -5,6 +5,17 @@ import { ArrowLeft, MapPin, Briefcase, Euro, ShieldCheck, Flame, CheckCircle2, S
 import { findJob } from "@/lib/emploi";
 import { ShareButtons } from "@/components/ui/ShareButtons";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo/schemas";
+
+const EMPLOYMENT_TYPE_MAP: Record<string, string> = {
+  CDI:           "FULL_TIME",
+  CDD:           "TEMPORARY",
+  Apprentissage: "INTERN",
+  Alternance:    "INTERN",
+  Stage:         "INTERN",
+  "Intérim":     "TEMPORARY",
+  Freelance:     "CONTRACTOR",
+};
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -28,16 +39,20 @@ export default async function JobOfferPage({ params }: Props) {
   const j = findJob(id);
   if (!j) notFound();
 
-  // Schema.org JobPosting pour SEO
+  // Schema.org JobPosting pour SEO (compatible Google Jobs)
+  const jobUrl = `https://bisecco.fr/emploi/${j.id}`;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "JobPosting",
+    "@id": jobUrl,
     title: j.title,
     description: j.description,
     datePosted: new Date().toISOString(),
     validThrough: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    employmentType: j.contractType,
-    hiringOrganization: { "@type": "Organization", name: j.company },
+    employmentType: EMPLOYMENT_TYPE_MAP[j.contractType] ?? "OTHER",
+    industry: j.metier,
+    occupationalCategory: j.metier,
+    hiringOrganization: { "@type": "Organization", name: j.company, sameAs: "https://bisecco.fr" },
     jobLocation: {
       "@type": "Place",
       address: { "@type": "PostalAddress", addressLocality: j.city, postalCode: j.postalCode, addressCountry: "FR" },
@@ -52,11 +67,18 @@ export default async function JobOfferPage({ params }: Props) {
         unitText: j.salaryPeriod === "an" ? "YEAR" : j.salaryPeriod === "mois" ? "MONTH" : "HOUR",
       },
     } : undefined,
+    directApply: true,
   };
+
+  const breadcrumbs = breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Emploi", url: "/emploi" },
+    { name: j.title, url: `/emploi/${j.id}` },
+  ]);
 
   return (
     <>
-      <JsonLd data={jsonLd} />
+      <JsonLd data={[jsonLd, breadcrumbs]} />
 
       <div className="bg-ink-50 min-h-screen pb-16">
         <div className="container-default max-w-5xl py-10">

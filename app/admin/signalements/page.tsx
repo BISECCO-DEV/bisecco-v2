@@ -173,7 +173,7 @@ export default async function AdminReportsPage({ searchParams }: { searchParams:
                   <div className="bg-amber-50 border-l border-amber-300 px-3 py-2 rounded-r text-xs text-amber-800 mb-3">
                     <strong>Note admin :</strong> {r.admin_note}
                     {r.handler && (
-                      <span className="ml-2 text-amber-600">— {r.handler.name}{r.handled_at && `, ${formatDate(r.handled_at)}`}</span>
+                      <span className="ml-2 text-amber-600">· {r.handler.name}{r.handled_at && `, ${formatDate(r.handled_at)}`}</span>
                     )}
                   </div>
                 )}

@@ -10,13 +10,6 @@ import {
 
 const FOOTER_HIDDEN_ROUTES = ["/admin", "/coming-soon", "/maintenance"];
 
-const SOCIAL_ICONS: Record<string, string> = {
-  Facebook:  "M22 12a10 10 0 1 0-11.56 9.88V14.9h-2.54V12h2.54V9.8c0-2.5 1.5-3.9 3.78-3.9 1.1 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.9h-2.33v6.98A10 10 0 0 0 22 12z",
-  Instagram: "M12 2.16c3.2 0 3.58.01 4.85.07 1.17.06 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.43.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.06 1.17-.25 1.8-.41 2.23a3.7 3.7 0 0 1-.9 1.38c-.42.42-.82.68-1.38.9-.43.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.06-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.43-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.06-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.43-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 5.84a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm5.2-.6a1 1 0 1 0-2 0 1 1 0 0 0 2 0zM12 14.6a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2z",
-  LinkedIn:  "M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05a3.75 3.75 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43A2.07 2.07 0 1 1 5.34 3.3a2.07 2.07 0 0 1 0 4.13zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z",
-  YouTube:   "M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z",
-};
-
 const NAV_PARTICULIERS = [
   { href: "/rechercher",  label: "Trouver un artisan" },
   { href: "/metiers",     label: "Tous les métiers" },
@@ -187,33 +180,6 @@ export function Footer() {
               </li>
             </ul>
 
-            {/* Socials */}
-            <div className="mt-6">
-              <div className="text-[0.66rem] font-extrabold tracking-[0.14em] uppercase text-white/35 mb-2.5">
-                Suivez-nous
-              </div>
-              <div className="flex gap-2">
-                {[
-                  { key: "Facebook",  href: "https://www.facebook.com/bisecco" },
-                  { key: "Instagram", href: "https://www.instagram.com/bisecco.fr" },
-                  { key: "LinkedIn",  href: "https://www.linkedin.com/company/bisecco" },
-                  { key: "YouTube",   href: "#" },
-                ].map(({ key, href }) => (
-                  <a
-                    key={key}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={key}
-                    className="group relative w-10 h-10 rounded-xl bg-white/[0.05] border border-white/10 hover:bg-gradient-to-br hover:from-brand-500 hover:to-brand-600 hover:border-brand-500 hover:-translate-y-0.5 transition-all flex items-center justify-center text-white/65 hover:text-white"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path d={SOCIAL_ICONS[key]} />
-                    </svg>
-                  </a>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Particuliers · 2 cols */}
@@ -262,7 +228,7 @@ export function Footer() {
             iconColor="text-blue-400 bg-blue-500/10 border-blue-500/20"
             title="Top métiers"
             links={TOP_METIERS.slice(0, 6).map((m) => ({ href: `/metiers/${m.slug}`, label: m.name }))}
-            seeAll={{ href: "/metiers", label: "Voir les 80+ métiers" }}
+            seeAll={{ href: "/metiers", label: "Voir plus de 176 métiers" }}
           />
 
           {/* Top villes · 2 cols */}
@@ -289,7 +255,7 @@ export function Footer() {
                 </span>
                 © {new Date().getFullYear()} <strong className="text-white/85">Bisecco</strong>
                 <span className="text-white/30">·</span>
-                <span className="text-white/45">AGISCO HOLDING SAS</span>
+                <span className="text-white/45">Tous droits réservés</span>
               </span>
               <span className="text-white/20">·</span>
               <Link href="/mentions-legales"          className="hover:text-white transition">Mentions</Link>

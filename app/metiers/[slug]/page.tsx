@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ShieldCheck, Star, MapPin, ArrowRight, Briefcase, Users, Clock, CheckCircle2 } from "lucide-react";
 import { fetchMetierBySlug } from "@/lib/db/metiers";
 import { fetchArtisansForMetier } from "@/lib/db/artisans";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { breadcrumbSchema } from "@/lib/seo/schemas";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -15,14 +17,62 @@ function slugify(s: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+/**
+ * Construit une description SEO riche (300+ caractères) à partir du métier.
+ * Combine : nom + spécialité DB + bénéfices Bisecco + appel à l'action.
+ */
+function buildSeoDescription(metier: { name: string; description: string | null }): string {
+  const nameLower = metier.name.toLowerCase();
+  const specifics = metier.description?.trim() ?? "";
+
+  const parts = [
+    `Trouvez le meilleur ${nameLower} près de chez vous sur Bisecco, le réseau d'artisans français vérifiés.`,
+    specifics
+      ? `Nos ${nameLower}s couvrent : ${specifics.toLowerCase()}.`
+      : `Tous les ${nameLower}s inscrits exercent en France avec un numéro SIREN contrôlé.`,
+    `Chaque profil est vérifié auprès de l'INSEE en temps réel, avec avis clients authentiques et photos de réalisations.`,
+    `Comparez les profils, demandez un devis gratuit en 2 minutes, échangez en direct sans intermédiaire ni commission. 100 % gratuit, sans engagement.`,
+  ];
+
+  return parts.join(" ");
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const m = await fetchMetierBySlug(slug);
-  if (!m) return { title: "Métier introuvable" };
+  if (!m) return { title: "Métier introuvable · Bisecco" };
+
+  const description = buildSeoDescription(m);
+  const titleTag = `${m.name} · Artisan vérifié SIREN près de chez vous`;
+  const nameLower = m.name.toLowerCase();
+
   return {
-    title: `${m.name} · Trouvez un artisan vérifié`,
-    description: `Tous les ${m.name.toLowerCase()}s vérifiés sur Bisecco. SIREN contrôlé, avis clients réels, devis gratuit. Trouvez le bon pro près de chez vous.`,
+    title: titleTag,
+    description,
+    keywords: [
+      nameLower,
+      `${nameLower} près de chez moi`,
+      `trouver un ${nameLower}`,
+      `devis ${nameLower}`,
+      `${nameLower} vérifié SIREN`,
+      "artisan français",
+      "devis gratuit",
+      "sans commission",
+    ].join(", "),
     alternates: { canonical: `/metiers/${slug}` },
+    openGraph: {
+      title: titleTag,
+      description,
+      url: `/metiers/${slug}`,
+      siteName: "Bisecco",
+      locale: "fr_FR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: titleTag,
+      description,
+    },
   };
 }
 
@@ -48,8 +98,15 @@ export default async function MetierPage({ params }: Props) {
   const SEED_CITIES = ["Meaux", "Chelles", "Lagny-sur-Marne", "Melun", "Pontault-Combault", "Noisy-le-Grand", "Bussy-Saint-Georges", "Champs-sur-Marne", "Torcy", "Coulommiers", "Paris", "Versailles"];
   const allCities = Array.from(new Set([...cities, ...SEED_CITIES]));
 
+  const breadcrumbs = breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Métiers", url: "/metiers" },
+    { name: metier.name, url: `/metiers/${slug}` },
+  ]);
+
   return (
     <div className="bg-ink-50 min-h-screen pb-20">
+      <JsonLd data={breadcrumbs} />
       {/* Hero */}
       <section className="bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[300px] rounded-full bg-brand-500/15 blur-[120px] pointer-events-none" />
@@ -79,7 +136,7 @@ export default async function MetierPage({ params }: Props) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 pt-8 border-t border-white/10">
             {[
               { label: `${metier.name}s vérifiés`, value: String(artisans.length), icon: ShieldCheck },
-              { label: "Note moyenne",            value: avgRating > 0 ? avgRating.toFixed(1) : "—", icon: Star },
+              { label: "Note moyenne",            value: avgRating > 0 ? avgRating.toFixed(1) : "·", icon: Star },
               { label: "Avis publiés",            value: String(totalReviews), icon: Users },
               { label: "Devis sous",              value: "24h", icon: Clock },
             ].map((s) => (

@@ -12,7 +12,7 @@ export type ArtisanProfileState = {
 };
 
 const activiteSchema = z.object({
-  metier_id: z.coerce.number().int().positive("Métier requis"),
+  metier_ids: z.array(z.coerce.number().int().positive()).min(1, "Au moins un métier").max(3, "Maximum 3 métiers"),
   company_name: z.string().trim().max(200).optional().or(z.literal("")),
   service_radius: z.coerce.number().int().min(0).max(500).optional().nullable(),
   availability: z.string().trim().max(200).optional().or(z.literal("")),
@@ -34,6 +34,21 @@ export async function getMyArtisanProfile() {
   return data;
 }
 
+/** Récupère tous les métiers actuellement liés à l'artisan (multi). */
+export async function getMyArtisanMetierIds(): Promise<number[]> {
+  const profile = await getMyArtisanProfile();
+  if (!profile) return [];
+  const admin = createSupabaseAdminClient();
+  const ids = new Set<number>();
+  if (profile.metier_id) ids.add(profile.metier_id);
+  const { data } = await admin
+    .from("artisan_profile_metier")
+    .select("metier_id")
+    .eq("artisan_profile_id", profile.id);
+  for (const row of data ?? []) ids.add(row.metier_id);
+  return Array.from(ids);
+}
+
 export async function updateActiviteAction(
   _prev: ArtisanProfileState | undefined,
   formData: FormData,
@@ -44,8 +59,17 @@ export async function updateActiviteAction(
     return { error: "Réservé aux artisans." };
   }
 
+  // Récupérer les métiers (envoyés en JSON)
+  let metierIds: number[] = [];
+  try {
+    const raw = formData.get("metier_ids");
+    if (typeof raw === "string") metierIds = JSON.parse(raw);
+  } catch {
+    return { error: "Format de métiers invalide." };
+  }
+
   const parsed = activiteSchema.safeParse({
-    metier_id: formData.get("metier_id"),
+    metier_ids: metierIds,
     company_name: formData.get("company_name") ?? "",
     service_radius: formData.get("service_radius") || null,
     availability: formData.get("availability") ?? "",
@@ -60,7 +84,8 @@ export async function updateActiviteAction(
     return { error: "Champs invalides.", fieldErrors };
   }
 
-  const { metier_id, company_name, service_radius, availability } = parsed.data;
+  const { metier_ids, company_name, service_radius, availability } = parsed.data;
+  const metier_id = metier_ids[0]; // métier principal
 
   const admin = createSupabaseAdminClient();
 
@@ -72,7 +97,9 @@ export async function updateActiviteAction(
     .eq("is_active", true)
     .maybeSingle();
 
+  let profileId: number | undefined;
   if (existing) {
+    profileId = existing.id;
     const { error } = await admin
       .from("artisan_profiles")
       .update({
@@ -85,7 +112,7 @@ export async function updateActiviteAction(
       .eq("id", existing.id);
     if (error) return { error: "Erreur lors de la mise à jour." };
   } else {
-    const { error } = await admin
+    const { data: created, error } = await admin
       .from("artisan_profiles")
       .insert({
         user_id: user.id,
@@ -94,8 +121,19 @@ export async function updateActiviteAction(
         service_radius: service_radius ?? null,
         availability: availability || null,
         is_active: true,
-      });
-    if (error) return { error: "Erreur lors de la création." };
+      })
+      .select("id")
+      .single();
+    if (error || !created) return { error: "Erreur lors de la création." };
+    profileId = created.id;
+  }
+
+  // Sync table join artisan_profile_metier
+  await admin.from("artisan_profile_metier").delete().eq("artisan_profile_id", profileId);
+  if (metier_ids.length > 0) {
+    await admin.from("artisan_profile_metier").insert(
+      metier_ids.map((mid) => ({ artisan_profile_id: profileId!, metier_id: mid })),
+    );
   }
 
   revalidatePath("/mon-profil/edit");

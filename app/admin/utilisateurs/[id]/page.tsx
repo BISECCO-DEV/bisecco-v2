@@ -9,6 +9,7 @@ import {
   approveUserAction, rejectUserAction, recheckSirenAction,
   suspendUserAction, restoreUserAction,
 } from "@/lib/admin/actions";
+import { DeleteUserButton } from "@/components/features/DeleteUserButton";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -85,7 +86,7 @@ export default async function AdminUserDetail({ params }: Props) {
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            {user.client_number && (
+            {isArtisan && user.client_number && (
               <Link
                 href={`/profil/${user.client_number}`}
                 target="_blank"
@@ -106,8 +107,8 @@ export default async function AdminUserDetail({ params }: Props) {
         )}
       </div>
 
-      {/* Actions admin */}
-      {isArtisan && !isDeleted && (
+      {/* Actions admin : pour tout user non-supprimé (artisan OU particulier) */}
+      {!isDeleted && user.role !== "admin" && user.role !== "super_admin" && (
         <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-5">
           <h2 className="font-extrabold text-amber-900 text-sm mb-3 uppercase tracking-wider">
             Actions de modération
@@ -121,7 +122,7 @@ export default async function AdminUserDetail({ params }: Props) {
                   type="submit"
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-600 transition shadow-[0_4px_12px_rgba(16,185,129,0.35)]"
                 >
-                  <CheckCircle2 size={14} /> Valider l&apos;artisan
+                  <CheckCircle2 size={14} /> Valider le compte
                 </button>
               </form>
             )}
@@ -144,7 +145,7 @@ export default async function AdminUserDetail({ params }: Props) {
               </form>
             )}
 
-            {user.siren && (
+            {isArtisan && user.siren && (
               <form action={recheckSirenAction}>
                 <input type="hidden" name="user_id" value={user.id} />
                 <input type="hidden" name="_back" value={`/admin/utilisateurs/${user.id}`} />
@@ -159,7 +160,7 @@ export default async function AdminUserDetail({ params }: Props) {
 
             <form action={suspendUserAction}>
               <input type="hidden" name="user_id" value={user.id} />
-                <input type="hidden" name="_back" value={`/admin/utilisateurs/${user.id}`} />
+              <input type="hidden" name="_back" value={`/admin/utilisateurs/${user.id}`} />
               <button
                 type="submit"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-red-200 text-red-700 font-bold text-sm hover:bg-red-50 transition"
@@ -184,6 +185,22 @@ export default async function AdminUserDetail({ params }: Props) {
               <Play size={14} /> Restaurer le compte
             </button>
           </form>
+        </div>
+      )}
+
+      {/* Suppression définitive (sauf admin) */}
+      {user.role !== "admin" && user.role !== "super_admin" && (
+        <div className="flex items-center justify-between bg-red-50/50 border border-red-200 rounded-2xl p-4 flex-wrap gap-3">
+          <div>
+            <h3 className="font-bold text-red-700 text-sm">Supprimer ce compte</h3>
+            <p className="text-xs text-red-600 mt-0.5">Suppression définitive (Supabase Auth + données liées). Irréversible.</p>
+          </div>
+          <DeleteUserButton
+            userId={user.id}
+            userEmail={user.email}
+            userName={user.name}
+            backUrl={`/admin/utilisateurs/${user.id}`}
+          />
         </div>
       )}
 
@@ -303,7 +320,7 @@ function DataRow({
       <Icon size={14} className="mt-0.5 flex-shrink-0 text-ink-400" />
       <div className="min-w-0 flex-1">
         <div className="text-[0.7rem] uppercase tracking-wider text-ink-400 font-bold">{label}</div>
-        <div className="text-sm truncate">{value ?? "—"}</div>
+        <div className="text-sm truncate">{value ?? "·"}</div>
       </div>
     </li>
   );

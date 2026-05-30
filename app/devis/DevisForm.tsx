@@ -63,7 +63,10 @@ export function DevisForm() {
   const canNext = () => {
     if (step === 1) return data.metier && data.title && data.description.length >= 20;
     if (step === 2) return data.urgency && data.budget;
-    if (step === 3) return data.city && data.postalCode;
+    // step 3 = Photos (optionnelles) → toujours possible de continuer
+    if (step === 3) return true;
+    // step 4 = Contact + adresse → requis pour envoyer
+    if (step === 4) return Boolean(data.fullName && data.email && data.city && data.postalCode);
     return true;
   };
 
@@ -302,10 +305,10 @@ export function DevisForm() {
                 <FileText size={14} /> Récapitulatif
               </h3>
               <dl className="space-y-1.5 text-sm">
-                <Row label="Métier"  value={data.metier || "—"} />
-                <Row label="Projet"  value={data.title || "—"} />
-                <Row label="Urgence" value={URGENCY.find((u) => u.id === data.urgency)?.label || "—"} />
-                <Row label="Budget"  value={BUDGET.find((b) => b.id === data.budget)?.label || "—"} />
+                <Row label="Métier"  value={data.metier || "·"} />
+                <Row label="Projet"  value={data.title || "·"} />
+                <Row label="Urgence" value={URGENCY.find((u) => u.id === data.urgency)?.label || "·"} />
+                <Row label="Budget"  value={BUDGET.find((b) => b.id === data.budget)?.label || "·"} />
                 <Row label="Photos"  value={`${data.photos.length} ajoutée${data.photos.length > 1 ? "s" : ""}`} />
               </dl>
             </div>

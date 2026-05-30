@@ -18,6 +18,12 @@
     @apply bg-ink-50 text-ink-700 font-sans;
   }
 
+  /* Titres : Instrument Sans (à la manière de ihos.fr) */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
   ::selection {
     @apply bg-brand-500/20 text-brand-700;
   }
@@ -76,7 +82,7 @@
   margin: 12px 14px !important;
 }
 
-/* Confiner Leaflet dans son propre stacking context — empêche ses tiles/markers/controls (z-index 400-800)
+/* Confiner Leaflet dans son propre stacking context · empêche ses tiles/markers/controls (z-index 400-800)
    de passer au-dessus du header fixed (z-50). */
 .leaflet-container {
   position: relative;

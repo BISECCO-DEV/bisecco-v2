@@ -24,6 +24,19 @@ Thumbs.db
 # Tests
 coverage/
 
-# Migration scripts — contiennent des données sensibles (emails + hashes)
+# Migration scripts · contiennent des données sensibles (emails + hashes bcrypt)
 scripts/users-v1.csv
 scripts/users-v1-migration.sql
+supabase/dumps/v1_passwords_fresh.csv
+db/012_restore_legacy_passwords.sql
+db/013_refresh_legacy_passwords_local.sql
+db/014_reset_admin_password.sql
+
+# Build artefacts locaux
+next-build.tar.gz
+.next-cache-temp/
+
+# Tests
+playwright-report/
+test-results/
+.playwright/

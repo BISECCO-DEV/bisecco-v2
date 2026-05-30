@@ -11,7 +11,7 @@ const DEMO_DEVIS = [
   { id: "D-2026-128", title: "Rénovation salle de bain",      artisan: "Jean Dupont",    metier: "Maçon",     city: "Meaux",   amount: 4200, status: "received", date: "Il y a 2 jours",   responses: 3 },
   { id: "D-2026-127", title: "Pose carrelage cuisine 15m²",   artisan: "Hugo Martin",    metier: "Carreleur", city: "Chelles", amount: 1850, status: "quoted",   date: "Il y a 5 jours",   responses: 5 },
   { id: "D-2026-119", title: "Installation chaudière",        artisan: "Marc Lefevre",   metier: "Chauffagiste", city: "Melun", amount: 3400, status: "accepted", date: "Il y a 1 sem.",    responses: 4 },
-  { id: "D-2026-103", title: "Peinture salon 25m²",           artisan: "—",              metier: "Peintre",   city: "Meaux",   amount: 0,    status: "open",     date: "Il y a 2 sem.",    responses: 2 },
+  { id: "D-2026-103", title: "Peinture salon 25m²",           artisan: "·",              metier: "Peintre",   city: "Meaux",   amount: 0,    status: "open",     date: "Il y a 2 sem.",    responses: 2 },
   { id: "D-2026-098", title: "Pose parquet stratifié 40m²",   artisan: "Pierre Moreau",  metier: "Menuisier", city: "Lagny",   amount: 1200, status: "declined", date: "Il y a 1 mois",    responses: 1 },
   { id: "D-2026-072", title: "Réfection toiture 80m²",        artisan: "Sophie Lambert", metier: "Couvreur",  city: "Nantes",  amount: 8500, status: "completed", date: "Il y a 2 mois",    responses: 7 },
 ];
@@ -96,7 +96,7 @@ export default function MesDevisPage() {
                       <span className="inline-flex items-center gap-1"><MapPin size={11} /> {d.city}</span>
                       <span>·</span>
                       <span className="font-semibold text-brand-500">{d.metier}</span>
-                      {d.artisan !== "—" && <>
+                      {d.artisan !== "·" && <>
                         <span>·</span>
                         <span>Artisan : <strong className="text-ink-700">{d.artisan}</strong></span>
                       </>}
@@ -119,7 +119,7 @@ export default function MesDevisPage() {
                     <Link href={`/mon-profil/devis/${d.id}`} className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-brand-500 text-white text-sm font-bold hover:bg-brand-600 transition">
                       Voir <ExternalLink size={13} />
                     </Link>
-                    {d.artisan !== "—" && (
+                    {d.artisan !== "·" && (
                       <Link href={`/messagerie/1`} className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-ink-200 text-ink-700 text-sm font-bold hover:border-brand-500 transition">
                         <MessageCircle size={13} /> Message
                       </Link>

@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser, requireUser } from "@/lib/db/current-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { sendMail } from "@/lib/mail/mailer";
+import { newCvEmail } from "@/lib/mail/templates";
+
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_MIME = ["application/pdf"];
@@ -80,6 +84,22 @@ export async function submitCvAction(formData: FormData): Promise<void> {
     await supabase.storage.from(BUCKET).remove([storagePath]);
     console.error("[submitCvAction db]", dbErr);
     redirect(`${backUrl}?cv_error=db_failed`);
+  }
+
+  // Email à l'artisan destinataire
+  const { data: recipient } = await supabase
+    .from("users")
+    .select("email, name")
+    .eq("id", recipientId)
+    .maybeSingle();
+  if (recipient?.email && recipient.name) {
+    const tpl = newCvEmail({
+      artisanName: recipient.name,
+      candidateName: senderName,
+      candidateEmail: senderEmail,
+      cvUrl: `${APP_URL_BASE}/mon-profil/cvs-recus`,
+    });
+    await sendMail({ to: recipient.email, subject: tpl.subject, html: tpl.html, text: tpl.text, replyTo: senderEmail });
   }
 
   revalidatePath("/mon-profil/cvs-recus");

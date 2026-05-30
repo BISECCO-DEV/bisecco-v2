@@ -2,6 +2,10 @@
 
 import { randomBytes } from "node:crypto";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { sendMail } from "@/lib/mail/mailer";
+import { newsletterOptInEmail } from "@/lib/mail/templates";
+
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 export type NewsletterState = { error?: string; success?: string } | undefined;
 
@@ -68,9 +72,10 @@ export async function subscribeNewsletterAction(
     });
   }
 
-  // TODO: envoyer l'email de confirmation via Supabase Edge Function / Resend.
-  // Pour le moment, on retourne le token côté dev/log.
-  console.log("[Newsletter] Confirmation token pour", email, ":", tokens.confirmation_token);
+  // Envoyer l'email de confirmation via nodemailer + o2switch
+  const confirmUrl = `${APP_URL_BASE}/newsletter/confirmer/${tokens.confirmation_token}`;
+  const tpl = newsletterOptInEmail({ confirmUrl });
+  await sendMail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text });
 
   return { success: "Vérifiez votre boîte mail pour confirmer." };
 }

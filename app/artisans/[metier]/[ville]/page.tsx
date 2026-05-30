@@ -5,6 +5,8 @@ import { ShieldCheck, Star, MapPin, ArrowRight, MessageCircle, Search } from "lu
 import { fetchMetierBySlug } from "@/lib/db/metiers";
 import { fetchArtisansForMetierAndCity } from "@/lib/db/artisans";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { breadcrumbSchema, faqSchema } from "@/lib/seo/schemas";
+import { generateLocalContent } from "@/lib/seo/local-content";
 
 type Props = { params: Promise<{ metier: string; ville: string }> };
 
@@ -66,9 +68,20 @@ export default async function SeoLocalePage({ params }: Props) {
     })),
   };
 
+  const breadcrumbs = breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Métiers", url: "/metiers" },
+    { name: m.name, url: `/metiers/${metier}` },
+    { name: villeLabel, url: `/artisans/${metier}/${ville}` },
+  ]);
+
+  // Contenu SEO local enrichi (intro + FAQ + tarifs + quartiers)
+  const local = generateLocalContent(m.name, ville, artisans.length);
+  const localFaqSchema = faqSchema(local.faqs);
+
   return (
     <>
-      <JsonLd data={jsonLd} />
+      <JsonLd data={[jsonLd, breadcrumbs, localFaqSchema]} />
 
       <div className="bg-ink-50 min-h-screen pb-16">
         {/* Hero */}
@@ -208,31 +221,98 @@ export default async function SeoLocalePage({ params }: Props) {
             </section>
           )}
 
-          {/* Contenu SEO bas */}
-          <section className="mt-12 prose prose-ink max-w-3xl">
-            <h2 className="text-2xl font-bold text-ink-700 tracking-tight">
-              Pourquoi choisir un {m.name.toLowerCase()} à {villeLabel} via Bisecco ?
-            </h2>
-            <p className="text-ink-500 mt-3 leading-relaxed">
-              Trouver un {m.name.toLowerCase()} de confiance à {villeLabel} peut être un défi.
-              Avec Bisecco, vous accédez à une sélection d&apos;artisans dont l&apos;identité a été
-              vérifiée via leur numéro SIREN officiel. Aucun faux profil, aucune publicité
-              trompeuse.
-            </p>
-            <p className="text-ink-500 mt-3 leading-relaxed">
-              Chaque {m.name.toLowerCase()} référencé à {villeLabel} est noté par ses vrais
-              clients après chaque mission terminée. Les avis sont 100% authentiques · il est
-              impossible d&apos;acheter une note ou de poster un faux commentaire.
-            </p>
+          {/* Contenu SEO local enrichi · ~500 mots uniques par combinaison */}
+          <section className="mt-12 max-w-3xl space-y-10">
+            {/* Intro spécifique ville */}
+            <div>
+              <h2 className="font-display text-[1.8rem] font-semibold text-ink-700 tracking-[-0.02em]">
+                {m.name} à {villeLabel} · le guide Bisecco
+              </h2>
+              <p className="text-ink-600 mt-4 leading-relaxed text-[1rem]">
+                {local.intro}
+              </p>
+              <p className="text-ink-500 mt-3 leading-relaxed">
+                {local.whyHere}
+              </p>
+            </div>
 
-            <h3 className="text-xl font-bold text-ink-700 mt-6 tracking-tight">Comment ça marche ?</h3>
-            <ol className="text-ink-500 mt-3 space-y-2 list-decimal pl-5">
-              <li>Décrivez votre projet en 2 minutes via notre formulaire de devis.</li>
-              <li>Plusieurs {m.name.toLowerCase()}s à {villeLabel} étudient votre demande.</li>
-              <li>Vous recevez 2 à 5 devis gratuits sous 24h.</li>
-              <li>Vous comparez, vous discutez en direct avec les artisans.</li>
-              <li>Vous choisissez librement. Aucune commission prélevée.</li>
-            </ol>
+            {/* Tarifs moyens (si métier connu) */}
+            {local.tarifs && (
+              <div>
+                <h3 className="font-display text-[1.35rem] font-semibold text-ink-700 tracking-tight">
+                  Prix moyen d&apos;un {m.name.toLowerCase()} à {villeLabel} en 2026
+                </h3>
+                <div className="mt-4 inline-flex items-baseline gap-3 px-5 py-4 rounded-2xl bg-gradient-to-br from-brand-50 to-amber-50/30 border border-brand-200/60">
+                  <span className="font-display text-[2rem] font-semibold text-brand-600 tracking-[-0.025em] leading-none">
+                    {local.tarifs.min} – {local.tarifs.max}
+                  </span>
+                  <span className="text-ink-500 font-semibold">{local.tarifs.unit}</span>
+                </div>
+                {local.tarifs.note && (
+                  <p className="text-ink-500 text-[0.92rem] mt-3 leading-relaxed">{local.tarifs.note}</p>
+                )}
+                <p className="text-ink-400 text-[0.78rem] mt-2 italic">
+                  Fourchette indicative · comparez plusieurs devis Bisecco pour obtenir un prix précis.
+                </p>
+              </div>
+            )}
+
+            {/* Quartiers (si ville connue) */}
+            {local.neighborhoodsText && (
+              <div>
+                <h3 className="font-display text-[1.35rem] font-semibold text-ink-700 tracking-tight">
+                  Quartiers couverts à {villeLabel}
+                </h3>
+                <p className="text-ink-600 mt-3 leading-relaxed">{local.neighborhoodsText}</p>
+                {local.cityData && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {local.cityData.neighborhoods.map((n) => (
+                      <span
+                        key={n}
+                        className="inline-flex items-center px-3 py-1.5 rounded-full bg-ink-50 border border-ink-100 text-[0.82rem] font-semibold text-ink-700"
+                      >
+                        {n}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Comment ça marche */}
+            <div>
+              <h3 className="font-display text-[1.35rem] font-semibold text-ink-700 tracking-tight">
+                Comment trouver un {m.name.toLowerCase()} à {villeLabel} sur Bisecco
+              </h3>
+              <ol className="text-ink-500 mt-4 space-y-2.5 list-decimal pl-5 leading-relaxed">
+                <li>Décrivez votre projet en 2 minutes via notre formulaire de devis sécurisé.</li>
+                <li>Plusieurs {m.name.toLowerCase()}s vérifiés à {villeLabel} étudient votre demande.</li>
+                <li>Vous recevez généralement 2 à 5 devis gratuits sous 24 heures.</li>
+                <li>Vous comparez, vous discutez en direct via la messagerie Bisecco.</li>
+                <li>Vous choisissez librement. Aucune commission prélevée sur vos travaux.</li>
+              </ol>
+            </div>
+
+            {/* FAQ locale */}
+            <div>
+              <h3 className="font-display text-[1.35rem] font-semibold text-ink-700 tracking-tight mb-5">
+                Questions fréquentes · {m.name} à {villeLabel}
+              </h3>
+              <div className="space-y-3">
+                {local.faqs.map((faq, i) => (
+                  <details
+                    key={i}
+                    className="group bg-white rounded-2xl border border-ink-100 px-5 py-4 hover:border-brand-200 transition open:border-brand-300"
+                  >
+                    <summary className="font-semibold text-ink-700 cursor-pointer list-none flex items-center justify-between gap-3">
+                      <span>{faq.question}</span>
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-50 text-brand-500 grid place-items-center text-lg leading-none group-open:rotate-45 transition-transform">+</span>
+                    </summary>
+                    <p className="mt-3 text-ink-500 leading-relaxed text-[0.94rem]">{faq.answer}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
           </section>
 
           <section className="mt-12 bg-gradient-to-br from-brand-50 to-amber-50/30 rounded-3xl p-10 text-center border border-brand-200/60">

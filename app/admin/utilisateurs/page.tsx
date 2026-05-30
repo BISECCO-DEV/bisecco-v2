@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search, ShieldCheck, Users, Filter, ChevronRight, ChevronLeft } from "lucide-react";
 import { fetchUsersList } from "@/lib/db/admin-users";
+import { DeleteUserButton } from "@/components/features/DeleteUserButton";
 
 export const dynamic = "force-dynamic";
 
@@ -159,21 +160,32 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
                           )}
                         </div>
                       ) : (
-                        <span className="text-ink-300">—</span>
+                        <span className="text-ink-300">·</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-ink-600 text-xs">{u.city ?? "—"}</td>
+                    <td className="px-4 py-3 text-ink-600 text-xs">{u.city ?? "·"}</td>
                     <td className="px-4 py-3"><StatusBadge status={u.validation_status} /></td>
                     <td className="px-4 py-3 text-ink-500 text-xs">
                       {new Date(u.created_at).toLocaleDateString("fr-FR")}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Link
-                        href={`/admin/utilisateurs/${u.id}`}
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-ink-100 text-ink-500 hover:text-brand-600 transition"
-                      >
-                        <ChevronRight size={16} />
-                      </Link>
+                      <div className="inline-flex items-center gap-1">
+                        {u.role !== "admin" && (
+                          <DeleteUserButton
+                            userId={u.id}
+                            userEmail={u.email}
+                            userName={u.name}
+                            backUrl="/admin/utilisateurs"
+                            iconOnly
+                          />
+                        )}
+                        <Link
+                          href={`/admin/utilisateurs/${u.id}`}
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-ink-100 text-ink-500 hover:text-brand-600 transition"
+                        >
+                          <ChevronRight size={16} />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))

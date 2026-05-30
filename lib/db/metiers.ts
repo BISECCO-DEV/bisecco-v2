@@ -1,4 +1,4 @@
-import { createClient as createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export type Metier = {
   id: number;
@@ -16,11 +16,12 @@ export type MetierGrouped = {
 
 /**
  * Récupère tous les métiers depuis Supabase, triés par nom.
- * Server-side uniquement (Server Components, Route Handlers, Server Actions).
+ * On utilise l'admin client : table de référence en lecture publique légitime,
+ * pas besoin de dépendre des RLS policies.
  */
 export async function fetchAllMetiers(): Promise<Metier[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin
     .from("metiers")
     .select("id, name, slug, category, description, icon")
     .order("name", { ascending: true });
@@ -56,8 +57,8 @@ export async function fetchMetiersGroupedByCategory(): Promise<MetierGrouped[]> 
  * Récupère un métier par son slug (pour pages métier).
  */
 export async function fetchMetierBySlug(slug: string): Promise<Metier | null> {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
+  const admin = createSupabaseAdminClient();
+  const { data, error } = await admin
     .from("metiers")
     .select("id, name, slug, category, description, icon")
     .eq("slug", slug)
@@ -74,8 +75,8 @@ export async function fetchMetierBySlug(slug: string): Promise<Metier | null> {
  * Compte les métiers (pour stats, debug).
  */
 export async function countMetiers(): Promise<number> {
-  const supabase = await createSupabaseServerClient();
-  const { count, error } = await supabase
+  const admin = createSupabaseAdminClient();
+  const { count, error } = await admin
     .from("metiers")
     .select("*", { count: "exact", head: true });
 

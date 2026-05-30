@@ -84,6 +84,19 @@ export async function readAllNotificationsAction() {
   revalidatePath("/mon-profil/notifications");
 }
 
+/** Supprime TOUTES les notifs du user (clean total) */
+export async function deleteAllNotificationsAction() {
+  const me = await getCurrentDbUser();
+  if (!me) return;
+
+  const admin = createSupabaseAdminClient();
+  await admin.from("app_notifications")
+    .delete()
+    .eq("user_id", me.id);
+
+  revalidatePath("/mon-profil/notifications");
+}
+
 /** Helper interne : push une notif (best-effort) */
 export async function pushNotification(
   userId: number,

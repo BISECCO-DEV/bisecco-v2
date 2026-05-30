@@ -1,13 +1,39 @@
 import type { Metadata } from "next";
 import { ParrainageClient } from "./ParrainageClient";
 import { Gift, Users, Sparkles, Award, Share2 } from "lucide-react";
+import { getCurrentDbUser } from "@/lib/auth/current-user";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
   title: "Programme de parrainage Bisecco",
   description: "Invitez vos proches et vos professionnels à vous rejoindre sur bisecco.fr · le 1er réseau social d'artisans français vérifiés SIREN.",
 };
 
-export default function ParrainagePage() {
+export const dynamic = "force-dynamic";
+
+export default async function ParrainagePage() {
+  const me = await getCurrentDbUser();
+  let referralCode: string | null = null;
+  let stats = { validated: 0, signed_up: 0 };
+
+  if (me) {
+    const admin = createSupabaseAdminClient();
+    // Récupère le code (ou le génère côté DB normalement)
+    const { data: userRow } = await admin
+      .from("users")
+      .select("referral_code")
+      .eq("id", me.id)
+      .maybeSingle();
+    referralCode = (userRow?.referral_code as string | null) ?? null;
+
+    const [{ count: validated }, { count: signed_up }] = await Promise.all([
+      admin.from("referrals").select("*", { count: "exact", head: true })
+        .eq("referrer_user_id", me.id).eq("status", "validated"),
+      admin.from("referrals").select("*", { count: "exact", head: true })
+        .eq("referrer_user_id", me.id).eq("status", "signed_up"),
+    ]);
+    stats = { validated: validated ?? 0, signed_up: signed_up ?? 0 };
+  }
   return (
     <div className="bg-ink-50 min-h-screen pb-16">
       <section className="bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 text-white py-16 relative overflow-hidden">
@@ -29,7 +55,7 @@ export default function ParrainagePage() {
       </section>
 
       <div className="container-default -mt-12 relative">
-        <ParrainageClient />
+        <ParrainageClient referralCode={referralCode} stats={stats} signedIn={!!me} />
 
         {/* How it works */}
         <section className="mt-12">

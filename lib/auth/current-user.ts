@@ -15,7 +15,7 @@ export type DbUser = {
  * Récupère le profil public.users de l'utilisateur connecté (Supabase Auth).
  *
  * Mapping: auth.uid() (UUID) → public.users.id (bigint) via email.
- * Le schéma V2 ne lie pas auth.users et public.users par FK directe —
+ * Le schéma V2 ne lie pas auth.users et public.users par FK directe ·
  * on utilise donc l'email comme clé de jointure.
  *
  * @returns null si non authentifié ou si aucun profil public ne correspond.

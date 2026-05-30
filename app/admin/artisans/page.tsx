@@ -93,7 +93,7 @@ export default function AdminArtisansPage() {
                       <span className="inline-flex items-center gap-1 text-ink-700 font-semibold">
                         <Star size={11} fill="#f07a2f" className="text-brand-500" /> {a.rating} ({a.reviews})
                       </span>
-                    ) : <span className="text-ink-400">—</span>}
+                    ) : <span className="text-ink-400">·</span>}
                   </td>
                   <td className="px-5">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[0.65rem] font-bold uppercase tracking-wider ${

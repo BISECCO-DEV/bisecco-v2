@@ -57,7 +57,7 @@ export function ReportProfileForm({ reportedUserId, isGuest }: Props) {
                 required
                 className="w-full px-3 py-2 rounded-lg bg-ink-50 border-2 border-ink-200 focus:border-red-500 focus:bg-white outline-none text-sm"
               >
-                <option value="">— Choisir —</option>
+                <option value="">· Choisir ·</option>
                 {Object.entries(REASON_LABELS).map(([key, label]) => (
                   <option key={key} value={key}>{String(label)}</option>
                 ))}

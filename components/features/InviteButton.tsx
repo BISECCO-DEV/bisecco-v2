@@ -18,7 +18,7 @@ declare global {
 }
 
 export interface InviteButtonProps {
-  /** Lien de parrainage unique du user (ex: https://bisecco.fr/r/laurent-a3f7) */
+  /** Lien de parrainage unique du user (ex: https://bisecco.eu/r/laurent-a3f7) */
   referralUrl: string;
   /** Variant visuel du bouton */
   variant?: "primary" | "ghost" | "compact";

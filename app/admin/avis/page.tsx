@@ -158,10 +158,10 @@ export default async function AdminAvisPage({ searchParams }: { searchParams: Se
                     sur{" "}
                     {r.artisan_profiles?.users?.client_number ? (
                       <Link href={`/profil/${r.artisan_profiles.users.client_number}`} className="text-brand-600 font-semibold hover:underline">
-                        {r.artisan_profiles?.company_name ?? r.artisan_profiles?.users?.name ?? "—"}
+                        {r.artisan_profiles?.company_name ?? r.artisan_profiles?.users?.name ?? "·"}
                       </Link>
                     ) : (
-                      <span>{r.artisan_profiles?.company_name ?? r.artisan_profiles?.users?.name ?? "—"}</span>
+                      <span>{r.artisan_profiles?.company_name ?? r.artisan_profiles?.users?.name ?? "·"}</span>
                     )}
                     {" · "}
                     {new Date(r.created_at).toLocaleDateString("fr-FR")}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Briefcase, TrendingUp } from "lucide-react";
+import { CtaButton } from "@/components/ui/CtaButton";
 
 type Metier = {
   slug: string;
@@ -10,18 +11,18 @@ type Metier = {
 };
 
 const METIERS: Metier[] = [
-  { slug: "plombier",     name: "Plombier",     emoji: "🔧", description: "Fuites, sanitaires, chauffe-eau", trending: true },
-  { slug: "electricien",  name: "Électricien",  emoji: "⚡", description: "Installation, dépannage", trending: true },
-  { slug: "macon",        name: "Maçon",        emoji: "🧱", description: "Construction, rénovation" },
-  { slug: "menuisier",    name: "Menuisier",    emoji: "🪵", description: "Pose, sur-mesure" },
-  { slug: "peintre",      name: "Peintre",      emoji: "🎨", description: "Intérieur, façade" },
-  { slug: "couvreur",     name: "Couvreur",     emoji: "🏠", description: "Toiture, étanchéité" },
-  { slug: "carreleur",    name: "Carreleur",    emoji: "🔲", description: "Faïence, mosaïque" },
-  { slug: "chauffagiste", name: "Chauffagiste", emoji: "🔥", description: "Chaudière, pompe à chaleur", trending: true },
-  { slug: "serrurier",    name: "Serrurier",    emoji: "🔑", description: "Urgences 24/7" },
-  { slug: "boulanger",    name: "Boulanger",    emoji: "🥖", description: "Pain & viennoiseries" },
-  { slug: "boucher",      name: "Boucher",      emoji: "🥩", description: "Viandes & charcuterie" },
-  { slug: "jardinier",    name: "Jardinier",    emoji: "🌿", description: "Entretien, paysagiste" },
+  { slug: "plombier",     name: "Plombier",     emoji: "🔧", description: "Dépannage fuite d'eau, installation sanitaire, chauffe-eau et débouchage 24/7.", trending: true },
+  { slug: "electricien",  name: "Électricien",  emoji: "⚡", description: "Installation, mise aux normes, dépannage tableau électrique et domotique certifiée.", trending: true },
+  { slug: "macon",        name: "Maçon",        emoji: "🧱", description: "Construction neuve, extension, rénovation de murs et travaux de gros œuvre.", },
+  { slug: "menuisier",    name: "Menuisier",    emoji: "🪵", description: "Pose de fenêtres, portes, parquet, agencement sur-mesure intérieur et extérieur.", },
+  { slug: "peintre",      name: "Peintre",      emoji: "🎨", description: "Peinture intérieure et façade, enduits décoratifs, ravalement et papier peint.", },
+  { slug: "couvreur",     name: "Couvreur",     emoji: "🏠", description: "Réfection de toiture, étanchéité, démoussage et isolation des combles par l'extérieur.", },
+  { slug: "carreleur",    name: "Carreleur",    emoji: "🔲", description: "Pose de carrelage, faïence, mosaïque, sol et mur, salle de bain et cuisine.", },
+  { slug: "chauffagiste", name: "Chauffagiste", emoji: "🔥", description: "Installation et entretien de chaudière, pompe à chaleur et plancher chauffant.", trending: true },
+  { slug: "serrurier",    name: "Serrurier",    emoji: "🔑", description: "Ouverture de porte, changement de serrure, blindage et dépannage en urgence 24/7.", },
+  { slug: "boulanger",    name: "Boulanger",    emoji: "🥖", description: "Pain artisanal, baguette tradition, viennoiseries et pâtisseries faites maison.", },
+  { slug: "boucher",      name: "Boucher",      emoji: "🥩", description: "Viandes de qualité, charcuterie maison, traiteur et conseils de cuisson sur-mesure.", },
+  { slug: "jardinier",    name: "Jardinier",    emoji: "🌿", description: "Entretien de jardin, tonte, élagage, taille de haies et aménagement paysager.", },
 ];
 
 export function HomeMetiers() {
@@ -38,7 +39,7 @@ export function HomeMetiers() {
             <Briefcase size={11} strokeWidth={2.8} className="text-brand-500" />
             Métiers populaires
           </span>
-          <h2 className="mt-5 text-[34px] sm:text-[44px] md:text-[52px] leading-[1.05] font-extrabold text-ink-700 tracking-[-0.025em]">
+          <h2 className="mt-5 text-[32px] lg:text-[38px] leading-[1.25] font-semibold text-ink-700 tracking-[-0.025em]">
             Trouvez le bon{" "}
             <span className="relative inline-block">
               <span className="text-brand-500 animate-gradient-flow" style={{ backgroundSize: "200% 100%" }}>
@@ -48,7 +49,7 @@ export function HomeMetiers() {
             </span>
           </h2>
           <p className="mt-5 text-[1rem] sm:text-[1.06rem] text-ink-500 leading-relaxed">
-            Plus de <strong className="text-ink-700">80 métiers</strong> couverts, des artisans
+            Plus de <strong className="text-ink-700">176 métiers</strong> couverts, des artisans
             <strong className="text-ink-700"> vérifiés SIREN</strong> dans toute la France.
           </p>
         </div>
@@ -81,7 +82,7 @@ export function HomeMetiers() {
               <h3 className="mt-3 font-extrabold text-ink-700 text-[0.95rem] sm:text-[1rem] tracking-tight group-hover:text-brand-600 transition-colors">
                 {m.name}
               </h3>
-              <p className="text-[0.74rem] sm:text-[0.78rem] text-ink-400 mt-0.5 line-clamp-1">{m.description}</p>
+              <p className="text-[0.74rem] sm:text-[0.78rem] text-ink-400 mt-1 leading-snug line-clamp-2">{m.description}</p>
 
               {/* Flèche qui apparaît au hover */}
               <span className="absolute bottom-3 right-3 inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand-500 text-white opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shadow-[0_4px_12px_rgba(240,122,47,0.4)]">
@@ -93,13 +94,9 @@ export function HomeMetiers() {
 
         {/* Voir tous les métiers */}
         <div className="mt-10 text-center">
-          <Link
-            href="/metiers"
-            className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-ink-50 border border-ink-200 text-ink-700 font-extrabold text-[0.88rem] hover:bg-white hover:border-brand-300 hover:text-brand-600 hover:shadow-[0_8px_20px_-8px_rgba(13,30,74,0.15)] transition-all"
-          >
-            Voir les 80+ métiers
-            <ArrowRight size={14} strokeWidth={2.6} className="group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+          <CtaButton href="/metiers" variant="white" size="md">
+            Voir plus de 176 métiers
+          </CtaButton>
         </div>
       </div>
     </section>

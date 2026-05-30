@@ -91,3 +91,37 @@ export async function handleReportAction(
   revalidatePath("/admin/signalements");
   return { ok: true };
 }
+
+/** Signalement générique (page /signaler) · envoie un mail à contact@bisecco.fr */
+export async function submitGenericReportAction(
+  formData: FormData,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const reason = String(formData.get("reason") ?? "").trim();
+  const target = String(formData.get("target") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+
+  if (!reason) return { ok: false, error: "Sélectionnez une raison." };
+  if (!description || description.length < 20) return { ok: false, error: "Description trop courte (20 caractères min)." };
+
+  const { sendMail } = await import("@/lib/mail/mailer");
+  const ADMIN_INBOX = process.env.CONTACT_INBOX || "contact@bisecco.fr";
+
+  const html = `
+    <h2 style="color:#0d1e4a;font-family:sans-serif;">Nouveau signalement Bisecco</h2>
+    <p><strong>Raison :</strong> ${reason}</p>
+    ${target ? `<p><strong>Cible :</strong> ${target}</p>` : ""}
+    <p><strong>Description :</strong></p>
+    <div style="background:#f7f7f5;padding:14px;border-left:4px solid #f07a2f;border-radius:4px;white-space:pre-wrap;">${description.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+  `;
+  const text = `Nouveau signalement Bisecco\n\nRaison: ${reason}\n${target ? `Cible: ${target}\n` : ""}\nDescription:\n${description}`;
+
+  const res = await sendMail({
+    to: ADMIN_INBOX,
+    subject: `[Bisecco · Signalement] ${reason}`,
+    html,
+    text,
+  });
+
+  if (!res.ok) return { ok: false, error: "Envoi échoué. Réessayez plus tard." };
+  return { ok: true };
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CheckCircle2, AlertTriangle, MessageSquare, User, FileText, Send } from "lucide-react";
+import { submitGenericReportAction } from "@/lib/reports/actions";
 
 const REASONS = [
   { id: "fake-profile",  label: "Faux profil / arnaque",        icon: User,         color: "text-red-500" },
@@ -18,12 +19,27 @@ export function SignalerForm() {
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const [error, setError] = useState<string | null>(null);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!reason) {
+      setError("Sélectionnez une raison.");
+      return;
+    }
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
+    setError(null);
+    const fd = new FormData();
+    fd.set("reason", reason);
+    fd.set("target", target);
+    fd.set("description", description);
+    const res = await submitGenericReportAction(fd);
     setSubmitting(false);
-    setSent(true);
+    if (res.ok) {
+      setSent(true);
+    } else {
+      setError(res.error);
+    }
   };
 
   if (sent) {
@@ -42,6 +58,11 @@ export function SignalerForm() {
 
   return (
     <form onSubmit={submit} className="bg-white rounded-3xl shadow-card border border-ink-100 p-7 md:p-8 space-y-5">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 flex items-center gap-2">
+          <AlertTriangle size={14} /> {error}
+        </div>
+      )}
       <div>
         <label className="block text-sm font-bold text-ink-600 mb-3">Type de problème</label>
         <div className="grid sm:grid-cols-2 gap-2">

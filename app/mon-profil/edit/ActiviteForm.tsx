@@ -2,7 +2,7 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { Building2, MapPin, Clock, CheckCircle2, AlertCircle, Save } from "lucide-react";
-import { MetierCombobox } from "@/components/ui/MetierCombobox";
+import { MultiMetierPicker, type MetierPick } from "@/components/ui/MultiMetierPicker";
 import { updateActiviteAction, type ArtisanProfileState } from "@/lib/profile/artisan";
 
 type MetierOption = { id: number; name: string };
@@ -10,7 +10,7 @@ type MetierOption = { id: number; name: string };
 type Props = {
   metiers: MetierOption[];
   initial: {
-    metier_id: number | null;
+    metier_ids: number[];
     company_name: string;
     service_radius: number | null;
     availability: string;
@@ -30,10 +30,26 @@ export function ActiviteForm({ metiers, initial }: Props) {
     return m;
   }, [metiers]);
 
-  const [metierLabel, setMetierLabel] = useState<string>(
-    initial.metier_id != null ? (idToName.get(initial.metier_id) ?? "") : "",
+  // Initial picks à partir des IDs
+  const initialPicks: MetierPick[] = useMemo(
+    () =>
+      initial.metier_ids
+        .map((id) => idToName.get(id))
+        .filter((n): n is string => Boolean(n))
+        .map((name) => ({ name, slug: null })),
+    [initial.metier_ids, idToName],
   );
-  const metierId = nameToId.get(metierLabel.toLowerCase()) ?? null;
+
+  const [picks, setPicks] = useState<MetierPick[]>(initialPicks);
+
+  // Calculer les IDs sélectionnés (en ignorant les custom)
+  const selectedIds = useMemo(() => {
+    return picks
+      .map((p) => nameToId.get(p.name.toLowerCase()))
+      .filter((id): id is number => typeof id === "number");
+  }, [picks, nameToId]);
+
+  const hasInvalid = picks.some((p) => !nameToId.has(p.name.toLowerCase()));
 
   const [state, formAction, isPending] = useActionState<ArtisanProfileState | undefined, FormData>(
     updateActiviteAction,
@@ -43,30 +59,28 @@ export function ActiviteForm({ metiers, initial }: Props) {
   return (
     <form action={formAction} className="space-y-5">
       <div>
-        <h2 className="text-xl font-bold text-ink-700">Activité & métier</h2>
-        <p className="text-ink-400 text-sm mt-1">Définissez votre métier principal et votre zone d&apos;intervention.</p>
+        <h2 className="text-xl font-bold text-ink-700">Activité & métiers</h2>
+        <p className="text-ink-400 text-sm mt-1">
+          Choisissez jusqu&apos;à <strong>3 métiers</strong>. Le premier sera votre métier principal.
+        </p>
       </div>
 
       <div>
         <label className="block text-sm font-bold text-ink-600 mb-1.5">
-          Métier principal <span className="text-brand-500">*</span>
+          Vos métiers <span className="text-brand-500">*</span>{" "}
+          <span className="font-normal text-ink-400">({picks.length}/3)</span>
         </label>
-        <MetierCombobox
-          value={metierLabel}
-          onChange={setMetierLabel}
-          variant="light"
-          hideLabel
-          placeholder="Choisir un métier"
-        />
-        <input type="hidden" name="metier_id" value={metierId ?? ""} />
-        {state?.fieldErrors?.metier_id && (
+        <MultiMetierPicker value={picks} onChange={setPicks} max={3} variant="light" />
+        <input type="hidden" name="metier_ids" value={JSON.stringify(selectedIds)} />
+
+        {state?.fieldErrors?.metier_ids && (
           <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
-            <AlertCircle size={12} /> {state.fieldErrors.metier_id}
+            <AlertCircle size={12} /> {state.fieldErrors.metier_ids}
           </p>
         )}
-        {metierLabel && metierId == null && (
+        {hasInvalid && (
           <p className="mt-1 text-xs text-amber-600 flex items-center gap-1">
-            <AlertCircle size={12} /> Métier non reconnu · sélectionnez-le dans la liste déroulante.
+            <AlertCircle size={12} /> Un ou plusieurs métiers ne sont pas dans le référentiel et seront ignorés.
           </p>
         )}
       </div>
@@ -108,7 +122,11 @@ export function ActiviteForm({ metiers, initial }: Props) {
             <AlertCircle size={14} /> {state.error}
           </span>
         )}
-        <button type="submit" disabled={isPending || metierId == null} className="btn-primary disabled:opacity-50">
+        <button
+          type="submit"
+          disabled={isPending || selectedIds.length === 0}
+          className="btn-primary disabled:opacity-50"
+        >
           {isPending ? "Enregistrement…" : (<><Save size={16} /> Enregistrer</>)}
         </button>
       </div>
@@ -117,12 +135,7 @@ export function ActiviteForm({ metiers, initial }: Props) {
 }
 
 function Field({
-  name,
-  label,
-  icon,
-  type = "text",
-  defaultValue,
-  placeholder,
+  name, label, icon, type = "text", defaultValue, placeholder,
 }: {
   name: string;
   label: string;

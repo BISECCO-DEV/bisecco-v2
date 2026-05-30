@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Info } from "lucide-react";
+import { Cookie } from "lucide-react";
+
+type Choice = "accept" | "essential" | "decline";
 
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
@@ -13,41 +15,69 @@ export function CookieBanner() {
     }
   }, []);
 
-  const choose = (choice: "accept" | "decline") => {
+  const choose = (choice: Choice) => {
     localStorage.setItem("bsc_cookies", choice);
+    localStorage.setItem("bsc_cookies_at", new Date().toISOString());
     setVisible(false);
   };
 
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[min(780px,calc(100vw-2rem))] animate-slide-up">
-      <div className="bg-ink-700 border border-white/10 rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3 text-sm text-white/80 flex-1">
-          <Info size={20} className="text-brand-500 flex-shrink-0" />
-          <span>
-            Nous utilisons des cookies pour améliorer votre expérience.{" "}
-            <Link
-              href="/politique-confidentialite"
-              className="text-brand-500 font-bold hover:underline"
+    <div
+      role="dialog"
+      aria-label="Préférences cookies"
+      aria-live="polite"
+      className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 pointer-events-none"
+    >
+      <div className="mx-auto max-w-3xl pointer-events-auto">
+        <div className="bg-white border border-ink-100 rounded-2xl shadow-[0_20px_60px_-15px_rgba(13,30,74,0.25)] p-5 sm:p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center flex-shrink-0">
+              <Cookie size={18} className="text-brand-500" strokeWidth={2.2} />
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <h2 className="text-sm font-bold text-ink-700 tracking-tight">
+                Vos préférences cookies
+              </h2>
+              <p className="text-[0.82rem] text-ink-500 leading-relaxed mt-1">
+                Bisecco utilise des cookies pour assurer le fonctionnement du site, mesurer l&apos;audience et
+                améliorer votre expérience. Vous pouvez accepter, refuser ou n&apos;autoriser que les cookies
+                essentiels.{" "}
+                <Link
+                  href="/politique-confidentialite"
+                  className="text-brand-500 font-semibold hover:underline whitespace-nowrap"
+                >
+                  En savoir plus
+                </Link>
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => choose("decline")}
+              className="px-4 py-2.5 rounded-lg text-sm font-semibold text-ink-500 hover:text-ink-700 hover:bg-ink-50 transition order-3 sm:order-1"
             >
-              En savoir plus
-            </Link>
-          </span>
-        </div>
-        <div className="flex gap-2 w-full sm:w-auto">
-          <button
-            onClick={() => choose("decline")}
-            className="flex-1 sm:flex-initial px-5 py-2 rounded-lg bg-white/5 border border-white/10 text-white/70 text-sm font-bold hover:bg-white/10 transition"
-          >
-            Refuser
-          </button>
-          <button
-            onClick={() => choose("accept")}
-            className="flex-1 sm:flex-initial btn-primary text-sm py-2 px-5"
-          >
-            Accepter
-          </button>
+              Refuser
+            </button>
+            <button
+              type="button"
+              onClick={() => choose("essential")}
+              className="px-4 py-2.5 rounded-lg border border-ink-200 text-sm font-semibold text-ink-700 hover:border-ink-300 hover:bg-ink-50 transition order-2"
+            >
+              Essentiels uniquement
+            </button>
+            <button
+              type="button"
+              onClick={() => choose("accept")}
+              className="px-5 py-2.5 rounded-lg bg-brand-500 text-white text-sm font-bold hover:bg-brand-600 transition shadow-[0_6px_16px_-4px_rgba(240,122,47,0.4)] order-1 sm:order-3"
+            >
+              Tout accepter
+            </button>
+          </div>
         </div>
       </div>
     </div>

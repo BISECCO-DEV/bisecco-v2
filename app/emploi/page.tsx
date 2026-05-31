@@ -74,8 +74,13 @@ export default function EmploiPage() {
                 <Briefcase size={20} className="text-brand-400" />
               </div>
               <div>
-                <h3 className="font-bold">Je recrute</h3>
-                <p className="text-xs text-white/55">Poster une offre d&apos;emploi</p>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold">Je recrute</h3>
+                  <span className="px-1.5 py-0.5 rounded-full bg-brand-500/20 border border-brand-500/40 text-brand-300 text-[0.6rem] font-bold uppercase tracking-wider">
+                    Abonnement Pro
+                  </span>
+                </div>
+                <p className="text-xs text-white/55">Poster une offre d&apos;emploi · bientôt disponible</p>
               </div>
             </div>
             <span className="text-brand-400 group-hover:translate-x-1 transition">→</span>

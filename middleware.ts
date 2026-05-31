@@ -5,6 +5,22 @@ import { type NextRequest, NextResponse } from "next/server";
 const COMING_SOON_ENABLED = process.env.COMING_SOON_ENABLED !== "false";
 const BYPASS_COOKIE = "bisecco_bypass";
 
+// ─── MAINTENANCE GATE ────────────────────────────────────────────
+// Si MAINTENANCE_ENABLED=true → tout le monde est redirigé vers /maintenance
+// (sauf cookie bypass via /coming-soon avec le code admin).
+const MAINTENANCE_ENABLED = process.env.MAINTENANCE_ENABLED === "true";
+
+const MAINTENANCE_PUBLIC_ROUTES = [
+  "/maintenance",
+  "/coming-soon", // permet de saisir le code bypass admin
+  "/_next/",
+  "/favicon.ico",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/llms.txt",
+  "/api/",
+];
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -70,6 +86,18 @@ export async function middleware(request: NextRequest) {
 
     const { data } = await supabase.auth.getUser();
     user = data.user ? { id: data.user.id } : null;
+  }
+
+  // ── 1.5. Maintenance gate : prioritaire, bloque TOUT le monde (sauf bypass cookie) ──
+  if (MAINTENANCE_ENABLED) {
+    const hasBypass = request.cookies.get(BYPASS_COOKIE)?.value === "ok";
+    const isPublic = MAINTENANCE_PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
+    if (!hasBypass && !isPublic) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/maintenance";
+      url.search = "";
+      return copyCookies(response, NextResponse.redirect(url));
+    }
   }
 
   // ── 2. Coming-soon gate : authentifiés + bypass cookie + routes publiques passent ──

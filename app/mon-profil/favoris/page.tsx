@@ -99,9 +99,11 @@ export default async function FavorisPage() {
               if (!f.artisan) return null;
               const a = f.artisan;
               const metierName = a.artisan_profiles?.metier?.name ?? "Artisan";
-              const company = a.artisan_profiles?.company_name ?? "";
+              const company = a.artisan_profiles?.company_name?.trim() ?? "";
+              // Affichage public : nom commercial en titre, gérant en sous-ligne discrète.
+              const displayName = company || a.name || "·";
               const verified = a.siren_status === "A";
-              const initial = (a.name ?? "?").charAt(0).toUpperCase();
+              const initial = displayName.charAt(0).toUpperCase();
 
               return (
                 <article key={f.id} className="bg-white rounded-2xl border border-ink-100 hover:border-brand-300 hover:-translate-y-1 transition group overflow-hidden">

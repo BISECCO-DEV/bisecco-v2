@@ -11,7 +11,12 @@ export type CurrentUser = {
   id: number | null;
   client_number: string | null;
   referral_code: string | null;
+  /** Nom du gérant (personne physique) · usage administratif / paramètres. */
   name: string;
+  /** Nom commercial (entreprise) si artisan, sinon name. À utiliser pour tout affichage public. */
+  display_name: string;
+  /** Nom de l'entreprise (artisan uniquement). */
+  company_name: string | null;
   role: "admin" | "artisan" | "particulier";
   phone: string | null;
   city: string | null;
@@ -48,6 +53,21 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     .is("deleted_at", null)
     .maybeSingle();
 
+  // Si artisan → on récupère le nom commercial dans artisan_profiles
+  let company_name: string | null = null;
+  if (profile?.id && profile.role === "artisan") {
+    const { data: artisan } = await admin
+      .from("artisan_profiles")
+      .select("company_name")
+      .eq("user_id", profile.id)
+      .maybeSingle();
+    company_name = (artisan?.company_name as string | null)?.trim() || null;
+  }
+
+  const name = profile?.name ?? (authUser.user_metadata?.full_name as string) ?? authUser.email ?? "Utilisateur";
+  const role = (profile?.role as CurrentUser["role"]) ?? (authUser.user_metadata?.role as CurrentUser["role"]) ?? "particulier";
+  const display_name = role === "artisan" && company_name ? company_name : name;
+
   return {
     auth_id: authUser.id,
     email: authUser.email ?? "",
@@ -55,8 +75,10 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     id: profile?.id ?? null,
     client_number: profile?.client_number ?? null,
     referral_code: profile?.referral_code ?? null,
-    name: profile?.name ?? (authUser.user_metadata?.full_name as string) ?? authUser.email ?? "Utilisateur",
-    role: (profile?.role as CurrentUser["role"]) ?? (authUser.user_metadata?.role as CurrentUser["role"]) ?? "particulier",
+    name,
+    display_name,
+    company_name,
+    role,
     phone: profile?.phone ?? null,
     city: profile?.city ?? null,
     description: profile?.description ?? null,

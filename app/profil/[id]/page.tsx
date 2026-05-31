@@ -181,8 +181,8 @@ export default async function ProfilPage({ params }: Props) {
           </Link>
           <div className="flex gap-2">
             <ShareButton
-              title={`${a.name} sur Bisecco`}
-              text={`Découvrez ${a.name}${a.company_name ? ` (${a.company_name})` : ""} sur Bisecco · artisan vérifié SIREN`}
+              title={`${companyName} sur Bisecco`}
+              text={`Découvrez ${companyName} sur Bisecco · artisan vérifié SIREN`}
             />
             {canFavorite ? (
               <FavoriteButton artisanId={artisanIdNum} initialFavorited={alreadyFavorited} compact />
@@ -552,7 +552,7 @@ export default async function ProfilPage({ params }: Props) {
           {/* ── Sections actions utilisateur ─────────────── */}
           {canReview && (
             <div className="mt-8 max-w-3xl">
-              <ReviewForm artisanId={artisanIdNum} artisanName={a.name ?? "cet artisan"} />
+              <ReviewForm artisanId={artisanIdNum} artisanName={companyName} />
             </div>
           )}
 

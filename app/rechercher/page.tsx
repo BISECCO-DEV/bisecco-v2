@@ -76,9 +76,11 @@ async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
       const lat = profile.latitude ?? (48.85 + ((seed % 100) / 100 - 0.5) * 0.6);
       const lng = profile.longitude ?? (2.55 + (((seed >> 8) % 100) / 100 - 0.5) * 1.0);
 
+      // Affichage public : on privilégie le nom commercial (entreprise) sur le nom du gérant.
+      const commercialName = profile.company_name?.trim() || u.name;
       return {
         id: u.client_number ?? String(u.id),
-        name: u.name.split(" - ")[0] ?? u.name,
+        name: commercialName.split(" - ")[0] ?? commercialName,
         company: profile.company_name ?? null,
         metier: profile.metiers?.name ?? "Artisan",
         city: u.city?.replace(/^\d+\s*/, "") ?? "France",

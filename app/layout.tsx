@@ -8,7 +8,6 @@ import { StickyMobileCTA } from "@/components/layout/StickyMobileCTA";
 import { CookieBanner } from "@/components/layout/CookieBanner";
 import { Chatbot } from "@/components/layout/Chatbot";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
-import { PwaInstallBanner } from "@/components/ui/PwaInstallBanner";
 import { ServiceWorkerRegister } from "@/components/ui/ServiceWorkerRegister";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { getCurrentUser } from "@/lib/db/current-user";
@@ -105,7 +104,8 @@ export default async function RootLayout({
   const current = await getCurrentUser();
   const headerUser = current
     ? {
-        name: current.name,
+        // Pour les pros : on affiche le nom commercial (entreprise), pas celui du gérant.
+        name: current.display_name,
         email: current.email,
         role: current.role,
         profile_photo: current.profile_photo,
@@ -128,7 +128,6 @@ export default async function RootLayout({
         <CookieBanner />
         <Chatbot />
         <ScrollToTop />
-        <PwaInstallBanner />
         <ServiceWorkerRegister />
       </body>
     </html>

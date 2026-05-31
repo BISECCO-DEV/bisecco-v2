@@ -10,6 +10,7 @@ import { logoutAction } from "@/lib/auth/actions";
 import { fetchOnboardingStatus } from "@/lib/db/onboarding";
 import { OnboardingChecklist } from "@/components/features/OnboardingChecklist";
 import { fetchUserStats, fetchUserActivity, type UserActivity } from "@/lib/db/user-dashboard";
+import { countUnreadNotifications } from "@/lib/notifications/actions";
 
 export const metadata: Metadata = {
   title: "Mon espace",
@@ -30,6 +31,7 @@ export default async function MonProfilPage() {
   const onboarding = user.id ? await fetchOnboardingStatus(user.id, user.role) : null;
   const stats = user.id ? await fetchUserStats(user.id, user.role) : null;
   const activities = user.id ? await fetchUserActivity(user.id, user.role, 8) : [];
+  const unreadNotifs = await countUnreadNotifications();
   const isArtisan = user.role === "artisan";
   const viewsDelta = stats && stats.prevMonthViews > 0
     ? Math.round(((stats.profileViews - stats.prevMonthViews) / stats.prevMonthViews) * 100)
@@ -88,7 +90,11 @@ export default async function MonProfilPage() {
               </Link>
               <Link href="/mon-profil/notifications" className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 text-white text-sm transition" aria-label="Notifications">
                 <Bell size={16} />
-                <span className="px-1.5 rounded-full bg-brand-500 text-[0.65rem] font-bold">3</span>
+                {unreadNotifs > 0 && (
+                  <span className="px-1.5 rounded-full bg-brand-500 text-[0.65rem] font-bold">
+                    {unreadNotifs > 99 ? "99+" : unreadNotifs}
+                  </span>
+                )}
               </Link>
             </div>
           </div>
@@ -270,10 +276,15 @@ export default async function MonProfilPage() {
               <h3 className="font-bold text-ink-700 text-sm mb-3">Accès rapides</h3>
               <div className="space-y-1">
                 {[
-                  { href: "/messagerie", icon: MessageCircle, label: "Messagerie", badge: "7" },
-                  { href: "/mon-profil/devis", icon: FileText, label: "Mes devis" },
-                  { href: "/mon-profil/avis", icon: Star, label: "Mes avis" },
-                  { href: "/mon-profil/parametres", icon: Settings, label: "Paramètres" },
+                  {
+                    href: "/messagerie",
+                    icon: MessageCircle,
+                    label: "Messagerie",
+                    badge: stats && stats.unreadMessages > 0 ? String(stats.unreadMessages) : null,
+                  },
+                  { href: "/mon-profil/devis", icon: FileText, label: "Mes devis", badge: null },
+                  { href: "/mon-profil/avis", icon: Star, label: "Mes avis", badge: null },
+                  { href: "/mon-profil/parametres", icon: Settings, label: "Paramètres", badge: null },
                 ].map((l) => (
                   <Link
                     key={l.href}

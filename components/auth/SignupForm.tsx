@@ -327,7 +327,7 @@ export function SignupForm({ role: roleProp, onRoleChange }: SignupFormProps = {
           <PasswordField
             label="Mot de passe"
             name="password"
-            placeholder="••••••••"
+            placeholder="8 caractères minimum"
           />
           <PasswordField
             label="Confirmer le mot de passe"
@@ -454,7 +454,7 @@ function PasswordField({
   return (
     <div>
       <label className="block text-[0.8rem] font-bold text-ink-600 mb-1.5">{label}</label>
-      <div className="flex items-center gap-2 px-3 border-2 border-ink-200 rounded-xl bg-ink-50/70 focus-within:border-brand-500 focus-within:bg-white transition">
+      <div className="flex items-center gap-2 pl-3 pr-1 border-2 border-ink-200 rounded-xl bg-ink-50/70 focus-within:border-brand-500 focus-within:bg-white transition">
         <Lock size={15} className="text-ink-300 flex-shrink-0" />
         <input
           name={name}
@@ -462,13 +462,13 @@ function PasswordField({
           placeholder={placeholder}
           required
           minLength={8}
-          autoComplete={name === "password" ? "new-password" : "new-password"}
-          className="flex-1 bg-transparent py-2.5 outline-none text-[0.9rem] text-ink-700 placeholder:text-ink-300"
+          autoComplete="new-password"
+          className="flex-1 min-w-0 bg-transparent py-2.5 outline-none text-[0.9rem] text-ink-700 placeholder:text-ink-300"
         />
         <button
           type="button"
           onClick={() => setShow((s) => !s)}
-          className="text-ink-400 hover:text-brand-500 transition p-1 flex-shrink-0"
+          className="flex-shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg text-ink-500 hover:text-brand-500 hover:bg-brand-50 transition"
           aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"}
           tabIndex={-1}
         >

@@ -3,11 +3,10 @@
 import { useState } from "react";
 import {
   User, Briefcase, GraduationCap, Languages, Award, Plus, Trash2,
-  Save, Globe, EyeOff, MapPin, Calendar, FileText, ArrowRight,
+  Save, MapPin, Calendar,
 } from "lucide-react";
-import Link from "next/link";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
-import { saveCvAction, togglePublishCvAction } from "@/lib/cv/actions";
+import { saveCvAction } from "@/lib/cv/actions";
 
 type Experience = { id: string; poste: string; entreprise: string; debut: string; fin: string; description: string };
 type Formation = { id: string; diplome: string; ecole: string; annee: string };
@@ -22,7 +21,6 @@ type InitialCv = {
     langues: Langue[];
     competences: string[];
   } | null;
-  cv_published: boolean;
   cv_title: string | null;
   cv_about: string | null;
   cv_search_city: string | null;
@@ -322,40 +320,6 @@ export function CVEditor({ initialCv, metiers }: { initialCv: InitialCv; metiers
         </div>
       </form>
 
-      {/* ─── Publication ─── */}
-      <Card
-        icon={<Globe size={16} />}
-        title="Publication dans la Banque de CV"
-      >
-        <p className="text-sm text-ink-500 mb-4">
-          {initialCv?.cv_published
-            ? "Ton CV est actuellement visible par tous les artisans vérifiés Bisecco qui cherchent à recruter dans ton métier."
-            : "Publie ton CV pour qu'il soit visible par les artisans recruteurs. Tu peux le retirer à tout moment."}
-        </p>
-        <form action={togglePublishCvAction}>
-          <input type="hidden" name="publish" value={initialCv?.cv_published ? "false" : "true"} />
-          <button
-            type="submit"
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition ${
-              initialCv?.cv_published
-                ? "bg-white border-2 border-red-200 text-red-700 hover:bg-red-50"
-                : "bg-emerald-500 text-white hover:bg-emerald-600 shadow-[0_6px_18px_-4px_rgba(16,185,129,0.5)]"
-            }`}
-          >
-            {initialCv?.cv_published ? (
-              <><EyeOff size={14} /> Retirer de la banque</>
-            ) : (
-              <><Globe size={14} /> Publier dans la Banque de CV</>
-            )}
-          </button>
-        </form>
-        <Link
-          href="/banque-cv"
-          className="mt-4 inline-flex items-center gap-1.5 text-xs text-brand-600 font-bold hover:underline"
-        >
-          <FileText size={11} /> Voir la Banque de CV publique <ArrowRight size={11} />
-        </Link>
-      </Card>
     </div>
   );
 }

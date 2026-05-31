@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Briefcase, TrendingUp } from "lucide-react";
+import { ArrowRight, Briefcase, Sparkles, TrendingUp } from "lucide-react";
 import { CtaButton } from "@/components/ui/CtaButton";
 
 type Metier = {
@@ -8,21 +8,22 @@ type Metier = {
   emoji: string;
   description: string;
   trending?: boolean;
+  isNew?: boolean;
 };
 
 const METIERS: Metier[] = [
-  { slug: "plombier",     name: "Plombier",     emoji: "🔧", description: "Dépannage fuite d'eau, installation sanitaire, chauffe-eau et débouchage 24/7.", trending: true },
-  { slug: "electricien",  name: "Électricien",  emoji: "⚡", description: "Installation, mise aux normes, dépannage tableau électrique et domotique certifiée.", trending: true },
-  { slug: "macon",        name: "Maçon",        emoji: "🧱", description: "Construction neuve, extension, rénovation de murs et travaux de gros œuvre.", },
-  { slug: "menuisier",    name: "Menuisier",    emoji: "🪵", description: "Pose de fenêtres, portes, parquet, agencement sur-mesure intérieur et extérieur.", },
-  { slug: "peintre",      name: "Peintre",      emoji: "🎨", description: "Peinture intérieure et façade, enduits décoratifs, ravalement et papier peint.", },
-  { slug: "couvreur",     name: "Couvreur",     emoji: "🏠", description: "Réfection de toiture, étanchéité, démoussage et isolation des combles par l'extérieur.", },
-  { slug: "carreleur",    name: "Carreleur",    emoji: "🔲", description: "Pose de carrelage, faïence, mosaïque, sol et mur, salle de bain et cuisine.", },
-  { slug: "chauffagiste", name: "Chauffagiste", emoji: "🔥", description: "Installation et entretien de chaudière, pompe à chaleur et plancher chauffant.", trending: true },
-  { slug: "serrurier",    name: "Serrurier",    emoji: "🔑", description: "Ouverture de porte, changement de serrure, blindage et dépannage en urgence 24/7.", },
-  { slug: "boulanger",    name: "Boulanger",    emoji: "🥖", description: "Pain artisanal, baguette tradition, viennoiseries et pâtisseries faites maison.", },
-  { slug: "boucher",      name: "Boucher",      emoji: "🥩", description: "Viandes de qualité, charcuterie maison, traiteur et conseils de cuisson sur-mesure.", },
-  { slug: "jardinier",    name: "Jardinier",    emoji: "🌿", description: "Entretien de jardin, tonte, élagage, taille de haies et aménagement paysager.", },
+  { slug: "plombier",                  name: "Plombier",                  emoji: "🔧", description: "Dépannage fuite d'eau, installation sanitaire, chauffe-eau et débouchage 24/7.", trending: true },
+  { slug: "electricien",               name: "Électricien",               emoji: "⚡", description: "Installation, mise aux normes, dépannage tableau électrique et domotique certifiée.", trending: true },
+  { slug: "macon",                     name: "Maçon",                     emoji: "🧱", description: "Construction neuve, extension, rénovation de murs et travaux de gros œuvre.", },
+  { slug: "menuisier",                 name: "Menuisier",                 emoji: "🪵", description: "Pose de fenêtres, portes, parquet, agencement sur-mesure intérieur et extérieur.", },
+  { slug: "peintre",                   name: "Peintre",                   emoji: "🎨", description: "Peinture intérieure et façade, enduits décoratifs, ravalement et papier peint.", },
+  { slug: "couvreur",                  name: "Couvreur",                  emoji: "🏠", description: "Réfection de toiture, étanchéité, démoussage et isolation des combles par l'extérieur.", },
+  { slug: "developpeur-informatique",  name: "Développeur informatique",  emoji: "💻", description: "Création de site web, application mobile, e-commerce et logiciel sur-mesure pour votre activité.", isNew: true },
+  { slug: "carreleur",                 name: "Carreleur",                 emoji: "🔲", description: "Pose de carrelage, faïence, mosaïque, sol et mur, salle de bain et cuisine.", },
+  { slug: "chauffagiste",              name: "Chauffagiste",              emoji: "🔥", description: "Installation et entretien de chaudière, pompe à chaleur et plancher chauffant.", trending: true },
+  { slug: "serrurier",                 name: "Serrurier",                 emoji: "🔑", description: "Ouverture de porte, changement de serrure, blindage et dépannage en urgence 24/7.", },
+  { slug: "boulanger",                 name: "Boulanger",                 emoji: "🥖", description: "Pain artisanal, baguette tradition, viennoiseries et pâtisseries faites maison.", },
+  { slug: "boucher",                   name: "Boucher",                   emoji: "🥩", description: "Viandes de qualité, charcuterie maison, traiteur et conseils de cuisson sur-mesure.", },
 ];
 
 export function HomeMetiers() {
@@ -65,8 +66,13 @@ export function HomeMetiers() {
               {/* Décor coin orange au hover */}
               <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full bg-brand-500/[0.10] opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none" />
 
-              {/* Badge trending si applicable */}
-              {m.trending && (
+              {/* Badge trending ou nouveau si applicable */}
+              {m.isNew ? (
+                <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[0.58rem] font-extrabold tracking-wider uppercase">
+                  <Sparkles size={8} strokeWidth={2.6} />
+                  Nouveau
+                </span>
+              ) : m.trending && (
                 <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-red-50 border border-red-200 text-red-600 text-[0.58rem] font-extrabold tracking-wider uppercase">
                   <TrendingUp size={8} strokeWidth={2.6} />
                   Hot

@@ -28,14 +28,14 @@ const NAV_ARTISANS = [
 ];
 
 const TOP_METIERS = [
-  { name: "Plombier",     slug: "plombier" },
-  { name: "Électricien",  slug: "electricien" },
-  { name: "Maçon",        slug: "macon" },
-  { name: "Menuisier",    slug: "menuisier" },
-  { name: "Peintre",      slug: "peintre" },
-  { name: "Couvreur",     slug: "couvreur" },
-  { name: "Carreleur",    slug: "carreleur" },
-  { name: "Chauffagiste", slug: "chauffagiste" },
+  { name: "Plombier",                 slug: "plombier" },
+  { name: "Électricien",              slug: "electricien" },
+  { name: "Maçon",                    slug: "macon" },
+  { name: "Développeur informatique", slug: "developpeur-informatique" },
+  { name: "Menuisier",                slug: "menuisier" },
+  { name: "Peintre",                  slug: "peintre" },
+  { name: "Couvreur",                 slug: "couvreur" },
+  { name: "Chauffagiste",             slug: "chauffagiste" },
 ];
 
 const TOP_VILLES = [

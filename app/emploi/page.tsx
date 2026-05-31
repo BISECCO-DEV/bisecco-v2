@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { EmploiClient } from "./EmploiClient";
-import { Briefcase, TrendingUp, Award, MapPin } from "lucide-react";
+import {
+  Briefcase, Bell, ShieldCheck, Sparkles, ArrowRight,
+  Search, MessageCircle, Lock, Mail,
+} from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Emploi artisanat · Le 1er job board des métiers d'artisans",
-  description: "Trouvez un emploi dans l'artisanat : boulanger, plombier, maçon, menuisier, électricien, boucher. Apprentissage, CDI, alternance, partout en France.",
+  title: "Emploi artisanat · Bientôt disponible",
+  description:
+    "Le job board Bisecco arrive bientôt. Réservé aux entreprises abonnées Pro pour publier leurs offres, gratuit pour les candidats dès l'ouverture. En attendant, échangez en direct avec les artisans vérifiés SIREN.",
 };
 
 export default function EmploiPage() {
@@ -18,91 +21,113 @@ export default function EmploiPage() {
 
         <div className="container-default relative">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-400 text-[0.65rem] font-bold tracking-[0.14em] uppercase">
-            <Briefcase size={11} /> Emploi artisanat · Nouveau
+            <Sparkles size={11} /> Bientôt disponible
           </span>
           <h1 className="text-3xl md:text-[2.8rem] font-bold mt-4 tracking-[-0.02em] leading-[1.05]">
-            Le 1<sup className="text-xl">er</sup> job board<br />
-            <span className="text-brand-500">
-              dédié aux métiers d&apos;artisans.
-            </span>
+            Le job board des artisans<br />
+            <span className="text-brand-500">arrive bientôt sur Bisecco.</span>
           </h1>
           <p className="mt-5 text-white/65 max-w-2xl leading-relaxed">
-            Apprentissages, CDI, alternances : trouvez un emploi dans l&apos;artisanat près de chez vous. Pas de spam, pas de fausses annonces · les entreprises sont vérifiées via leur SIREN.
+            Nous finalisons une plateforme dédiée aux offres d&apos;emploi de l&apos;artisanat français : apprentissage, alternance, CDI, freelance. La publication d&apos;offres sera réservée aux entreprises <strong className="text-white">abonnées au plan Pro</strong>. Le dépôt et la consultation seront gratuits pour les candidats dès l&apos;ouverture.
           </p>
 
-          {/* Stats · affichées dès qu'il y aura de vraies offres */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 pt-8 border-t border-white/10">
-            {[
-              { value: "176",   label: "Métiers couverts" },
-              { value: "100%",  label: "Entreprises vérifiées SIREN" },
-              { value: "Direct", label: "Pas d'intermédiaire" },
-            ].map((s) => (
-              <div key={s.label}>
-                <div className="text-2xl md:text-3xl font-bold tracking-tight">{s.value}</div>
-                <div className="text-xs text-white/55 mt-0.5">{s.label}</div>
-              </div>
-            ))}
+          <div className="mt-7 flex flex-col sm:flex-row gap-3">
+            <Link
+              href="/inscription"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition shadow-[0_8px_24px_-8px_rgba(240,122,47,0.6)]"
+            >
+              <Bell size={15} /> Être prévenu du lancement
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white font-semibold text-sm transition"
+            >
+              <Mail size={15} /> Nous contacter
+            </Link>
           </div>
         </div>
       </section>
 
-      <div className="container-default py-10">
-        {/* Two CTAs */}
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
-          <Link
-            href="/mon-profil/cv"
-            className="group flex items-center justify-between p-5 rounded-2xl bg-white border border-ink-100 hover:border-brand-300 hover:-translate-y-0.5 transition"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-brand-50 flex items-center justify-center">
-                <Award size={20} className="text-brand-500" />
-              </div>
-              <div>
-                <h3 className="font-bold text-ink-700">Je cherche un job</h3>
-                <p className="text-xs text-ink-400">Créer/modifier mon CV en 2 minutes</p>
-              </div>
+      <div className="container-default py-10 max-w-4xl">
+        {/* En attendant : alternatives concrètes */}
+        <div className="bg-white rounded-3xl border border-ink-100 p-6 sm:p-8">
+          <div className="flex items-start gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+              <Sparkles size={18} className="text-brand-500" />
             </div>
-            <span className="text-brand-500 group-hover:translate-x-1 transition">→</span>
-          </Link>
+            <div>
+              <h2 className="text-xl font-bold text-ink-700 tracking-tight">En attendant l&apos;ouverture du job board</h2>
+              <p className="text-sm text-ink-500 mt-1">
+                Vous pouvez déjà entrer en relation directe avec les artisans Bisecco · pour un stage, un apprentissage, ou simplement leur proposer vos services.
+              </p>
+            </div>
+          </div>
 
-          <Link
-            href="/emploi/poster"
-            className="group flex items-center justify-between p-5 rounded-2xl bg-gradient-to-br from-ink-800 to-ink-700 text-white border border-ink-700 hover:-translate-y-0.5 transition"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center">
-                <Briefcase size={20} className="text-brand-400" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold">Je recrute</h3>
-                  <span className="px-1.5 py-0.5 rounded-full bg-brand-500/20 border border-brand-500/40 text-brand-300 text-[0.6rem] font-bold uppercase tracking-wider">
-                    Abonnement Pro
-                  </span>
+          <div className="grid sm:grid-cols-2 gap-3 mt-6">
+            <Link
+              href="/rechercher"
+              className="group p-5 rounded-2xl border border-ink-100 hover:border-brand-300 hover:-translate-y-0.5 transition bg-ink-50/60"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl bg-white border border-ink-100 flex items-center justify-center">
+                  <Search size={18} className="text-brand-500" />
                 </div>
-                <p className="text-xs text-white/55">Poster une offre d&apos;emploi · bientôt disponible</p>
+                <h3 className="font-extrabold text-ink-700 text-sm">Trouver un artisan</h3>
               </div>
-            </div>
-            <span className="text-brand-400 group-hover:translate-x-1 transition">→</span>
-          </Link>
+              <p className="text-xs text-ink-500 leading-relaxed">
+                Parcourez les profils par métier et ville. Tous vérifiés SIREN.
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[0.72rem] font-bold text-brand-600">
+                Parcourir l&apos;annuaire <ArrowRight size={11} />
+              </span>
+            </Link>
+
+            <Link
+              href="/messagerie"
+              className="group p-5 rounded-2xl border border-ink-100 hover:border-brand-300 hover:-translate-y-0.5 transition bg-ink-50/60"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl bg-white border border-ink-100 flex items-center justify-center">
+                  <MessageCircle size={18} className="text-brand-500" />
+                </div>
+                <h3 className="font-extrabold text-ink-700 text-sm">Contacter en direct</h3>
+              </div>
+              <p className="text-xs text-ink-500 leading-relaxed">
+                Envoyez un message à l&apos;artisan de votre choix depuis sa fiche : stage, apprentissage, candidature spontanée.
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1 text-[0.72rem] font-bold text-brand-600">
+                Ouvrir la messagerie <ArrowRight size={11} />
+              </span>
+            </Link>
+          </div>
         </div>
 
-        <EmploiClient />
-
-        {/* Pourquoi Bisecco emploi */}
-        <section className="mt-14 grid md:grid-cols-3 gap-4">
-          {[
-            { icon: TrendingUp, title: "200 000+ postes",   text: "à pourvoir dans l'artisanat français (CMA France 2024). Bisecco met en relation direct." },
-            { icon: Award,      title: "SIREN vérifié",      text: "100% des recruteurs ont leur entreprise contrôlée. Aucune offre fantôme." },
-            { icon: MapPin,     title: "Près de chez vous",   text: "Filtre par ville, code postal, rayon d'intervention. Métiers locaux d'abord." },
-          ].map((c) => (
-            <div key={c.title} className="bg-white rounded-2xl p-5 border border-ink-100">
-              <c.icon size={20} className="text-brand-500 mb-3" />
-              <h3 className="font-bold text-ink-700">{c.title}</h3>
-              <p className="text-sm text-ink-500 mt-1 leading-relaxed">{c.text}</p>
+        {/* Ce qui arrive avec le plan Pro */}
+        <div className="mt-8 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 text-white border border-ink-700 relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-60 h-60 rounded-full bg-brand-500/20 blur-3xl pointer-events-none" />
+          <div className="relative">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-brand-500/20 border border-brand-500/30 mb-4">
+              <Lock size={20} className="text-brand-400" />
             </div>
-          ))}
-        </section>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Réservé aux abonnés Pro</h2>
+            <p className="text-white/70 mt-2 text-sm leading-relaxed max-w-xl">
+              La publication d&apos;offres d&apos;emploi et la consultation des candidatures reçues feront partie du plan <strong className="text-white">Bisecco Pro</strong>. Le reste de Bisecco (annuaire, devis, messagerie, signalement) reste 100% gratuit.
+            </p>
+
+            <div className="grid sm:grid-cols-3 gap-3 mt-6">
+              {[
+                { icon: Briefcase,   text: "Offres d'emploi illimitées" },
+                { icon: ShieldCheck, text: "Validation SIREN automatique" },
+                { icon: Sparkles,    text: "Mise en avant des annonces" },
+              ].map((t) => (
+                <div key={t.text} className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-xs font-semibold text-white/85">
+                  <t.icon size={14} className="text-brand-400 flex-shrink-0" />
+                  {t.text}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

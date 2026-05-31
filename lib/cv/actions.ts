@@ -62,29 +62,3 @@ export async function saveCvAction(formData: FormData): Promise<void> {
   revalidatePath("/mon-profil/cv");
   redirect("/mon-profil/cv?saved=1");
 }
-
-/** Publie / dépublie le CV dans la banque */
-export async function togglePublishCvAction(formData: FormData): Promise<void> {
-  const user = await requireUser();
-  if (!user.id) redirect("/connexion");
-
-  const publish = formData.get("publish") === "true";
-  const supabase = createSupabaseAdminClient();
-
-  const { error } = await supabase
-    .from("users")
-    .update({
-      cv_published: publish,
-      cv_updated_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
-
-  if (error) {
-    console.error("[togglePublishCvAction]", error);
-    redirect("/mon-profil/cv?error=publish_failed");
-  }
-
-  revalidatePath("/mon-profil/cv");
-  revalidatePath("/banque-cv");
-  redirect(`/mon-profil/cv?${publish ? "published=1" : "unpublished=1"}`);
-}

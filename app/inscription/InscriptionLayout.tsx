@@ -43,7 +43,7 @@ const PARTICULIER_STEPS = [
     num: "01",
     icon: Search,
     title: "Recherchez par métier et ville",
-    text: "176 métiers couverts, filtrage par localisation et spécialité.",
+    text: "176 métiers couverts (du plombier au développeur web), filtrage par localisation et spécialité.",
   },
   {
     num: "02",

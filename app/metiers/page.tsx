@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 export const metadata: Metadata = {
   title: "Tous les métiers artisanaux · Spécialités vérifiées SIREN",
   description:
-    "Plombier, électricien, maçon, menuisier, peintre, couvreur, boulanger, fromager… Découvrez tous les métiers du réseau Bisecco. Trouvez un artisan vérifié SIREN près de chez vous.",
+    "Plombier, électricien, maçon, menuisier, peintre, couvreur, boulanger, développeur informatique… Découvrez tous les métiers du réseau Bisecco. Trouvez un artisan vérifié SIREN près de chez vous.",
 };
 
 export const dynamic = "force-dynamic";

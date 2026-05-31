@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   UserPlus, LogIn, LogOut, User, Settings, Star, FileText,
-  Gift, Shield, ChevronDown, MessageCircle, Users, Inbox,
+  Gift, Shield, ChevronDown, MessageCircle, Inbox,
 } from "lucide-react";
 import { logoutAction } from "@/lib/auth/actions";
 import { CtaButton } from "@/components/ui/CtaButton";
@@ -110,10 +110,7 @@ export function UserMenu({ user }: UserMenuProps) {
             <MenuLink href="/mon-profil" icon={User} label="Mon espace" />
             <MenuLink href="/messagerie" icon={MessageCircle} label="Messagerie" />
             {(user.role === "artisan" || user.role === "admin") && (
-              <>
-                <MenuLink href="/banque-cv" icon={Users} label="Banque de CV" />
-                <MenuLink href="/mon-profil/cvs-recus" icon={Inbox} label="CVs reçus" />
-              </>
+              <MenuLink href="/mon-profil/cvs-recus" icon={Inbox} label="CVs reçus" />
             )}
             <MenuLink href="/mon-profil/cv" icon={FileText} label="Mon CV" />
             <MenuLink href="/mon-profil/devis" icon={FileText} label="Mes devis" />

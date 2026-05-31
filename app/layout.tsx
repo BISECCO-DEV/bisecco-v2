@@ -36,8 +36,8 @@ export const metadata: Metadata = {
     template: "%s | Bisecco",
   },
   description:
-    "Trouvez un artisan qualifié et vérifié près de chez vous. SIREN vérifié, avis clients réels, devis gratuit. Plombier, électricien, maçon, menuisier et bien plus.",
-  keywords: ["artisan", "artisan vérifié", "plombier", "électricien", "maçon", "devis gratuit", "Meaux", "Île-de-France"],
+    "Trouvez un artisan qualifié et vérifié près de chez vous. SIREN vérifié, avis clients réels, devis gratuit. Plombier, électricien, maçon, menuisier, développeur informatique et bien plus.",
+  keywords: ["artisan", "artisan vérifié", "plombier", "électricien", "maçon", "développeur informatique", "devis gratuit", "Meaux", "Île-de-France"],
   authors: [{ name: "Bisecco" }],
   openGraph: {
     type: "website",

@@ -1,6 +1,6 @@
 import {
   Home, Search, Briefcase, BriefcaseBusiness, Mail,
-  Star, HelpCircle, FileText, Bell, MessageSquare, Users, Handshake,
+  Star, HelpCircle, FileText, Bell, MessageSquare, Users, Handshake, Newspaper,
   type LucideIcon,
 } from "lucide-react";
 
@@ -16,6 +16,7 @@ export type NavLink = {
  */
 export const MAIN_NAV: NavLink[] = [
   { href: "/",           label: "Accueil",     icon: Home },
+  { href: "/fil",        label: "Fil",         icon: Newspaper },
   { href: "/rechercher", label: "Rechercher",  icon: Search },
   { href: "/metiers",    label: "Métiers",     icon: Briefcase },
   { href: "/emploi",     label: "Emploi",      icon: BriefcaseBusiness },

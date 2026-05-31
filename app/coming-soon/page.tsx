@@ -4,10 +4,19 @@ import { Sparkles, ShieldCheck, KeyRound, Mail } from "lucide-react";
 import { ComingSoonClient } from "./ComingSoonClient";
 
 export const metadata: Metadata = {
-  title: "Bisecco · Bientôt disponible sur bisecco.fr",
+  title: "Bisecco · Le 1er réseau social d'artisans français vérifiés SIREN",
   description:
-    "Bisecco · Le 1er réseau social d'artisans français vérifiés SIREN. Nouvelle version d'ici quelques jours.",
-  robots: { index: false, follow: false },
+    "Bisecco · Annuaire d'artisans français vérifiés SIREN. Trouvez un artisan qualifié près de chez vous (plombier, électricien, maçon, menuisier, développeur web…). 100% gratuit, 0% commission. Nouvelle version bientôt disponible.",
+  keywords: ["artisans", "artisans vérifiés", "SIREN", "plombier", "électricien", "annuaire artisans", "devis gratuit"],
+  alternates: { canonical: "https://bisecco.eu" },
+  openGraph: {
+    title: "Bisecco · Réseau d'artisans français vérifiés",
+    description: "Annuaire 100% gratuit · 0% commission · SIREN vérifié.",
+    type: "website",
+    locale: "fr_FR",
+    url: "https://bisecco.eu",
+    siteName: "Bisecco",
+  },
 };
 
 export const dynamic = "force-dynamic";
@@ -18,30 +27,20 @@ export default function ComingSoonPage() {
       className="relative min-h-screen w-full text-white overflow-hidden"
       style={{ backgroundColor: "#040A1C" }}
     >
-      {/* Mesh gradient principal · fond animé multi-couleurs */}
+      {/* Mesh gradient principal · simplifié (2 gradients au lieu de 5) */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage: `
             radial-gradient(at 18% 22%, rgba(240, 122, 47, 0.28) 0%, transparent 45%),
-            radial-gradient(at 82% 78%, rgba(59, 130, 246, 0.22) 0%, transparent 50%),
-            radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.18) 0%, transparent 55%),
-            radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
-            radial-gradient(at 0% 50%, rgba(34, 197, 94, 0.08) 0%, transparent 50%)
+            radial-gradient(at 82% 78%, rgba(59, 130, 246, 0.22) 0%, transparent 50%)
           `,
         }}
       />
 
-      {/* Orbes flottantes animées */}
-      <div className="absolute top-[12%] left-[18%] w-[420px] h-[420px] rounded-full bg-brand-500/35 blur-[140px] pointer-events-none animate-float" />
-      <div
-        className="absolute bottom-[18%] right-[14%] w-[380px] h-[380px] rounded-full bg-blue-500/30 blur-[130px] pointer-events-none animate-float"
-        style={{ animationDelay: "2s", animationDuration: "8s" }}
-      />
-      <div
-        className="absolute top-[55%] left-[55%] w-[300px] h-[300px] rounded-full bg-purple-500/20 blur-[120px] pointer-events-none animate-float"
-        style={{ animationDelay: "4s", animationDuration: "10s" }}
-      />
+      {/* Orbes statiques desktop · animations retirées pour perf mobile */}
+      <div className="absolute top-[12%] left-[18%] w-[420px] h-[420px] rounded-full bg-brand-500/35 blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-[18%] right-[14%] w-[380px] h-[380px] rounded-full bg-blue-500/30 blur-[130px] pointer-events-none" />
 
       {/* Pattern hexagonal subtil */}
       <div
@@ -52,32 +51,6 @@ export default function ComingSoonPage() {
           backgroundSize: "84px 96px",
         }}
       />
-
-      {/* Étoiles scintillantes */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[
-          { top: "8%", left: "12%", delay: "0s" },
-          { top: "15%", left: "85%", delay: "1.2s" },
-          { top: "32%", left: "8%", delay: "2.4s" },
-          { top: "48%", left: "92%", delay: "0.6s" },
-          { top: "62%", left: "15%", delay: "3.1s" },
-          { top: "78%", left: "78%", delay: "1.8s" },
-          { top: "88%", left: "30%", delay: "2.7s" },
-          { top: "22%", left: "62%", delay: "1.5s" },
-          { top: "70%", left: "45%", delay: "0.9s" },
-        ].map((s, i) => (
-          <span
-            key={i}
-            className="absolute w-1 h-1 rounded-full bg-white animate-pulse-slow"
-            style={{
-              top: s.top,
-              left: s.left,
-              animationDelay: s.delay,
-              boxShadow: "0 0 8px 2px rgba(255,255,255,0.5)",
-            }}
-          />
-        ))}
-      </div>
 
       {/* Vignette douce autour */}
       <div
@@ -92,7 +65,14 @@ export default function ComingSoonPage() {
         {/* Logo header */}
         <div className="flex items-center gap-3 mb-10 sm:mb-14">
           <div className="w-12 h-12 rounded-2xl overflow-hidden border border-white/15 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.5)]">
-            <Image src="/logo.jpg" alt="Bisecco" width={48} height={48} />
+            <Image
+              src="/logo.jpg"
+              alt="Logo Bisecco · réseau d'artisans français vérifiés"
+              width={48}
+              height={48}
+              priority
+              fetchPriority="high"
+            />
           </div>
           <div>
             <div className="font-extrabold text-lg sm:text-xl tracking-[0.16em] leading-tight">
@@ -151,19 +131,21 @@ export default function ComingSoonPage() {
             ))}
           </div>
 
-          {/* Footer info */}
-          <div className="mt-12 text-center text-[0.66rem] text-white/30 font-mono">
+          {/* Footer info · contraste renforcé pour l'accessibilité */}
+          <div className="mt-12 text-center text-[0.72rem] text-white/65 font-mono">
             <p className="inline-flex items-center gap-1.5">
-              <KeyRound size={10} />
+              <KeyRound size={10} aria-hidden="true" />
               Accès restreint · Code requis pour entrée anticipée
             </p>
           </div>
         </div>
 
-        {/* Footer fixe en bas */}
-        <footer className="absolute bottom-4 left-0 right-0 text-center text-[0.66rem] text-white/30">
+        {/* Footer fixe en bas · contraste renforcé */}
+        <footer className="absolute bottom-4 left-0 right-0 text-center text-[0.72rem] text-white/60">
           © {new Date().getFullYear()} Bisecco · Tous droits réservés ·{" "}
-          <a href="https://bisecco.fr" className="hover:text-white/60 transition">bisecco.fr</a>
+          <a href="https://bisecco.eu" className="text-white/75 hover:text-white transition underline-offset-2 hover:underline">
+            bisecco.eu
+          </a>
         </footer>
       </main>
     </div>

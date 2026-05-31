@@ -9,6 +9,8 @@ import {
 import { requireAdmin } from "@/lib/db/current-user";
 import { logoutAction } from "@/lib/auth/actions";
 import { CtaButton } from "@/components/ui/CtaButton";
+import { MaintenanceToggleBar } from "@/components/admin/MaintenanceToggleBar";
+import { getMaintenanceSettingMeta } from "@/lib/admin/site-settings";
 
 export const metadata: Metadata = {
   title: { default: "Admin", template: "%s · Admin Bisecco" },
@@ -30,9 +32,10 @@ const NAV_SECTIONS: Array<{ section: string; items: NavItem[] }> = [
   {
     section: "Modération",
     items: [
-      { href: "/admin/chat-live",    label: "Chat live",    icon: MessageSquare },
-      { href: "/admin/avis",         label: "Avis",         icon: Star },
-      { href: "/admin/signalements", label: "Signalements", icon: Flag },
+      { href: "/admin/fil",          label: "Fil d'actualité", icon: MessageSquare },
+      { href: "/admin/chat-live",    label: "Chat live",       icon: MessageSquare },
+      { href: "/admin/avis",         label: "Avis",            icon: Star },
+      { href: "/admin/signalements", label: "Signalements",    icon: Flag },
     ],
   },
   {
@@ -46,8 +49,12 @@ const NAV_SECTIONS: Array<{ section: string; items: NavItem[] }> = [
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const admin = await requireAdmin();
+  const [admin, maintenance] = await Promise.all([
+    requireAdmin(),
+    getMaintenanceSettingMeta(),
+  ]);
   const adminInitial = admin.name.charAt(0).toUpperCase();
+  const envForced = process.env.MAINTENANCE_ENABLED === "true";
 
   return (
     <div className="min-h-screen bg-sand-50 grid lg:grid-cols-[260px_1fr]">
@@ -134,8 +141,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       {/* ═══════════ MAIN ═══════════ */}
       <main className="min-w-0">
+        {/* Toggle maintenance sticky en tête · toujours visible */}
+        <div className="sticky top-0 z-30">
+          <MaintenanceToggleBar
+            initialEnabled={maintenance.maintenanceEnabled}
+            envForced={envForced}
+            updatedAt={maintenance.updatedAt}
+            updatedByName={maintenance.updatedByName}
+          />
+        </div>
+
         {/* Mobile top bar */}
-        <header className="lg:hidden sticky top-0 z-20 bg-ink-900 text-white px-4 py-3 flex items-center justify-between">
+        <header className="lg:hidden sticky top-[44px] z-20 bg-ink-900 text-white px-4 py-3 flex items-center justify-between">
           <Link href="/admin" className="flex items-center gap-2 font-bold">
             <Shield size={16} className="text-brand-400" /> Admin Bisecco
           </Link>
@@ -143,7 +160,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </header>
 
         {/* Mobile nav scrollable */}
-        <nav className="lg:hidden bg-ink-900/95 backdrop-blur px-3 py-2 flex gap-1 overflow-x-auto sticky top-[44px] z-10 border-b border-white/10">
+        <nav className="lg:hidden bg-ink-900/95 backdrop-blur px-3 py-2 flex gap-1 overflow-x-auto sticky top-[88px] z-10 border-b border-white/10">
           {NAV_SECTIONS.flatMap((s) => s.items).map((item) => (
             <Link
               key={item.href}

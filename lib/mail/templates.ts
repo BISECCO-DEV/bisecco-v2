@@ -567,3 +567,59 @@ export function welcomeEmail(opts: { name: string; role: "particulier" | "artisa
     text,
   };
 }
+
+export function feedPostApprovedEmail(opts: { recipientName: string; feedUrl: string }): { subject: string; html: string; text: string } {
+  const html = wrap(
+    `
+      <p style="margin:0 0 12px;font-size:15px;color:${COLORS.ink600};">Bonjour ${opts.recipientName},</p>
+      <h1 style="margin:0 0 18px;font-size:22px;font-weight:800;color:${COLORS.ink};line-height:1.3;">
+        Votre publication est en ligne ✨
+      </h1>
+      <p style="margin:0 0 22px;font-size:15px;color:${COLORS.ink600};line-height:1.6;">
+        Notre équipe a validé votre post. Il est désormais visible dans le fil d'actualité de Bisecco par toute la communauté.
+      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+        <tr><td style="background:${COLORS.brand};border-radius:10px;">
+          <a href="${opts.feedUrl}" style="display:inline-block;padding:13px 26px;color:${COLORS.white};font-weight:700;text-decoration:none;font-size:14px;">
+            Voir ma publication →
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:18px 0 0;font-size:13px;color:${COLORS.ink400};">Merci de contribuer à la communauté Bisecco.</p>
+    `,
+    "Votre post a été validé",
+  );
+  const text = `Bonjour ${opts.recipientName},\n\nVotre post a été approuvé et est désormais visible : ${opts.feedUrl}\n\nMerci de contribuer à Bisecco.`;
+  return { subject: "Votre publication est en ligne ✨", html, text };
+}
+
+export function feedPostRejectedEmail(opts: {
+  recipientName: string;
+  reason: string;
+  contentExcerpt: string;
+}): { subject: string; html: string; text: string } {
+  const html = wrap(
+    `
+      <p style="margin:0 0 12px;font-size:15px;color:${COLORS.ink600};">Bonjour ${opts.recipientName},</p>
+      <h1 style="margin:0 0 18px;font-size:22px;font-weight:800;color:${COLORS.ink};line-height:1.3;">
+        Votre publication n'a pas été retenue
+      </h1>
+      <p style="margin:0 0 18px;font-size:15px;color:${COLORS.ink600};line-height:1.6;">
+        Après examen par notre équipe, votre publication ne pourra pas être mise en ligne pour la raison suivante :
+      </p>
+      <div style="background:#fff4ed;border-left:4px solid ${COLORS.brand};padding:14px 18px;margin:0 0 22px;border-radius:6px;">
+        <p style="margin:0;font-size:14px;color:${COLORS.ink};font-weight:600;">${opts.reason}</p>
+      </div>
+      <p style="margin:0 0 8px;font-size:13px;color:${COLORS.ink400};font-weight:600;">Extrait de votre post :</p>
+      <p style="margin:0 0 22px;font-size:14px;color:${COLORS.ink600};font-style:italic;background:#f7f7f5;padding:12px 16px;border-radius:8px;">
+        "${opts.contentExcerpt}${opts.contentExcerpt.length >= 200 ? "…" : ""}"
+      </p>
+      <p style="margin:0 0 12px;font-size:14px;color:${COLORS.ink600};line-height:1.6;">
+        Vous pouvez republier un contenu reformulé qui respecte nos règles d'utilisation. Pour toute question, contactez-nous à <a href="mailto:contact@bisecco.fr" style="color:${COLORS.brand};">contact@bisecco.fr</a>.
+      </p>
+    `,
+    "Publication non retenue",
+  );
+  const text = `Bonjour ${opts.recipientName},\n\nVotre publication n'a pas été retenue.\nRaison : ${opts.reason}\n\nExtrait : "${opts.contentExcerpt}"\n\nContact : contact@bisecco.fr`;
+  return { subject: "Publication non retenue · Bisecco", html, text };
+}

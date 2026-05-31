@@ -3,8 +3,11 @@ import Image from "next/image";
 import { Wrench, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Maintenance en cours",
-  robots: { index: false, follow: false },
+  title: "Bisecco · Maintenance · Le 1er réseau d'artisans français vérifiés SIREN",
+  description:
+    "Bisecco · Annuaire d'artisans français vérifiés SIREN. Plombier, électricien, maçon, menuisier, développeur web. 100% gratuit, 0% commission. Plateforme en mise à jour, retour très prochain.",
+  keywords: ["artisans", "artisans vérifiés", "SIREN", "annuaire artisans", "devis gratuit"],
+  alternates: { canonical: "https://bisecco.eu" },
 };
 
 export default function MaintenancePage() {
@@ -20,7 +23,14 @@ export default function MaintenancePage() {
       <div className="relative w-full max-w-md text-center text-white">
         <div className="flex items-center gap-3 justify-center mb-10">
           <div className="w-11 h-11 rounded-xl overflow-hidden">
-            <Image src="/logo.jpg" alt="Bisecco" width={44} height={44} />
+            <Image
+              src="/logo.jpg"
+              alt="Logo Bisecco · réseau d'artisans français vérifiés"
+              width={44}
+              height={44}
+              priority
+              fetchPriority="high"
+            />
           </div>
           <span className="font-bold text-lg tracking-[0.12em]">BISECCO</span>
         </div>
@@ -61,8 +71,8 @@ export default function MaintenancePage() {
           Toutes vos données sont en sécurité
         </div>
 
-        <p className="mt-8 text-xs text-white/50">
-          Pour toute urgence, écrivez-nous à <a href="mailto:contact@bisecco.fr" className="text-brand-400 font-bold hover:underline">contact@bisecco.fr</a>
+        <p className="mt-8 text-xs text-white/70">
+          Pour toute urgence, écrivez-nous à <a href="mailto:contact@bisecco.fr" className="text-brand-300 font-bold hover:text-brand-200 underline-offset-2 hover:underline">contact@bisecco.fr</a>
         </p>
       </div>
     </div>

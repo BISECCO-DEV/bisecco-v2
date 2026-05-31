@@ -25,24 +25,28 @@ export function ComingSoonClient() {
           <KeyRound size={16} className="text-brand-400" />
           Accès anticipé
         </h2>
-        <p className="text-white/55 text-sm mb-5">
+        <p className="text-white/70 text-sm mb-5">
           Vous avez reçu un code d&apos;accès ? Saisissez-le pour entrer dans la plateforme.
         </p>
 
         <form action={validateBypassCodeAction} className="space-y-3">
           <div className="relative">
+            <label htmlFor="bypass-code" className="sr-only">Code d&apos;accès anticipé</label>
             <Lock
               size={15}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60"
+              aria-hidden="true"
             />
             <input
+              id="bypass-code"
               type="text"
               name="code"
               required
               autoComplete="off"
               placeholder="XXXX-XXXX"
               maxLength={50}
-              className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/[0.06] border-2 border-white/[0.10] focus:border-brand-400 focus:bg-white/[0.10] outline-none text-white placeholder-white/40 text-sm font-mono font-bold tracking-[0.10em] backdrop-blur-md transition"
+              aria-label="Code d'accès anticipé"
+              className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/[0.10] border-2 border-white/[0.15] focus:border-brand-400 focus:bg-white/[0.15] outline-none text-white placeholder-white/55 text-sm font-mono font-bold tracking-[0.10em] backdrop-blur-md transition"
             />
           </div>
           <button
@@ -67,8 +71,8 @@ export function ComingSoonClient() {
             </div>
           )}
 
-          <p className="text-[0.66rem] text-white/35 text-center pt-1 inline-flex items-center gap-1.5 justify-center w-full">
-            <Lock size={9} />
+          <p className="text-[0.7rem] text-white/65 text-center pt-1 inline-flex items-center gap-1.5 justify-center w-full">
+            <Lock size={9} aria-hidden="true" />
             Connexion chiffrée · Validation côté serveur
           </p>
         </form>

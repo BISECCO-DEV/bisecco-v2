@@ -6,9 +6,33 @@ const COMING_SOON_ENABLED = process.env.COMING_SOON_ENABLED !== "false";
 const BYPASS_COOKIE = "bisecco_bypass";
 
 // ─── MAINTENANCE GATE ────────────────────────────────────────────
-// Si MAINTENANCE_ENABLED=true → tout le monde est redirigé vers /maintenance
-// (sauf cookie bypass via /coming-soon avec le code admin).
-const MAINTENANCE_ENABLED = process.env.MAINTENANCE_ENABLED === "true";
+// Si MAINTENANCE_ENABLED=true (env) → toggle FORCÉ ON (override admin DB).
+// Sinon : on lit le flag dans la table public.site_settings, modifiable par l'admin.
+const MAINTENANCE_ENV_FORCE = process.env.MAINTENANCE_ENABLED === "true";
+
+/** Lit le flag maintenance depuis la DB via REST Supabase (compatible Edge).
+ *  Cache HTTP 15s côté Next.js pour éviter de hit la DB à chaque requête. */
+async function fetchMaintenanceFromDb(): Promise<boolean> {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_settings?key=eq.maintenance_enabled&select=value`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        next: { revalidate: 15 },
+      },
+    );
+    if (!res.ok) return false;
+    const rows = (await res.json()) as { value: unknown }[];
+    const v = rows[0]?.value;
+    return v === true || v === "true";
+  } catch {
+    return false;
+  }
+}
 
 const MAINTENANCE_PUBLIC_ROUTES = [
   "/maintenance",
@@ -88,11 +112,16 @@ export async function middleware(request: NextRequest) {
     user = data.user ? { id: data.user.id } : null;
   }
 
-  // ── 1.5. Maintenance gate : prioritaire, bloque TOUT le monde (sauf bypass cookie) ──
-  if (MAINTENANCE_ENABLED) {
+  // ── 1.5. Maintenance gate : env force ON > DB setting ──
+  const maintenanceFromDb = MAINTENANCE_ENV_FORCE ? false : await fetchMaintenanceFromDb();
+  const maintenanceActive = MAINTENANCE_ENV_FORCE || maintenanceFromDb;
+
+  if (maintenanceActive) {
     const hasBypass = request.cookies.get(BYPASS_COOKIE)?.value === "ok";
     const isPublic = MAINTENANCE_PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
-    if (!hasBypass && !isPublic) {
+    // Les admins connectés bypassent automatiquement pour pouvoir désactiver.
+    const isAdminPath = pathname.startsWith("/admin");
+    if (!hasBypass && !isPublic && !isAdminPath) {
       const url = request.nextUrl.clone();
       url.pathname = "/maintenance";
       url.search = "";

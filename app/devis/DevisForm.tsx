@@ -7,6 +7,7 @@ import {
   Upload, X, ArrowRight, ArrowLeft, CheckCircle2, Camera,
 } from "lucide-react";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
+import type { MetierOption } from "@/lib/metiers";
 import { submitPublicQuoteAction } from "@/lib/quotes/public-actions";
 
 const URGENCY = [
@@ -24,7 +25,7 @@ const BUDGET = [
   { id: "unknown", label: "Je ne sais pas", sub: "Aidez-moi à estimer" },
 ];
 
-export function DevisForm() {
+export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } = {}) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -144,6 +145,7 @@ export function DevisForm() {
                 variant="light"
                 hideLabel
                 placeholder="Plombier, électricien…"
+                options={metierOptions}
               />
             </div>
 

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { DevisForm } from "./DevisForm";
 import { ShieldCheck, Clock, Zap } from "lucide-react";
+import { getMetierOptions } from "@/lib/db/metier-options";
 
 export const metadata: Metadata = {
   title: "Demander un devis gratuit",
   description: "Décrivez votre projet en 2 minutes, ajoutez des photos et recevez plusieurs devis d'artisans vérifiés. 100% gratuit, sans engagement.",
 };
 
-export default function DevisPage() {
+export default async function DevisPage() {
+  const metierOptions = await getMetierOptions();
   return (
     <div className="bg-ink-50 min-h-screen">
       <div className="container-default py-12">
@@ -40,7 +42,7 @@ export default function DevisPage() {
         </div>
 
         {/* Form */}
-        <DevisForm />
+        <DevisForm metierOptions={metierOptions} />
       </div>
     </div>
   );

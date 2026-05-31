@@ -6,13 +6,14 @@ import {
   Save, MapPin, Calendar,
 } from "lucide-react";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
+import type { MetierOption } from "@/lib/metiers";
 import { saveCvAction } from "@/lib/cv/actions";
 
 type Experience = { id: string; poste: string; entreprise: string; debut: string; fin: string; description: string };
 type Formation = { id: string; diplome: string; ecole: string; annee: string };
 type Langue = { id: string; nom: string; niveau: string };
 
-type Metier = { id: number; name: string; slug: string; icon: string | null };
+type Metier = { id: number; name: string; slug: string; category?: string; icon: string | null };
 
 type InitialCv = {
   cv_data: {
@@ -55,6 +56,13 @@ export function CVEditor({ initialCv, metiers }: { initialCv: InitialCv; metiers
   // Resolve metier name from slug (for combobox value display)
   const metierName = metiers.find((m) => m.slug === metierSlug)?.name ?? "";
 
+  // Convertit les métiers passés en props vers le format attendu par le combobox
+  const metierOptions: MetierOption[] = metiers.map((m) => ({
+    name: m.name,
+    category: m.category ?? "Autre",
+    icon: m.icon ?? "🛠️",
+  }));
+
   const cvJson = JSON.stringify({ experiences, formations, langues, competences });
 
   return (
@@ -86,6 +94,7 @@ export function CVEditor({ initialCv, metiers }: { initialCv: InitialCv; metiers
                 variant="light"
                 hideLabel
                 placeholder="Sélectionner un métier"
+                options={metierOptions}
               />
             </div>
           </div>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Search, X, ArrowRight, MapPin, Briefcase, FileText, Users, Newspaper } from "lucide-react";
-import { METIER_OPTIONS } from "@/lib/metiers";
+import { METIER_OPTIONS, type MetierOption } from "@/lib/metiers";
 
 type Suggestion = {
   type: "metier" | "page" | "ville";
@@ -26,10 +26,11 @@ function slugify(s: string) {
     .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-export function GlobalSearch() {
+export function GlobalSearch({ metierOptions }: { metierOptions?: MetierOption[] } = {}) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const metierSource = metierOptions && metierOptions.length > 0 ? metierOptions : METIER_OPTIONS;
 
   // Open on Ctrl/Cmd+K
   useEffect(() => {
@@ -54,7 +55,7 @@ export function GlobalSearch() {
   // Filtrer les suggestions
   const q = query.toLowerCase();
   const metierMatches: Suggestion[] = q
-    ? METIER_OPTIONS
+    ? metierSource
         .filter((m) => m.name.toLowerCase().includes(q))
         .slice(0, 6)
         .map((m) => ({

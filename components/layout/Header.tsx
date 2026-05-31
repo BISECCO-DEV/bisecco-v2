@@ -5,12 +5,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { GlobalSearch } from "./GlobalSearch";
+import type { MetierOption } from "@/lib/metiers";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { MobileMenu } from "./MobileMenu";
 import { UserMenu, type UserMenuProps } from "./UserMenu";
 import { MAIN_NAV, isActive } from "@/lib/nav";
 
-type HeaderProps = { user: UserMenuProps["user"]; unreadNotifications?: number; currentUserId?: number | null };
+type HeaderProps = {
+  user: UserMenuProps["user"];
+  unreadNotifications?: number;
+  currentUserId?: number | null;
+  metierOptions?: MetierOption[];
+};
 
 // Pages où le header doit être TRANSPARENT en haut (hero overlay)
 // puis devient navy opaque au scroll.
@@ -18,7 +24,7 @@ const OVERLAY_HERO_ROUTES = ["/"];
 
 const SCROLL_THRESHOLD = 24;
 
-export function Header({ user, unreadNotifications = 0, currentUserId = null }: HeaderProps) {
+export function Header({ user, unreadNotifications = 0, currentUserId = null, metierOptions }: HeaderProps) {
   const pathname = usePathname();
   const isOverlayPage = OVERLAY_HERO_ROUTES.includes(pathname);
   const isAdminPage = pathname?.startsWith("/admin") ?? false;
@@ -133,7 +139,7 @@ export function Header({ user, unreadNotifications = 0, currentUserId = null }: 
 
           {/* Actions */}
           <div className="flex items-center gap-1.5 lg:gap-2 flex-shrink-0">
-            <GlobalSearch />
+            <GlobalSearch metierOptions={metierOptions} />
 
             <div className="hidden lg:block">
               <NotificationsDropdown unreadCount={unreadNotifications} currentUserId={currentUserId} />

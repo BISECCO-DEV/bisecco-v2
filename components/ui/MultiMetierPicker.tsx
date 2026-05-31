@@ -19,6 +19,8 @@ type Props = {
   max?: number;
   /** Variante d'apparence */
   variant?: "light" | "dark";
+  /** Liste de métiers à afficher. Si non fournie → fallback hardcodé. */
+  options?: MetierOption[];
 };
 
 function normalize(s: string): string {
@@ -32,18 +34,19 @@ function slugifyCustom(name: string): string {
     .slice(0, 80);
 }
 
-export function MultiMetierPicker({ value, onChange, max = 3, variant = "light" }: Props) {
+export function MultiMetierPicker({ value, onChange, max = 3, variant = "light", options }: Props) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const reachedMax = value.length >= max;
+  const source = options && options.length > 0 ? options : METIER_OPTIONS;
 
   // Liste filtrée + dédupliquée (tous les métiers visibles, pas de limite)
   const filtered = useMemo(() => {
     const selectedSlugs = new Set(value.map((v) => v.slug).filter(Boolean));
-    const notSelected = METIER_OPTIONS.filter(
+    const notSelected = source.filter(
       (m) => !selectedSlugs.has(slugifyCustom(m.name)),
     );
     if (!query.trim()) return notSelected;
@@ -51,7 +54,7 @@ export function MultiMetierPicker({ value, onChange, max = 3, variant = "light" 
     return notSelected.filter(
       (m) => normalize(m.name).includes(q) || normalize(m.category).includes(q),
     );
-  }, [query, value]);
+  }, [query, value, source]);
 
   // Détection du métier custom (saisie libre)
   const trimmedQuery = query.trim();

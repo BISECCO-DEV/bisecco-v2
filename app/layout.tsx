@@ -12,6 +12,7 @@ import { ServiceWorkerRegister } from "@/components/ui/ServiceWorkerRegister";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { getCurrentUser } from "@/lib/db/current-user";
 import { countUnreadNotifications } from "@/lib/notifications/actions";
+import { getMetierOptions } from "@/lib/db/metier-options";
 
 const inter = localFont({
   src: "../public/fonts/Inter.woff2",
@@ -113,6 +114,7 @@ export default async function RootLayout({
       }
     : null;
   const unreadNotifs = current ? await countUnreadNotifications() : 0;
+  const metierOptions = await getMetierOptions();
 
   return (
     <html lang="fr" className={`${inter.variable} ${instrumentSans.variable}`}>
@@ -120,7 +122,7 @@ export default async function RootLayout({
         <JsonLd data={[organizationJsonLd, websiteJsonLd]} />
       </head>
       <body className="font-sans antialiased min-h-screen flex flex-col">
-        <Header user={headerUser} unreadNotifications={unreadNotifs} currentUserId={current?.id ?? null} />
+        <Header user={headerUser} unreadNotifications={unreadNotifs} currentUserId={current?.id ?? null} metierOptions={metierOptions} />
         <main className="flex-1">{children}</main>
         <Footer />
         <MobileBottomNav />

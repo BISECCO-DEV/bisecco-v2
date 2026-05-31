@@ -18,6 +18,9 @@ type Props = {
   hideLabel?: boolean;
   /** Icon à afficher devant (par défaut Briefcase) */
   leadingIcon?: React.ReactNode;
+  /** Liste de métiers à afficher. Si non fournie → fallback hardcodé. À passer
+   *  depuis un Server Component pour rester en phase avec la DB. */
+  options?: MetierOption[];
 };
 
 export function MetierCombobox({
@@ -28,6 +31,7 @@ export function MetierCombobox({
   variant = "dark",
   hideLabel = false,
   leadingIcon,
+  options,
 }: Props) {
   const id = useId();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -35,8 +39,10 @@ export function MetierCombobox({
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
 
+  const source = options && options.length > 0 ? options : METIER_OPTIONS;
+
   /** Liste filtrée par la query */
-  const filtered = METIER_OPTIONS.filter((m) =>
+  const filtered = source.filter((m) =>
     m.name.toLowerCase().includes(value.toLowerCase())
   );
 

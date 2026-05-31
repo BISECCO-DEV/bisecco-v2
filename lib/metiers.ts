@@ -158,6 +158,7 @@ export const METIER_OPTIONS: MetierOption[] = [
   { name: "Fleuriste",                        category: "Services", icon: "💐" },
   { name: "Toiletteur animalier",             category: "Services", icon: "🐕" },
   { name: "Photographe",                      category: "Services", icon: "📷" },
+  { name: "Développeur informatique",         category: "Services", icon: "💻" },
   { name: "Réparateur informatique",          category: "Services", icon: "💻" },
   { name: "Dépanneur informatique",           category: "Services", icon: "🖥️" },
   { name: "Réparateur téléphones",            category: "Services", icon: "📱" },

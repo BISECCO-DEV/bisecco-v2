@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MapPin, Search, Navigation, ArrowRight, Loader2 } from "lucide-react";
 import type { Artisan } from "./LocalSearchMap";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
+import type { MetierOption } from "@/lib/metiers";
 import { artisanProfilePath } from "@/lib/utils";
 
 const LocalSearchMap = dynamic(
@@ -43,9 +44,11 @@ type LocalSearchProps = {
   artisans?: Artisan[];
   /** ID du user courant (pour le bouton Contacter). null = non connecté */
   currentUserId?: number | null;
+  /** Liste des métiers depuis la DB (server). Si absent → fallback hardcodé. */
+  metierOptions?: MetierOption[];
 };
 
-export function LocalSearch({ artisans }: LocalSearchProps = {}) {
+export function LocalSearch({ artisans, metierOptions }: LocalSearchProps = {}) {
   const dataSource = artisans && artisans.length > 0 ? artisans : DEMO_ARTISANS;
   const [query, setQuery] = useState({ metier: "", ville: "" });
   const [activeMetier, setActiveMetier] = useState("Tous");
@@ -181,6 +184,7 @@ export function LocalSearch({ artisans }: LocalSearchProps = {}) {
                 value={query.metier}
                 onChange={(v) => setQuery((q) => ({ ...q, metier: v }))}
                 placeholder="Maçon, électricien…"
+                options={metierOptions}
               />
 
               <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-ink-900/50 border border-white/10 focus-within:border-brand-500/50 transition">

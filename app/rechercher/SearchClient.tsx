@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, MapPin, Filter, Star, Loader2 } from "lucide-react";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
+import type { MetierOption } from "@/lib/metiers";
 import { artisanProfilePath } from "@/lib/utils";
 
 // Carte interactive (même que la homepage) · lazy-loaded car Leaflet est lourd
@@ -38,7 +39,7 @@ const QUICK_METIERS = ["Plombier", "Électricien", "Maçon", "Peintre", "Menuisi
 
 type SortBy = "rating" | "recent" | "name";
 
-export function SearchClient({ artisans }: { artisans: ArtisanCard[] }) {
+export function SearchClient({ artisans, metierOptions }: { artisans: ArtisanCard[]; metierOptions?: MetierOption[] }) {
   const [metier, setMetier] = useState("");
   const [city, setCity] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("rating");
@@ -74,6 +75,7 @@ export function SearchClient({ artisans }: { artisans: ArtisanCard[] }) {
             placeholder="Quel métier ? (plombier, électricien...)"
             variant="light"
             label="MÉTIER"
+            options={metierOptions}
           />
         </div>
 

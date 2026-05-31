@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FileText, ArrowRight } from "lucide-react";
 import { SearchClient, type ArtisanCard } from "./SearchClient";
+import { getMetierOptions } from "@/lib/db/metier-options";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
@@ -96,6 +97,7 @@ async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
 
 export default async function RechercherPage({ searchParams }: { searchParams: SearchParams }) {
   const { intent } = await searchParams;
+  const metierOptions = await getMetierOptions();
   const isCvIntent = intent === "cv";
 
   const artisans = await fetchAllApprovedArtisans();
@@ -143,7 +145,7 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
           </>
         )}
 
-        <SearchClient artisans={artisans} />
+        <SearchClient artisans={artisans} metierOptions={metierOptions} />
       </div>
     </div>
   );

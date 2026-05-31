@@ -2,6 +2,7 @@ import { LocalSearch } from "@/components/features/LocalSearch";
 import type { Artisan } from "@/components/features/LocalSearchMap";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
+import { getMetierOptions } from "@/lib/db/metier-options";
 
 /**
  * Server component qui fetch les artisans réels depuis Supabase
@@ -87,7 +88,10 @@ export async function HomeLocalSearch() {
       .filter((a): a is Artisan => a !== null);
   }
 
-  const me = await getCurrentDbUser();
+  const [me, metierOptions] = await Promise.all([
+    getCurrentDbUser(),
+    getMetierOptions(),
+  ]);
 
-  return <LocalSearch artisans={artisans} currentUserId={me?.id ?? null} />;
+  return <LocalSearch artisans={artisans} currentUserId={me?.id ?? null} metierOptions={metierOptions} />;
 }

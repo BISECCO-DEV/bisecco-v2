@@ -9,6 +9,7 @@ import { HomeComparison } from "@/components/features/home/HomeComparison";
 import { HomeArtisanPitch } from "@/components/features/home/HomeArtisanPitch";
 import { HomeBlogTeasers } from "@/components/features/home/HomeBlogTeasers";
 import { HomeReviews } from "@/components/features/home/HomeReviews";
+import { HomeCommunityStats } from "@/components/features/home/HomeCommunityStats";
 import {
   ShieldCheck,
   Sparkles,
@@ -137,6 +138,9 @@ export default function HomePage() {
         </div>
         <ScrollIndicator targetId="gratuit" offset={110} label="Découvrir" />
       </section>
+
+      {/* ═══════════ STATS COMMUNAUTÉ LIVE · particuliers + artisans + villes ═══════════ */}
+      <HomeCommunityStats />
 
       {/* ═══════════ COMMENT ÇA MARCHE · dual particulier/artisan avec tabs ═══════════ */}
       <HomeHowItWorks />

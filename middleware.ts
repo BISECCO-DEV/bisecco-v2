@@ -13,6 +13,8 @@ const MAINTENANCE_ENV_FORCE = process.env.MAINTENANCE_ENABLED === "true";
 /** Lit le flag maintenance depuis la DB via REST Supabase (compatible Edge).
  *  Cache HTTP 15s côté Next.js pour éviter de hit la DB à chaque requête. */
 async function fetchMaintenanceFromDb(): Promise<boolean> {
+  // Pendant le build statique, on ne hit pas la DB (sinon PageNotFoundError sur /_error).
+  if (process.env.NEXT_PHASE === "phase-production-build") return false;
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
   try {
     const res = await fetch(

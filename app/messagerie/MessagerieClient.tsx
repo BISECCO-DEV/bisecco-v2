@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search, Send, ChevronLeft, MessageSquare, Smile, Paperclip, Bold, Italic,
-  ShieldCheck, MapPin, Briefcase, FileText, Info, Flag, ExternalLink, Phone,
+  ShieldCheck, MapPin, Briefcase, FileText, Info, Flag, ExternalLink, Phone, Trash2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -14,6 +14,7 @@ import {
   sendMessageAction,
   markThreadReadAction,
   getThreadPanelDataAction,
+  deleteThreadAction,
   type ThreadPanelData,
 } from "@/lib/messages/actions";
 import { playNotificationSound } from "@/lib/notifications/sound";
@@ -315,6 +316,30 @@ export function MessagerieClient({ currentUserId, initialThreadId }: { currentUs
                       <Phone size={16} />
                     </a>
                   )}
+                  {/* Bouton supprimer la conversation */}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!selected) return;
+                      const ok = window.confirm(
+                        `Supprimer la conversation avec ${selected.other_user.name} ?\n\nTous les messages échangés seront définitivement effacés des deux côtés.`,
+                      );
+                      if (!ok) return;
+                      const res = await deleteThreadAction(selected.id);
+                      if (res.ok) {
+                        setSelectedId(null);
+                        router.push("/messagerie");
+                        router.refresh();
+                      } else {
+                        alert(res.error ?? "Erreur lors de la suppression.");
+                      }
+                    }}
+                    className="w-9 h-9 rounded-md border border-sand-200 grid place-items-center text-red-500 hover:bg-red-50 hover:border-red-300 transition"
+                    aria-label="Supprimer la conversation"
+                    title="Supprimer la conversation"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                   {/* Bouton mobile pour ouvrir le panneau droit */}
                   <button
                     type="button"

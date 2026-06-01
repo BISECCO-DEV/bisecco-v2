@@ -218,7 +218,7 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
 
         {/* Annuaire complet des métiers (même contenu que /metiers) */}
         <section className="mt-14">
-          <div className="text-center max-w-2xl mx-auto mb-8">
+          <div className="text-center max-w-2xl mx-auto pb-24 sm:pb-28">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[0.7rem] font-extrabold tracking-[0.14em] uppercase">
               <Briefcase size={11} strokeWidth={2.8} />
               Annuaire des métiers
@@ -230,6 +230,8 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
               Cherchez parmi tous les métiers Bisecco, filtrez par catégorie, ouvrez la page dédiée pour découvrir les artisans.
             </p>
           </div>
+          {/* MetiersDirectory utilise -mt-20 sur sa stats banner pour chevaucher
+              une hero · le pb-24 ci-dessus laisse la place qu'il faut pour absorber */}
           <MetiersDirectory metiers={metiersWithCounts} />
         </section>
 

@@ -71,7 +71,7 @@ export async function submitReviewAction(_prev: ReviewState, formData: FormData)
     quote_request_id: quoteId,
     rating,
     comment,
-    status: "pending",
+    status: "approved",
     is_flagged: false,
   });
 

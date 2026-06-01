@@ -324,6 +324,39 @@ export async function getThreadPanelDataAction(otherUserId: number): Promise<Thr
   };
 }
 
+/**
+ * Supprime une conversation (thread) côté serveur · les deux participants perdent l'historique.
+ * Sécurité : le user doit être participant du thread.
+ */
+export async function deleteThreadAction(threadId: number): Promise<{ ok: boolean; error?: string }> {
+  const me = await getCurrentDbUser();
+  if (!me) return { ok: false, error: "Connexion requise." };
+
+  const admin = createSupabaseAdminClient();
+  const { data: thread } = await admin
+    .from("message_threads")
+    .select("id, user_a_id, user_b_id")
+    .eq("id", threadId)
+    .maybeSingle();
+
+  if (!thread) return { ok: false, error: "Conversation introuvable." };
+  if (thread.user_a_id !== me.id && thread.user_b_id !== me.id) {
+    return { ok: false, error: "Accès refusé." };
+  }
+
+  // Cascade : on supprime les messages puis le thread.
+  await admin.from("messages").delete().eq("thread_id", threadId);
+  const { error } = await admin.from("message_threads").delete().eq("id", threadId);
+
+  if (error) {
+    console.error("[deleteThreadAction]", error);
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath("/messagerie");
+  return { ok: true };
+}
+
 /** Récupère ou crée le thread avec un user spécifique (pour bouton "Contacter"). */
 export async function getOrCreateThreadAction(otherUserId: number): Promise<{ ok: true; threadId: number } | { ok: false; error: string }> {
   const me = await getCurrentDbUser();

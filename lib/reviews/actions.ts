@@ -32,7 +32,7 @@ export async function submitReviewAction(_prev: ReviewState, formData: FormData)
 
   const { data: artisan } = await admin
     .from("users")
-    .select("id, role, artisan_profiles(id)")
+    .select("id, role, client_number, artisan_profiles(id)")
     .eq("id", artisanId)
     .single();
 
@@ -75,17 +75,20 @@ export async function submitReviewAction(_prev: ReviewState, formData: FormData)
     is_flagged: false,
   });
 
+  // L'URL publique du profil utilise client_number, pas l'id numérique.
+  const profilePath = `/profil/${artisan.client_number ?? artisanId}`;
+
   await pushNotification(
     artisanId,
     "review_received",
     "Nouvel avis sur votre profil",
     `Vous avez reçu une note ${rating}/5`,
-    `/profil/${artisanId}`,
+    profilePath,
     "⭐",
   );
 
-  revalidatePath(`/profil/${artisanId}`);
-  redirect(`/profil/${artisanId}?review=submitted`);
+  revalidatePath(profilePath);
+  redirect(`${profilePath}?review=submitted`);
 }
 
 /** Admin: approuve un avis */

@@ -17,6 +17,7 @@ type FavoriteRow = {
   artisan_id: number;
   artisan: {
     id: number;
+    client_number: string | null;
     name: string | null;
     city: string | null;
     siren_status: string | null;
@@ -32,7 +33,7 @@ async function loadFavorites(userId: number): Promise<FavoriteRow[]> {
     .select(`
       id, created_at, artisan_id,
       artisan:artisan_id (
-        id, name, city, siren_status, profile_photo,
+        id, client_number, name, city, siren_status, profile_photo,
         artisan_profiles ( company_name, metier:metiers ( name ) )
       )
     `)
@@ -147,7 +148,7 @@ export default async function FavorisPage() {
                       Sauvegardé {relativeTime(f.created_at)}
                     </div>
                     <div className="flex gap-2">
-                      <Link href={`/profil/${a.id}`} className="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-xl bg-brand-500 text-white text-xs font-bold hover:bg-brand-600 transition">
+                      <Link href={`/profil/${a.client_number ?? a.id}`} className="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-xl bg-brand-500 text-white text-xs font-bold hover:bg-brand-600 transition">
                         Voir le profil
                       </Link>
                       <Link href={`/messagerie/${a.id}`} className="px-3 py-2 rounded-xl border border-ink-200 text-ink-700 hover:border-brand-500 transition" aria-label="Message">

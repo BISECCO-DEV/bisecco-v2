@@ -487,8 +487,9 @@ export async function signupAction(
       await admin.from("artisan_profile_metier").insert(pivotRows);
     }
 
-    // Pas d'email de vérification : l'email est auto-validé pour les pros.
-    // L'utilisateur attend juste la validation admin (notif par email à l'approve).
+    // Email de bienvenue avec magic link · l'artisan peut se connecter directement,
+    // ce mail lui offre aussi un lien d'accès rapide (et trace de son email).
+    await sendVerificationEmail(email, fullName, "artisan");
 
     // Notifier Bisecco de la nouvelle inscription artisan
     await notifyAdminOfSignup({

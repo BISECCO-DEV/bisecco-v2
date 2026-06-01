@@ -58,18 +58,22 @@ export default async function InscriptionSuccesPage({
           <div className="mt-8 space-y-3 text-left max-w-md mx-auto">
             {isArtisan ? (
               <>
-                {/* Étape 1 artisan : email auto-validé */}
+                {/* Étape 1 artisan : email envoyé */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200">
                   <div className="w-10 h-10 rounded-xl bg-emerald-500 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
-                    ✓
+                    <Mail size={16} />
                   </div>
                   <div>
                     <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
                       <CheckCircle2 size={14} className="text-emerald-500" />
-                      Email auto-validé · pas de lien à cliquer
+                      Un email vient de vous être envoyé
                     </div>
                     <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
-                      Votre adresse <strong className="text-ink-900">{maskedEmail}</strong> est déjà confirmée.
+                      Un lien de confirmation a été envoyé à <strong className="text-ink-900">{maskedEmail}</strong>.
+                      Cliquez dessus pour confirmer votre adresse (vous pouvez aussi vous connecter directement avec votre mot de passe).
+                    </p>
+                    <p className="text-[0.74rem] text-ink-400 mt-1.5">
+                      Pensez à vérifier vos spams si l&apos;email tarde à arriver.
                     </p>
                   </div>
                 </div>

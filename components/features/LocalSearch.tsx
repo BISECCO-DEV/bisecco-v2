@@ -384,13 +384,15 @@ function ArtisanCard({
             <img src={artisan.avatar} alt="" className="w-full h-full object-cover" loading="lazy" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-white font-bold text-xl bg-gradient-to-br from-brand-400 to-brand-600">
-              {artisan.name[0]}
+              {(artisan.company || artisan.name)[0]}
             </div>
           )}
         </div>
 
-        <div className="font-bold text-white text-sm leading-tight">{artisan.name}</div>
-        <div className="text-[0.78rem] text-white/55 mt-0.5">{artisan.company}</div>
+        {/* Pour les pros : on affiche le nom commercial (entreprise), pas celui du gérant. */}
+        <div className="font-bold text-white text-sm leading-tight line-clamp-2">
+          {artisan.company || artisan.name}
+        </div>
 
         <div className="flex items-center gap-1.5 mt-2 text-[0.72rem] text-white/65">
           <span className="px-2 py-0.5 rounded-md bg-brand-500/15 border border-brand-500/25 text-brand-400 font-semibold">

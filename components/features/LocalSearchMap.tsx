@@ -167,7 +167,7 @@ export function LocalSearchMap({
           <Marker key={a.id} position={[a.lat, a.lng]} icon={icon}>
             <Popup>
               <div className="text-sm">
-                <div className="font-bold text-ink-700">{a.name}</div>
+                <div className="font-bold text-ink-700">{a.company || a.name}</div>
                 <div className="text-ink-400 text-xs">
                   {a.metier} · {a.city}
                 </div>

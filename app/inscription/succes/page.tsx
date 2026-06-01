@@ -48,63 +48,104 @@ export default async function InscriptionSuccesPage({
           </h1>
 
           <p className="mt-5 text-ink-500 text-[1rem] leading-relaxed max-w-lg mx-auto">
-            Votre {isArtisan ? "compte artisan" : "compte particulier"} a été créé avec succès.
-            Pour finaliser votre inscription, vous devez activer votre adresse email.
+            Votre {isArtisan ? "compte artisan" : "compte particulier"} a bien été créé.
+            {isArtisan
+              ? " Notre équipe vérifie votre SIREN et valide votre profil sous peu."
+              : " Pour finaliser votre inscription, vous devez activer votre adresse email."}
           </p>
 
           {/* Étapes */}
           <div className="mt-8 space-y-3 text-left max-w-md mx-auto">
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-brand-50/60 border border-brand-200/60">
-              <div className="w-10 h-10 rounded-xl bg-brand-500 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
-                1
-              </div>
-              <div>
-                <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
-                  <Mail size={14} className="text-brand-500" />
-                  Vérifiez votre boîte mail
-                </div>
-                <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
-                  Un email vous a été envoyé à <strong className="text-ink-900">{maskedEmail}</strong>.
-                  Cliquez sur le lien d&apos;activation à l&apos;intérieur.
-                </p>
-                <p className="text-[0.74rem] text-ink-400 mt-1.5">
-                  Pensez à vérifier vos spams si l&apos;email tarde à arriver.
-                </p>
-              </div>
-            </div>
-
             {isArtisan ? (
-              <div className="flex items-start gap-4 p-4 rounded-2xl bg-sand-100/70 border border-sand-200">
-                <div className="w-10 h-10 rounded-xl bg-ink-700 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
-                  2
-                </div>
-                <div>
-                  <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
-                    <ShieldCheck size={14} className="text-ink-700" />
-                    L&apos;équipe Bisecco valide votre profil
+              <>
+                {/* Étape 1 artisan : email auto-validé */}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
+                    ✓
                   </div>
-                  <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
-                    Nous vérifions votre numéro SIREN sous <strong className="text-ink-900">24 heures</strong>.
-                    Vous recevrez un email dès que votre profil sera approuvé et visible publiquement.
-                  </p>
+                  <div>
+                    <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
+                      <CheckCircle2 size={14} className="text-emerald-500" />
+                      Email auto-validé pour les pros
+                    </div>
+                    <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
+                      Pas besoin de cliquer sur un lien : votre adresse <strong className="text-ink-900">{maskedEmail}</strong> est déjà confirmée.
+                    </p>
+                  </div>
                 </div>
-              </div>
+
+                {/* Étape 2 artisan : validation admin */}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-brand-50/60 border border-brand-200/60">
+                  <div className="w-10 h-10 rounded-xl bg-brand-500 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
+                    1
+                  </div>
+                  <div>
+                    <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
+                      <ShieldCheck size={14} className="text-brand-600" />
+                      Notre équipe valide votre profil
+                    </div>
+                    <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
+                      Nous vérifions votre numéro SIREN et vos métiers déclarés.
+                      Vous recevrez un email dès que votre profil sera <strong className="text-ink-900">approuvé et visible</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Étape 3 artisan : connexion */}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-sand-100/70 border border-sand-200">
+                  <div className="w-10 h-10 rounded-xl bg-ink-700 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
+                    2
+                  </div>
+                  <div>
+                    <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-ink-700" />
+                      Vous accédez à toute la plateforme
+                    </div>
+                    <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
+                      Une fois validé : profil public, messagerie, fil d&apos;actualité, devis entrants — tout est débloqué.
+                    </p>
+                  </div>
+                </div>
+              </>
             ) : (
-              <div className="flex items-start gap-4 p-4 rounded-2xl bg-sand-100/70 border border-sand-200">
-                <div className="w-10 h-10 rounded-xl bg-ink-700 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
-                  2
-                </div>
-                <div>
-                  <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
-                    <Clock size={14} className="text-ink-700" />
-                    Connectez-vous et explorez
+              <>
+                {/* Étape 1 particulier : vérif email */}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-brand-50/60 border border-brand-200/60">
+                  <div className="w-10 h-10 rounded-xl bg-brand-500 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
+                    1
                   </div>
-                  <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
-                    Dès votre email confirmé, vous pourrez vous connecter et trouver des artisans
-                    vérifiés près de chez vous.
-                  </p>
+                  <div>
+                    <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
+                      <Mail size={14} className="text-brand-500" />
+                      Vérifiez votre boîte mail
+                    </div>
+                    <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
+                      Un email vous a été envoyé à <strong className="text-ink-900">{maskedEmail}</strong>.
+                      Cliquez sur le lien d&apos;activation à l&apos;intérieur.
+                    </p>
+                    <p className="text-[0.74rem] text-ink-400 mt-1.5">
+                      Pensez à vérifier vos spams si l&apos;email tarde à arriver.
+                    </p>
+                  </div>
                 </div>
-              </div>
+
+                {/* Étape 2 particulier : connexion */}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-sand-100/70 border border-sand-200">
+                  <div className="w-10 h-10 rounded-xl bg-ink-700 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
+                    2
+                  </div>
+                  <div>
+                    <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
+                      <Clock size={14} className="text-ink-700" />
+                      Connectez-vous et explorez
+                    </div>
+                    <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
+                      Dès votre email confirmé, vous pourrez vous connecter et trouver des artisans
+                      vérifiés près de chez vous.
+                    </p>
+                  </div>
+                </div>
+              </>
             )}
           </div>
 
@@ -120,7 +161,9 @@ export default async function InscriptionSuccesPage({
 
           {/* Sous-pied */}
           <p className="mt-7 pt-6 border-t border-sand-200 text-[0.78rem] text-ink-400">
-            Vous n&apos;avez pas reçu d&apos;email ?{" "}
+            {isArtisan
+              ? "Une question sur le délai de validation ? "
+              : "Vous n'avez pas reçu d'email ? "}
             <Link href="/contact" className="font-semibold text-brand-500 hover:underline">
               Contactez le support
             </Link>

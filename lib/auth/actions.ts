@@ -425,11 +425,12 @@ export async function signupAction(
 
     const primaryMetierId = resolvedMetierIds[0]!;
 
-    // Crée le user Supabase Auth (avec email confirmé pour MVP)
+    // Crée le user Supabase Auth · email auto-validé pour les pros (skip vérif).
+    // La validation effective passe par l'admin qui approuve validation_status.
     const { data: authUser, error: authErr } = await admin.auth.admin.createUser({
       email,
       password,
-      email_confirm: false,
+      email_confirm: true,
       user_metadata: { full_name: fullName, role: "artisan" },
     });
     if (authErr || !authUser.user) {
@@ -483,8 +484,8 @@ export async function signupAction(
       await admin.from("artisan_profile_metier").insert(pivotRows);
     }
 
-    // Envoyer email de vérification via nodemailer (PAS d'auto-login)
-    await sendVerificationEmail(email, fullName, "artisan");
+    // Pas d'email de vérification : l'email est auto-validé pour les pros.
+    // L'utilisateur attend juste la validation admin (notif par email à l'approve).
 
     // Notifier Bisecco de la nouvelle inscription artisan
     await notifyAdminOfSignup({

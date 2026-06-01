@@ -5,6 +5,7 @@ import { Send, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { addCommentAction } from "@/lib/feed/actions";
 import type { FeedComment } from "@/lib/feed/fetch";
+import { LinkifiedText } from "./LinkifiedText";
 
 function timeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
@@ -101,7 +102,9 @@ export function FeedComments({ postId, initialComments, canComment }: Props) {
                     <span className="text-ink-300 text-xs">·</span>
                     <span className="text-ink-400 text-xs">{timeAgo(c.created_at)}</span>
                   </div>
-                  <p className="text-sm text-ink-700 mt-1 whitespace-pre-wrap break-words">{c.content}</p>
+                  <LinkifiedText className="text-sm text-ink-700 mt-1 whitespace-pre-wrap break-words">
+                    {c.content}
+                  </LinkifiedText>
                 </div>
               </div>
             );

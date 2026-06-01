@@ -23,18 +23,23 @@ export const dynamic = "force-dynamic";
 
 async function fetchHomeStats() {
   const supabase = createSupabaseAdminClient();
-  const [{ count: artisans }, { count: metiers }, citiesRes] = await Promise.all([
+  const [{ count: artisans }, { count: particuliers }, { count: metiers }, citiesRes] = await Promise.all([
     supabase
       .from("users")
       .select("*", { count: "exact", head: true })
       .eq("role", "artisan")
       .eq("validation_status", "approved")
       .is("deleted_at", null),
+    supabase
+      .from("users")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "particulier")
+      .eq("validation_status", "approved")
+      .is("deleted_at", null),
     supabase.from("metiers").select("*", { count: "exact", head: true }),
     supabase
       .from("users")
       .select("city")
-      .eq("role", "artisan")
       .eq("validation_status", "approved")
       .is("deleted_at", null)
       .not("city", "is", null),
@@ -48,9 +53,45 @@ async function fetchHomeStats() {
 
   return {
     artisans: artisans ?? 0,
+    particuliers: particuliers ?? 0,
     metiers: metiers ?? 0,
     cities: uniqueCities.size,
   };
+}
+
+async function fetchFeaturedParticuliers() {
+  const supabase = createSupabaseAdminClient();
+  const { data } = await supabase
+    .from("users")
+    .select("id, client_number, name, city, profile_photo, description, created_at")
+    .eq("role", "particulier")
+    .eq("validation_status", "approved")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(6);
+
+  type Row = {
+    id: number;
+    client_number: string | null;
+    name: string;
+    city: string | null;
+    profile_photo: string | null;
+    description: string | null;
+    created_at: string;
+  };
+
+  return ((data ?? []) as Row[]).map((r) => ({
+    id: r.id,
+    clientNumber: r.client_number,
+    name: r.name,
+    city: r.city?.replace(/^\d+\s*/, "") ?? "France",
+    profilePhoto: r.profile_photo
+      ? r.profile_photo.startsWith("http")
+        ? r.profile_photo
+        : `https://bisecco.fr/storage/${r.profile_photo}`
+      : null,
+    description: r.description,
+  }));
 }
 
 async function fetchFeaturedArtisans() {
@@ -113,9 +154,10 @@ export default async function PartenairesPage() {
     return <GatedPartenaires user={user} />;
   }
 
-  const [stats, featured] = await Promise.all([
+  const [stats, featured, featuredParticuliers] = await Promise.all([
     fetchHomeStats(),
     fetchFeaturedArtisans(),
+    fetchFeaturedParticuliers(),
   ]);
   const isArtisanConnecte = isArtisan;
 
@@ -451,7 +493,7 @@ export default async function PartenairesPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {featured.map((a) => (
                 <Link
-                  key={a.id}
+                  key={`artisan-${a.id}`}
                   href={a.clientNumber ? `/profil/${a.clientNumber}` : "#"}
                   className="group bg-white rounded-3xl border border-ink-100 overflow-hidden hover:border-brand-200 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(13,30,74,0.18)] transition-all"
                 >
@@ -495,8 +537,68 @@ export default async function PartenairesPage() {
         </section>
       )}
 
+      {/* ═════════ MEMBRES PARTICULIERS DU RÉSEAU ═════════ */}
+      {featuredParticuliers.length > 0 && (
+        <section className="py-20 sm:py-24 bg-white">
+          <div className="container-default">
+            <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
+              <div>
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[0.7rem] font-bold tracking-[0.14em] uppercase">
+                  <Users size={11} strokeWidth={2.8} />
+                  Particuliers actifs
+                </span>
+                <h2 className="mt-4 text-[28px] sm:text-[36px] font-extrabold text-ink-700 tracking-[-0.025em]">
+                  {stats.particuliers} particulier{stats.particuliers > 1 ? "s" : ""} dans la communauté
+                </h2>
+                <p className="text-ink-500 mt-2 max-w-xl">
+                  Des clients vérifiés à la recherche d&apos;artisans qualifiés. Tous validés manuellement par notre équipe.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {featuredParticuliers.map((p) => (
+                <div
+                  key={`particulier-${p.id}`}
+                  className="group bg-white rounded-3xl border border-ink-100 overflow-hidden hover:border-blue-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(13,30,74,0.15)] transition-all"
+                >
+                  <div className="px-5 pt-5 pb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 rounded-2xl border-2 border-blue-100 bg-blue-50 overflow-hidden shadow-card flex-shrink-0">
+                        {p.profilePhoto ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.profilePhoto} alt="" className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600 text-white font-extrabold text-lg">
+                            {p.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-extrabold text-ink-700 truncate">{p.name.split(" ")[0]}</div>
+                        <div className="text-xs text-ink-500 inline-flex items-center gap-1">
+                          <MapPin size={11} /> {p.city}
+                        </div>
+                      </div>
+                    </div>
+                    {p.description && (
+                      <p className="mt-3 text-[0.84rem] text-ink-500 leading-relaxed line-clamp-2">
+                        {p.description}
+                      </p>
+                    )}
+                    <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[0.7rem] font-bold">
+                      <Users size={10} /> Particulier vérifié
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ═════════ FAQ ═════════ */}
-      <section className="py-20 sm:py-24 bg-white">
+      <section className="py-20 sm:py-24 bg-ink-50">
         <div className="container-default max-w-3xl">
           <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink-100 border border-ink-200 text-ink-700 text-[0.7rem] font-bold tracking-[0.14em] uppercase">

@@ -6,7 +6,9 @@ import {
 import type { FeedPost } from "@/lib/feed/fetch";
 import { FeedLikeButton } from "./FeedLikeButton";
 import { FeedReportButton } from "./FeedReportButton";
+import { FeedShareButton } from "./FeedShareButton";
 import { FeedImageGrid } from "./FeedImageGrid";
+import { LinkifiedText } from "./LinkifiedText";
 
 const KIND_CFG: Record<FeedPost["kind"], { label: string; tint: string; icon: typeof Hammer }> = {
   realisation: { label: "Réalisation",      tint: "text-brand-600",  icon: Hammer },
@@ -116,11 +118,11 @@ export function FeedPostCard({ post, liked, canInteract }: Props) {
         </button>
       </header>
 
-      {/* ─── CONTENT ─── */}
+      {/* ─── CONTENT ─── (URLs rendues cliquables via LinkifiedText) */}
       <div className="px-5 pb-4">
-        <p className="text-[0.96rem] text-ink-700 leading-[1.65] whitespace-pre-wrap break-words">
+        <LinkifiedText className="text-[0.96rem] text-ink-700 leading-[1.65] whitespace-pre-wrap break-words">
           {post.content}
-        </p>
+        </LinkifiedText>
       </div>
 
       {/* ─── IMAGES (grid intelligent) ─── */}
@@ -155,11 +157,13 @@ export function FeedPostCard({ post, liked, canInteract }: Props) {
 
         <Link
           href={`/fil/${post.id}`}
-          className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-[0.85rem] font-semibold text-ink-500 hover:bg-ink-50 hover:text-ink-700 transition"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-[0.85rem] font-semibold text-ink-500 hover:bg-ink-50 hover:text-ink-700 transition"
         >
           <MessageCircle size={16} />
           Commenter
         </Link>
+
+        <FeedShareButton postId={post.id} excerpt={post.content} />
 
         {canInteract ? (
           <div className="px-3">

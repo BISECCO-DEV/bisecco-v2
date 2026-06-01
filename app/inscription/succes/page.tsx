@@ -50,7 +50,7 @@ export default async function InscriptionSuccesPage({
           <p className="mt-5 text-ink-500 text-[1rem] leading-relaxed max-w-lg mx-auto">
             Votre {isArtisan ? "compte artisan" : "compte particulier"} a bien été créé.
             {isArtisan
-              ? " Notre équipe vérifie votre SIREN et valide votre profil sous peu."
+              ? " Connexion immédiate · aucune attente de validation."
               : " Pour finaliser votre inscription, vous devez activer votre adresse email."}
           </p>
 
@@ -66,43 +66,42 @@ export default async function InscriptionSuccesPage({
                   <div>
                     <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
                       <CheckCircle2 size={14} className="text-emerald-500" />
-                      Email auto-validé pour les pros
+                      Email auto-validé · pas de lien à cliquer
                     </div>
                     <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
-                      Pas besoin de cliquer sur un lien : votre adresse <strong className="text-ink-900">{maskedEmail}</strong> est déjà confirmée.
+                      Votre adresse <strong className="text-ink-900">{maskedEmail}</strong> est déjà confirmée.
                     </p>
                   </div>
                 </div>
 
-                {/* Étape 2 artisan : validation admin */}
+                {/* Étape 2 artisan : connexion immédiate */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl bg-brand-50/60 border border-brand-200/60">
                   <div className="w-10 h-10 rounded-xl bg-brand-500 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
                     1
                   </div>
                   <div>
                     <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
-                      <ShieldCheck size={14} className="text-brand-600" />
-                      Notre équipe valide votre profil
+                      <Sparkles size={14} className="text-brand-600" />
+                      Connectez-vous maintenant
                     </div>
                     <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
-                      Nous vérifions votre numéro SIREN et vos métiers déclarés.
-                      Vous recevrez un email dès que votre profil sera <strong className="text-ink-900">approuvé et visible</strong>.
+                      Vous avez accès à tout : profil public, messagerie, fil d&apos;actualité, devis entrants.
                     </p>
                   </div>
                 </div>
 
-                {/* Étape 3 artisan : connexion */}
+                {/* Étape 3 artisan : modération info */}
                 <div className="flex items-start gap-4 p-4 rounded-2xl bg-sand-100/70 border border-sand-200">
                   <div className="w-10 h-10 rounded-xl bg-ink-700 grid place-items-center text-white flex-shrink-0 font-display font-semibold">
                     2
                   </div>
                   <div>
                     <div className="font-semibold text-ink-900 text-[0.94rem] inline-flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-ink-700" />
-                      Vous accédez à toute la plateforme
+                      <ShieldCheck size={14} className="text-ink-700" />
+                      Validation SIREN en arrière-plan
                     </div>
                     <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
-                      Une fois validé : profil public, messagerie, fil d&apos;actualité, devis entrants — tout est débloqué.
+                      Notre équipe vérifie votre SIREN auprès de l&apos;INSEE pour le badge ✓ <strong className="text-ink-900">Vérifié</strong> sur votre profil. Cela n&apos;empêche pas l&apos;accès au site.
                     </p>
                   </div>
                 </div>
@@ -151,18 +150,31 @@ export default async function InscriptionSuccesPage({
 
           {/* CTAs */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <CtaButton href="/" variant="primary" size="md" icon={Home}>
-              Retour à l&apos;accueil
-            </CtaButton>
-            <CtaButton href="/contact" variant="white" size="md" icon={MessageCircle}>
-              Besoin d&apos;aide ?
-            </CtaButton>
+            {isArtisan ? (
+              <>
+                <CtaButton href="/connexion" variant="primary" size="md" icon={Sparkles}>
+                  Me connecter maintenant
+                </CtaButton>
+                <CtaButton href="/" variant="white" size="md" icon={Home}>
+                  Accueil
+                </CtaButton>
+              </>
+            ) : (
+              <>
+                <CtaButton href="/" variant="primary" size="md" icon={Home}>
+                  Retour à l&apos;accueil
+                </CtaButton>
+                <CtaButton href="/contact" variant="white" size="md" icon={MessageCircle}>
+                  Besoin d&apos;aide ?
+                </CtaButton>
+              </>
+            )}
           </div>
 
           {/* Sous-pied */}
           <p className="mt-7 pt-6 border-t border-sand-200 text-[0.78rem] text-ink-400">
             {isArtisan
-              ? "Une question sur le délai de validation ? "
+              ? "Un problème pour vous connecter ? "
               : "Vous n'avez pas reçu d'email ? "}
             <Link href="/contact" className="font-semibold text-brand-500 hover:underline">
               Contactez le support

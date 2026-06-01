@@ -5,8 +5,14 @@ type Cell = "yes" | "no" | "partial" | string;
 
 type CompetitorCol = {
   name: string;
+  /** Texte court affiché dans la pastille logo (ex. "PJ"). */
   logo: string;
+  /** Image (fallback si défini). */
   logoUrl?: string;
+  /** Couleurs custom de la pastille logo (mark) — pour matcher l'identité de la marque. */
+  logoBg?: string;
+  logoText?: string;
+  logoBorder?: string;
   highlight?: boolean;
 };
 
@@ -17,9 +23,12 @@ type Row = {
 };
 
 const COLUMNS: CompetitorCol[] = [
-  { name: "Bisecco",        logo: "B",  logoUrl: "/logo.jpg",                      highlight: true },
-  { name: "Pages Jaunes",   logo: "PJ", logoUrl: "/competitors/pagesjaunes.svg" },
-  { name: "Habitatpresto",  logo: "H",  logoUrl: "/competitors/habitatpresto.svg" },
+  // Bisecco · logo image
+  { name: "Bisecco",      logo: "B",  logoUrl: "/logo.jpg", highlight: true },
+  // Pages Jaunes · jaune signature noir
+  { name: "Pages Jaunes", logo: "PJ", logoBg: "bg-[#FFDE07]", logoText: "text-ink-900", logoBorder: "border-[#e6c706]" },
+  // Habitatpresto · orange signature blanc
+  { name: "Habitatpresto", logo: "HP", logoBg: "bg-[#ED8150]", logoText: "text-white", logoBorder: "border-[#d36d3d]" },
 ];
 
 const ROWS: Row[] = [
@@ -178,11 +187,14 @@ export function HomeComparison() {
 
                 {/* Logo dans cercle premium DA */}
                 <div
-                  className={`relative inline-flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-2xl overflow-hidden bg-white mb-2 ${
+                  className={`relative inline-flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-2xl overflow-hidden mb-2 ${
+                    col.logoBg ?? "bg-white"
+                  } ${
                     col.highlight
                       ? "border-2 border-brand-300 shadow-[0_8px_20px_-4px_rgba(240,122,47,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]"
-                      : "border border-ink-100 shadow-[0_4px_10px_-2px_rgba(13,30,74,0.08)]"
+                      : `border ${col.logoBorder ?? "border-ink-100"} shadow-[0_4px_10px_-2px_rgba(13,30,74,0.08)]`
                   }`}
+                  aria-label={col.name}
                 >
                   {col.logoUrl ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -193,7 +205,11 @@ export function HomeComparison() {
                       loading="lazy"
                     />
                   ) : (
-                    <span className="w-full h-full flex items-center justify-center bg-gradient-to-br from-ink-700 to-ink-800 text-white font-extrabold text-[0.78rem] sm:text-[0.86rem]">
+                    <span
+                      className={`w-full h-full flex items-center justify-center font-extrabold text-[0.95rem] sm:text-[1.05rem] tracking-tight ${
+                        col.logoText ?? "text-white"
+                      }`}
+                    >
                       {col.logo}
                     </span>
                   )}

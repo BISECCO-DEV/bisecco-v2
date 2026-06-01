@@ -439,6 +439,9 @@ export async function signupAction(
 
     // Crée le user public.users
     // (name = nom du gérant uniquement · company_name est stocké dans artisan_profiles)
+    // validation_status: "approved" → connexion immédiate après signup.
+    // L'admin reçoit une notification email (notifyAdminOfSignup) pour modération a posteriori
+    // et peut suspendre/rejeter si besoin.
     const { data: created, error: createErr } = await admin
       .from("users")
       .insert({
@@ -452,7 +455,7 @@ export async function signupAction(
         siren: sirenRaw,
         siren_status: sirenCheck.status,
         siren_last_checked_at: new Date().toISOString(),
-        validation_status: "pending",
+        validation_status: "approved",
       })
       .select("id")
       .single();

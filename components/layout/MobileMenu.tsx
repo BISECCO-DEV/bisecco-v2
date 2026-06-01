@@ -8,6 +8,7 @@ import { Menu, X, ChevronRight, Search, Bell, LogOut, Shield, MessageSquare, Use
 import { MAIN_NAV, SECONDARY_NAV, filterNavForUser, isActive } from "@/lib/nav";
 import { logoutAction } from "@/lib/auth/actions";
 import { CtaButton } from "@/components/ui/CtaButton";
+import { InstallAppButton } from "./InstallAppButton";
 
 export type MobileMenuUser = {
   name: string;
@@ -223,6 +224,11 @@ export function MobileMenu({ user }: MobileMenuProps = {}) {
                   );
                 })}
               </ul>
+            </div>
+
+            {/* CTA Installer l'app · pertinent uniquement en navigateur mobile */}
+            <div className="px-4 py-3 border-t border-white/[0.05]">
+              <InstallAppButton variant="default" className="w-full justify-center" />
             </div>
 
             {/* Mon espace · SEULEMENT si connecté */}

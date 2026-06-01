@@ -2,72 +2,54 @@
 
 import { useEffect, useState } from "react";
 import { Download, X, Share2, Plus } from "lucide-react";
+import { pwaInstall } from "@/lib/pwa/install";
 
 /**
- * Bouton "Installer l'application" :
- * - Sur Android (Chrome, Edge, Brave...) : utilise l'événement beforeinstallprompt
- *   pour afficher un bouton qui déclenche le prompt natif.
- * - Sur iOS (Safari) : affiche un mini guide "Partager → Sur l'écran d'accueil"
- *   puisque iOS ne propose pas d'API automatique.
+ * Bandeau d'invite à installer · auto-affiché 6-10s après le chargement.
+ * - Android : déclenche le prompt natif via pwaInstall.prompt()
+ * - iOS : ouvre la modale guide
+ * - Caché si déjà installé ou refusé il y a moins de 14 jours
  *
- * Apparition : 8 sec après le premier scroll, une seule fois par session,
- * caché si déjà installé (display-mode: standalone).
+ * Note : utilise le même singleton pwaInstall que le bouton manuel
+ * pour garantir un seul état partagé.
  */
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
 
 const STORAGE_KEY = "bisecco_pwa_dismissed";
 
 export function PwaInstallPrompt() {
   const [visible, setVisible] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [iosGuideOpen, setIosGuideOpen] = useState(false);
-  const [platform, setPlatform] = useState<"ios" | "android" | "other">("other");
+  const [platform, setPlatform] = useState<"ios" | "android" | "desktop">("desktop");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Déjà installé ?
-    const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      // iOS Safari
-      (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
-    if (isStandalone) return;
+    pwaInstall.init();
+    if (pwaInstall.isStandalone()) return;
 
-    // Déjà refusé récemment ?
     const dismissedAt = localStorage.getItem(STORAGE_KEY);
     if (dismissedAt) {
       const days = (Date.now() - Number(dismissedAt)) / 86400000;
-      if (days < 14) return; // pas avant 14j
+      if (days < 14) return;
     }
 
-    const ua = navigator.userAgent;
-    const isIOS = /iPhone|iPad|iPod/i.test(ua) && !(window as unknown as { MSStream?: unknown }).MSStream;
-    const isAndroid = /Android/i.test(ua);
-    setPlatform(isIOS ? "ios" : isAndroid ? "android" : "other");
+    const p = pwaInstall.platform();
+    setPlatform(p);
 
-    const onBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Délai avant d'afficher pour ne pas être intrusif
-      setTimeout(() => setVisible(true), 6000);
-    };
+    if (p === "android") {
+      // Attends que le prompt soit dispo
+      const unsub = pwaInstall.subscribe((can) => {
+        if (can) setTimeout(() => setVisible(true), 6000);
+      });
+      // Cas où l'event est déjà fired avant montage
+      if (pwaInstall.canInstall()) setTimeout(() => setVisible(true), 6000);
+      return unsub;
+    }
 
-    window.addEventListener("beforeinstallprompt", onBeforeInstall);
-
-    // iOS : pas d'API → on affiche un mini guide après 10s de présence sur la page
-    if (isIOS) {
+    if (p === "ios") {
       const t = setTimeout(() => setVisible(true), 10000);
-      return () => {
-        clearTimeout(t);
-        window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-      };
+      return () => clearTimeout(t);
     }
-
-    return () => window.removeEventListener("beforeinstallprompt", onBeforeInstall);
   }, []);
 
   const dismiss = () => {
@@ -77,25 +59,19 @@ export function PwaInstallPrompt() {
   };
 
   const install = async () => {
-    if (deferredPrompt) {
-      await deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      if (choice.outcome === "accepted") {
-        setVisible(false);
-      } else {
-        dismiss();
-      }
-      setDeferredPrompt(null);
-    } else if (platform === "ios") {
+    if (platform === "ios") {
       setIosGuideOpen(true);
+      return;
     }
+    const outcome = await pwaInstall.prompt();
+    if (outcome === "accepted") setVisible(false);
+    else if (outcome === "dismissed") dismiss();
   };
 
   if (!visible) return null;
 
   return (
     <>
-      {/* Bandeau bottom flottant */}
       <div
         role="dialog"
         aria-label="Installer Bisecco sur votre écran d'accueil"
@@ -103,15 +79,12 @@ export function PwaInstallPrompt() {
       >
         <div className="mx-auto max-w-md pointer-events-auto">
           <div className="bg-white rounded-2xl border border-ink-100 shadow-[0_18px_50px_-15px_rgba(13,30,74,0.35)] p-4 flex items-start gap-3">
-            {/* Icône logo */}
             <div className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 ring-2 ring-brand-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/icon-app.png" alt="Bisecco" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-extrabold text-ink-700 text-sm leading-tight">
-                Installer Bisecco
-              </div>
+              <div className="font-extrabold text-ink-700 text-sm leading-tight">Installer Bisecco</div>
               <p className="text-[0.78rem] text-ink-500 mt-0.5 leading-snug">
                 {platform === "ios"
                   ? "Ajoute Bisecco à ton écran d'accueil pour y accéder en un clic."
@@ -146,7 +119,6 @@ export function PwaInstallPrompt() {
         </div>
       </div>
 
-      {/* Guide iOS modal */}
       {iosGuideOpen && (
         <div className="fixed inset-0 z-[100] bg-ink-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-3">
           <div className="bg-white rounded-2xl max-w-sm w-full p-5 relative">
@@ -166,12 +138,9 @@ export function PwaInstallPrompt() {
               <h3 className="font-extrabold text-ink-700 text-lg">Installer Bisecco sur iPhone</h3>
               <p className="text-sm text-ink-500 mt-1">3 étapes simples</p>
             </div>
-
             <ol className="mt-5 space-y-3">
               <li className="flex items-start gap-3">
-                <span className="w-7 h-7 rounded-full bg-brand-500 text-white inline-flex items-center justify-center font-bold text-xs flex-shrink-0">
-                  1
-                </span>
+                <span className="w-7 h-7 rounded-full bg-brand-500 text-white inline-flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
                 <div className="text-sm text-ink-600 leading-relaxed">
                   Appuie sur l&apos;icône{" "}
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-ink-100 font-semibold">
@@ -181,9 +150,7 @@ export function PwaInstallPrompt() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-7 h-7 rounded-full bg-brand-500 text-white inline-flex items-center justify-center font-bold text-xs flex-shrink-0">
-                  2
-                </span>
+                <span className="w-7 h-7 rounded-full bg-brand-500 text-white inline-flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
                 <div className="text-sm text-ink-600 leading-relaxed">
                   Choisis{" "}
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-ink-100 font-semibold">
@@ -193,15 +160,12 @@ export function PwaInstallPrompt() {
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-7 h-7 rounded-full bg-brand-500 text-white inline-flex items-center justify-center font-bold text-xs flex-shrink-0">
-                  3
-                </span>
+                <span className="w-7 h-7 rounded-full bg-brand-500 text-white inline-flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
                 <div className="text-sm text-ink-600 leading-relaxed">
                   Appuie sur <strong>Ajouter</strong> en haut à droite. C&apos;est tout 🎉
                 </div>
               </li>
             </ol>
-
             <button
               type="button"
               onClick={dismiss}

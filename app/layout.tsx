@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { getCurrentUser } from "@/lib/db/current-user";
 import { countUnreadNotifications } from "@/lib/notifications/actions";
 import { getMetierOptions } from "@/lib/db/metier-options";
+import { countUnreadCvs } from "@/lib/cv/count-unread";
 
 const inter = localFont({
   src: "../public/fonts/Inter.woff2",
@@ -109,6 +110,9 @@ export default async function RootLayout({
       }
     : null;
   const unreadNotifs = current ? await countUnreadNotifications() : 0;
+  const unreadCvs = current && (current.role === "artisan" || current.role === "admin")
+    ? await countUnreadCvs(current.id)
+    : 0;
   const metierOptions = await getMetierOptions();
 
   return (
@@ -117,7 +121,7 @@ export default async function RootLayout({
         <JsonLd data={[organizationJsonLd, websiteJsonLd]} />
       </head>
       <body className="font-sans antialiased min-h-screen flex flex-col">
-        <Header user={headerUser} unreadNotifications={unreadNotifs} currentUserId={current?.id ?? null} metierOptions={metierOptions} />
+        <Header user={headerUser} unreadNotifications={unreadNotifs} currentUserId={current?.id ?? null} metierOptions={metierOptions} unreadCvs={unreadCvs} />
         <main className="flex-1">{children}</main>
         <Footer />
         <GlobalClientWidgets />

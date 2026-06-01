@@ -16,6 +16,7 @@ type HeaderProps = {
   unreadNotifications?: number;
   currentUserId?: number | null;
   metierOptions?: MetierOption[];
+  unreadCvs?: number;
 };
 
 // Pages où le header doit être TRANSPARENT en haut (hero overlay)
@@ -24,7 +25,7 @@ const OVERLAY_HERO_ROUTES = ["/"];
 
 const SCROLL_THRESHOLD = 24;
 
-export function Header({ user, unreadNotifications = 0, currentUserId = null, metierOptions }: HeaderProps) {
+export function Header({ user, unreadNotifications = 0, currentUserId = null, metierOptions, unreadCvs = 0 }: HeaderProps) {
   const pathname = usePathname();
   const isOverlayPage = OVERLAY_HERO_ROUTES.includes(pathname);
   const isAdminPage = pathname?.startsWith("/admin") ?? false;
@@ -145,7 +146,7 @@ export function Header({ user, unreadNotifications = 0, currentUserId = null, me
               <NotificationsDropdown unreadCount={unreadNotifications} currentUserId={currentUserId} />
             </div>
 
-            <UserMenu user={user} />
+            <UserMenu user={user} unreadCvs={unreadCvs} />
 
             <MobileMenu user={user} />
           </div>

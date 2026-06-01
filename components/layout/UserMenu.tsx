@@ -17,9 +17,10 @@ export type UserMenuProps = {
     profile_photo: string | null;
     client_number: string | null;
   } | null;
+  unreadCvs?: number;
 };
 
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu({ user, unreadCvs = 0 }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -110,7 +111,12 @@ export function UserMenu({ user }: UserMenuProps) {
             <MenuLink href="/mon-profil" icon={User} label="Mon espace" />
             <MenuLink href="/messagerie" icon={MessageCircle} label="Messagerie" />
             {(user.role === "artisan" || user.role === "admin") && (
-              <MenuLink href="/mon-profil/cvs-recus" icon={Inbox} label="CVs reçus" />
+              <MenuLink
+                href="/mon-profil/cvs-recus"
+                icon={Inbox}
+                label="CVs reçus"
+                badge={unreadCvs > 0 ? (unreadCvs > 99 ? "99+" : String(unreadCvs)) : undefined}
+              />
             )}
             <MenuLink href="/mon-profil/cv" icon={FileText} label="Mon CV" />
             <MenuLink href="/mon-profil/devis" icon={FileText} label="Mes devis" />
@@ -138,12 +144,13 @@ export function UserMenu({ user }: UserMenuProps) {
 }
 
 function MenuLink({
-  href, icon: Icon, label, highlight,
+  href, icon: Icon, label, highlight, badge,
 }: {
   href: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
   label: string;
   highlight?: boolean;
+  badge?: string;
 }) {
   return (
     <Link
@@ -155,7 +162,12 @@ function MenuLink({
       }`}
     >
       <Icon size={15} />
-      {label}
+      <span className="flex-1">{label}</span>
+      {badge && (
+        <span className="px-1.5 py-0.5 rounded-full bg-brand-500 text-white text-[0.62rem] font-extrabold tabular-nums">
+          {badge}
+        </span>
+      )}
     </Link>
   );
 }

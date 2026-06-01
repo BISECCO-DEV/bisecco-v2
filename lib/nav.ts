@@ -23,10 +23,10 @@ export const MAIN_NAV: NavLink[] = [
   { href: "/",            label: "Accueil",     icon: Home },
   { href: "/rechercher",  label: "Rechercher",  icon: Search },
   { href: "/metiers",     label: "Métiers",     icon: Briefcase },
-  { href: "/fil",         label: "Fil",         icon: Newspaper,         requiresAuth: true },
+  { href: "/fil",         label: "Actu",        icon: Newspaper,         requiresAuth: true },
   { href: "/emploi",      label: "Emploi",      icon: BriefcaseBusiness, requiresAuth: true },
   { href: "/messagerie",  label: "Messagerie",  icon: MessageSquare,     requiresAuth: true },
-  { href: "/partenaires", label: "Partenaires", icon: Handshake,         requiresAuth: true },
+  { href: "/partenaires", label: "Mon réseau",  icon: Handshake,         requiresAuth: true },
   { href: "/contact",     label: "Contact",     icon: Mail,              requiresAuth: true },
 ];
 

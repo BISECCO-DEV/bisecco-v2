@@ -66,16 +66,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProfilPage({ params }: Props) {
   const { id } = await params;
   const clientNumber = extractClientNumber(id) ?? id;
-  const artisanIdNum = parseInt(id, 10);
-  const [detail, currentUser, dbUser, alreadyFavorited] = await Promise.all([
+  const [detail, currentUser, dbUser] = await Promise.all([
     fetchArtisanProfileDetail(clientNumber),
     getCurrentUser(),
     getCurrentDbUser(),
-    isNaN(artisanIdNum) ? Promise.resolve(false) : hasFavorited(artisanIdNum),
   ]);
   if (!detail) notFound();
-  const canFavorite = !!dbUser && dbUser.role !== "artisan" && !isNaN(artisanIdNum);
-  const canReview = !!dbUser && dbUser.role !== "artisan" && dbUser.id !== artisanIdNum;
+  // L'URL utilise le client_number (ex. BS-2026-001), pas un id numérique.
+  // On récupère le vrai id DB depuis detail.artisan pour les actions (review/favorite/contact).
+  const artisanIdResolved = detail.artisan.id;
+  const alreadyFavorited = dbUser ? await hasFavorited(artisanIdResolved) : false;
+  const canFavorite = !!dbUser && dbUser.role !== "artisan";
+  const canReview = !!dbUser && dbUser.role !== "artisan" && dbUser.id !== artisanIdResolved;
 
   const { artisan: a, services, gallery, reviews } = detail;
   const metierLabel = a.metiers[0]?.name ?? "Artisan";
@@ -185,7 +187,7 @@ export default async function ProfilPage({ params }: Props) {
               text={`Découvrez ${companyName} sur Bisecco · artisan vérifié SIREN`}
             />
             {canFavorite ? (
-              <FavoriteButton artisanId={artisanIdNum} initialFavorited={alreadyFavorited} compact />
+              <FavoriteButton artisanId={artisanIdResolved} initialFavorited={alreadyFavorited} compact />
             ) : (
               <button className="w-10 h-10 rounded-xl bg-white/90 backdrop-blur-md flex items-center justify-center text-ink-700 hover:bg-white shadow-card transition opacity-60 cursor-not-allowed" aria-label="Connexion requise pour sauvegarder" title="Connectez-vous pour sauvegarder">
                 <Heart size={16} />
@@ -552,13 +554,13 @@ export default async function ProfilPage({ params }: Props) {
           {/* ── Sections actions utilisateur ─────────────── */}
           {canReview && (
             <div className="mt-8 max-w-3xl">
-              <ReviewForm artisanId={artisanIdNum} artisanName={companyName} />
+              <ReviewForm artisanId={artisanIdResolved} artisanName={companyName} />
             </div>
           )}
 
-          {!isNaN(artisanIdNum) && dbUser?.id !== artisanIdNum && (
+          {dbUser?.id !== artisanIdResolved && (
             <div className="mt-4 max-w-3xl">
-              <ReportProfileForm reportedUserId={artisanIdNum} isGuest={!dbUser} />
+              <ReportProfileForm reportedUserId={artisanIdResolved} isGuest={!dbUser} />
             </div>
           )}
       </div>

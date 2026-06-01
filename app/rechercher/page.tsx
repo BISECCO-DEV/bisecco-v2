@@ -4,6 +4,27 @@ import { FileText, ArrowRight, ShieldCheck, Star, CheckCircle2, Briefcase } from
 import { SearchClient, type ArtisanCard } from "./SearchClient";
 import { getMetierOptions } from "@/lib/db/metier-options";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { MetiersDirectory, type MetierWithCount } from "@/app/metiers/MetiersDirectory";
+
+async function fetchMetiersWithCounts(): Promise<MetierWithCount[]> {
+  const supabase = createSupabaseAdminClient();
+  const { data: metiers } = await supabase
+    .from("metiers")
+    .select("id, name, slug, category, icon, description")
+    .order("name", { ascending: true });
+  if (!metiers) return [];
+
+  const { data: pivots } = await supabase
+    .from("artisan_profile_metier")
+    .select("metier_id");
+
+  const counts = new Map<number, number>();
+  for (const p of pivots ?? []) {
+    counts.set(p.metier_id, (counts.get(p.metier_id) ?? 0) + 1);
+  }
+
+  return metiers.map((m) => ({ ...m, artisanCount: counts.get(m.id) ?? 0 }));
+}
 
 export const metadata: Metadata = {
   title: "Rechercher un artisan qualifié",
@@ -98,10 +119,13 @@ async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
 
 export default async function RechercherPage({ searchParams }: { searchParams: SearchParams }) {
   const { intent } = await searchParams;
-  const metierOptions = await getMetierOptions();
   const isCvIntent = intent === "cv";
 
-  const artisans = await fetchAllApprovedArtisans();
+  const [metierOptions, artisans, metiersWithCounts] = await Promise.all([
+    getMetierOptions(),
+    fetchAllApprovedArtisans(),
+    fetchMetiersWithCounts(),
+  ]);
 
   return (
     <div className="bg-ink-50 min-h-screen">
@@ -192,45 +216,21 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
           </div>
         </section>
 
-        {/* Top métiers · vers les pages dédiées */}
+        {/* Annuaire complet des métiers (même contenu que /metiers) */}
         <section className="mt-14">
-          <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-ink-700 tracking-tight">
-                Explorer par <span className="text-brand-500">métier</span>
-              </h2>
-              <p className="text-ink-500 mt-1">Découvrez tous les artisans d&apos;un métier précis avec des pages dédiées.</p>
-            </div>
-            <Link href="/metiers" className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-600 hover:underline">
-              Tous les métiers <ArrowRight size={13} />
-            </Link>
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[0.7rem] font-extrabold tracking-[0.14em] uppercase">
+              <Briefcase size={11} strokeWidth={2.8} />
+              Annuaire des métiers
+            </span>
+            <h2 className="mt-4 text-2xl md:text-3xl font-bold text-ink-700 tracking-tight">
+              <span className="text-brand-500">{metiersWithCounts.length}</span> métiers artisanaux à portée de clic
+            </h2>
+            <p className="text-ink-500 mt-2">
+              Cherchez parmi tous les métiers Bisecco, filtrez par catégorie, ouvrez la page dédiée pour découvrir les artisans.
+            </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {[
-              { slug: "plombier",     name: "Plombier",     emoji: "🔧" },
-              { slug: "electricien",  name: "Électricien",  emoji: "⚡" },
-              { slug: "macon",        name: "Maçon",        emoji: "🧱" },
-              { slug: "menuisier",    name: "Menuisier",    emoji: "🪵" },
-              { slug: "peintre",      name: "Peintre",      emoji: "🎨" },
-              { slug: "couvreur",     name: "Couvreur",     emoji: "🏠" },
-              { slug: "chauffagiste", name: "Chauffagiste", emoji: "🔥" },
-              { slug: "carreleur",    name: "Carreleur",    emoji: "🔲" },
-            ].map((m) => (
-              <Link
-                key={m.slug}
-                href={`/metiers/${m.slug}`}
-                className="group flex items-center gap-3 p-4 rounded-xl bg-white border border-ink-100 hover:border-brand-300 hover:-translate-y-0.5 transition"
-              >
-                <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center text-xl group-hover:bg-brand-100 transition">
-                  {m.emoji}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-bold text-ink-700 text-sm truncate">{m.name}</div>
-                  <div className="text-[0.7rem] text-ink-400">Voir les artisans →</div>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <MetiersDirectory metiers={metiersWithCounts} />
         </section>
 
         {/* CTA artisan · cohérent avec /metiers/[slug] */}

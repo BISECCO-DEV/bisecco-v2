@@ -22,7 +22,8 @@ export type NavLink = {
 export const MAIN_NAV: NavLink[] = [
   { href: "/",            label: "Accueil",     icon: Home },
   { href: "/rechercher",  label: "Rechercher",  icon: Search },
-  { href: "/metiers",     label: "Métiers",     icon: Briefcase },
+  // /metiers reste accessible directement par URL + via les liens internes (footer, contenu),
+  // mais n'apparaît plus dans la nav principale (intégré dans /rechercher).
   { href: "/fil",         label: "Actu",        icon: Newspaper,         requiresAuth: true },
   { href: "/emploi",      label: "Emploi",      icon: BriefcaseBusiness, requiresAuth: true },
   { href: "/messagerie",  label: "Messagerie",  icon: MessageSquare,     requiresAuth: true },

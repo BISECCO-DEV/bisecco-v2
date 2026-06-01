@@ -2,12 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, CheckCircle2, Loader2, Power } from "lucide-react";
-import { setMaintenanceEnabledAction } from "@/lib/admin/site-settings";
+import { AlertTriangle, CheckCircle2, Loader2, Power, AlertOctagon } from "lucide-react";
+import { setMaintenanceEnabledAction } from "@/lib/admin/site-settings-actions";
 
 type Props = {
   initialEnabled: boolean;
   envForced: boolean;
+  tableExists: boolean;
   updatedAt: string | null;
   updatedByName: string | null;
 };
@@ -18,26 +19,44 @@ function formatDate(iso: string | null): string {
   return d.toLocaleString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
-export function MaintenanceToggleBar({ initialEnabled, envForced, updatedAt, updatedByName }: Props) {
+export function MaintenanceToggleBar({ initialEnabled, envForced, tableExists, updatedAt, updatedByName }: Props) {
   const router = useRouter();
   const [enabled, setEnabled] = useState(initialEnabled);
   const [pending, startTransition] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
 
   const toggle = () => {
-    if (envForced) return;
+    if (envForced || !tableExists) return;
     const next = !enabled;
     setMsg(null);
     startTransition(async () => {
-      const res = await setMaintenanceEnabledAction(next);
-      if (res.ok) {
-        setEnabled(next);
-        router.refresh();
-      } else {
-        setMsg(res.error ?? "Erreur");
+      try {
+        const res = await setMaintenanceEnabledAction(next);
+        if (res.ok) {
+          setEnabled(next);
+          router.refresh();
+        } else {
+          setMsg(res.error ?? "Erreur inconnue");
+        }
+      } catch (err) {
+        setMsg(err instanceof Error ? err.message : "Erreur réseau");
       }
     });
   };
+
+  // Si la table n'existe pas → bandeau rouge avec instruction
+  if (!tableExists) {
+    return (
+      <div className="bg-red-600 text-white px-4 sm:px-6 py-2.5 flex items-center gap-2.5">
+        <AlertOctagon size={16} className="flex-shrink-0" />
+        <div className="flex-1 min-w-0 text-[0.82rem]">
+          <strong>Toggle maintenance indisponible :</strong> exécute la migration{" "}
+          <code className="px-1.5 py-0.5 rounded bg-white/20 font-mono text-[0.78rem]">db/018_site_settings.sql</code>{" "}
+          dans Supabase Dashboard → SQL Editor.
+        </div>
+      </div>
+    );
+  }
 
   // Styles selon l'état
   const containerCls = enabled

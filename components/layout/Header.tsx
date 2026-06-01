@@ -9,7 +9,7 @@ import type { MetierOption } from "@/lib/metiers";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { MobileMenu } from "./MobileMenu";
 import { UserMenu, type UserMenuProps } from "./UserMenu";
-import { MAIN_NAV, isActive } from "@/lib/nav";
+import { MAIN_NAV, filterNavForUser, isActive } from "@/lib/nav";
 
 type HeaderProps = {
   user: UserMenuProps["user"];
@@ -108,9 +108,9 @@ export function Header({ user, unreadNotifications = 0, currentUserId = null, me
             </span>
           </Link>
 
-          {/* Nav desktop */}
+          {/* Nav desktop · liens auth-only cachés si non connecté */}
           <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center" aria-label="Navigation principale">
-            {MAIN_NAV.map((item) => {
+            {filterNavForUser(MAIN_NAV, Boolean(user)).map((item) => {
               const active = isActive(pathname, item.href);
               const Icon = item.icon;
               return (

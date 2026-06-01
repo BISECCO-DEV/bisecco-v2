@@ -146,6 +146,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <MaintenanceToggleBar
             initialEnabled={maintenance.maintenanceEnabled}
             envForced={envForced}
+            tableExists={maintenance.tableExists}
             updatedAt={maintenance.updatedAt}
             updatedByName={maintenance.updatedByName}
           />

@@ -3,7 +3,8 @@
  * Stratégie : Network-first, fallback cache, page offline
  */
 
-const CACHE_NAME = "bisecco-v1";
+// Bump à chaque déploiement majeur pour évincer les anciens caches.
+const CACHE_NAME = "bisecco-v2-2026-06-01";
 const OFFLINE_URL = "/offline";
 const PRECACHE = [
   "/",

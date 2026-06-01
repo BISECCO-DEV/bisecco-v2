@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { Menu, X, ChevronRight, Search, Bell, LogOut, Shield, MessageSquare, Users } from "lucide-react";
-import { MAIN_NAV, SECONDARY_NAV, isActive } from "@/lib/nav";
+import { MAIN_NAV, SECONDARY_NAV, filterNavForUser, isActive } from "@/lib/nav";
 import { logoutAction } from "@/lib/auth/actions";
 import { CtaButton } from "@/components/ui/CtaButton";
 
@@ -182,7 +182,7 @@ export function MobileMenu({ user }: MobileMenuProps = {}) {
                 Navigation
               </div>
               <ul className="space-y-1">
-                {MAIN_NAV.map((item) => {
+                {filterNavForUser(MAIN_NAV, Boolean(user)).map((item) => {
                   const active = isActive(pathname, item.href);
                   const Icon = item.icon;
                   return (

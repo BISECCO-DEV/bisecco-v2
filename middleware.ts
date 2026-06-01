@@ -67,7 +67,17 @@ const PUBLIC_ROUTES = [
   "/llms.txt",
 ];
 
-const PROTECTED_PATHS = ["/mon-profil", "/messagerie", "/admin"];
+// Routes accessibles uniquement aux membres connectés.
+// Le visiteur anonyme est redirigé vers /connexion?redirect=...
+const PROTECTED_PATHS = [
+  "/mon-profil",
+  "/messagerie",
+  "/admin",
+  "/fil",
+  "/emploi",
+  "/partenaires",
+  "/contact",
+];
 const GUEST_ONLY_PATHS = ["/connexion", "/inscription"];
 
 function isSupabaseConfigured(): boolean {

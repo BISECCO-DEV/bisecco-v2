@@ -1,24 +1,26 @@
-"use server";
-
 import { cache } from "react";
-import { revalidatePath } from "next/cache";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { requireAdmin } from "@/lib/db/current-user";
 
 /**
- * Lit le flag maintenance depuis la DB.
- * Cached par requête React (via cache()).
+ * Lectures du flag maintenance.
+ * Ces fonctions sont des utilitaires server-only (pas des Server Actions).
+ * → Pas de "use server" en tête, sinon Next.js les sérialise comme actions
+ *   et le cache() React ne fonctionne plus.
  */
+
 export const isMaintenanceEnabledFromDb = cache(async (): Promise<boolean> => {
   const admin = createSupabaseAdminClient();
-  const { data } = await admin
+  const { data, error } = await admin
     .from("site_settings")
     .select("value")
     .eq("key", "maintenance_enabled")
     .maybeSingle();
 
+  if (error) {
+    console.error("[isMaintenanceEnabledFromDb]", error);
+    return false;
+  }
   if (!data) return false;
-  // value est stocké en JSONB : true/false (bool natif) ou "true"/"false" (string)
   const v = data.value as unknown;
   return v === true || v === "true";
 });
@@ -27,18 +29,26 @@ export type SiteSettingsMeta = {
   maintenanceEnabled: boolean;
   updatedAt: string | null;
   updatedByName: string | null;
+  tableExists: boolean;
 };
 
 export const getMaintenanceSettingMeta = cache(async (): Promise<SiteSettingsMeta> => {
   const admin = createSupabaseAdminClient();
-  const { data } = await admin
+  const { data, error } = await admin
     .from("site_settings")
     .select("value, updated_at, updated_by")
     .eq("key", "maintenance_enabled")
     .maybeSingle();
 
+  // Si la table n'existe pas → on retourne tableExists=false pour que l'UI
+  // puisse afficher un warning explicite.
+  if (error) {
+    console.error("[getMaintenanceSettingMeta]", error);
+    return { maintenanceEnabled: false, updatedAt: null, updatedByName: null, tableExists: false };
+  }
+
   if (!data) {
-    return { maintenanceEnabled: false, updatedAt: null, updatedByName: null };
+    return { maintenanceEnabled: false, updatedAt: null, updatedByName: null, tableExists: true };
   }
 
   let updatedByName: string | null = null;
@@ -56,33 +66,6 @@ export const getMaintenanceSettingMeta = cache(async (): Promise<SiteSettingsMet
     maintenanceEnabled: v === true || v === "true",
     updatedAt: data.updated_at,
     updatedByName,
+    tableExists: true,
   };
 });
-
-/** Active ou désactive la maintenance. Admin requis. */
-export async function setMaintenanceEnabledAction(enabled: boolean): Promise<{ ok: boolean; error?: string }> {
-  const me = await requireAdmin();
-  if (!me.id) return { ok: false, error: "Admin non trouvé." };
-
-  const admin = createSupabaseAdminClient();
-  const { error } = await admin
-    .from("site_settings")
-    .upsert(
-      {
-        key: "maintenance_enabled",
-        value: enabled,
-        updated_at: new Date().toISOString(),
-        updated_by: me.id,
-      },
-      { onConflict: "key" },
-    );
-
-  if (error) {
-    console.error("[setMaintenanceEnabledAction]", error);
-    return { ok: false, error: error.message };
-  }
-
-  // Force le re-render de toutes les pages (le bandeau admin doit refléter l'état)
-  revalidatePath("/", "layout");
-  return { ok: true };
-}

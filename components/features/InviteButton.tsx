@@ -27,15 +27,18 @@ export interface InviteButtonProps {
   className?: string;
 }
 
+// Note : les caractères accentués passent mal sur SMS GSM-7 (-> SMS multipartie + facturation).
+// On utilise une version sans accents pour SMS, et avec accents pour WhatsApp / email.
+
 const SMS_MESSAGE = (url: string) =>
-  `Rejoins-moi sur Bisecco, l'annuaire d'artisans verifies gratuit 👇 ${url}`;
+  `Salut je viens de decouvrir Bisecco rejoins moi c'est nouveau un reseau social d'Artisants pour partager des infos sur nos besoins du quotidien, super sympa, et pratique :) ${url}`;
 
 const WHATSAPP_MESSAGE = (url: string) =>
-  `Salut ! Je viens de decouvrir Bisecco, un annuaire d'artisans francais verifies (SIREN controle) et 100% gratuit. Je te recommande, ca peut t'etre utile 👇\n${url}`;
+  `Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social d'Artisants pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊\n${url}`;
 
-const EMAIL_SUBJECT = "Decouvre Bisecco · annuaire d'artisans verifies";
+const EMAIL_SUBJECT = "Rejoins-moi sur Bisecco 😊";
 const EMAIL_BODY = (url: string) =>
-  `Salut !\n\nJe viens de decouvrir Bisecco, un annuaire d'artisans francais verifies (SIREN controle) et 100% gratuit.\n\nJe te recommande, ca peut vraiment t'etre utile :\n${url}\n\nA bientot !`;
+  `Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social d'Artisants pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊\n\n${url}`;
 
 type Platform = "android-picker" | "ios-sms" | "mobile" | "desktop";
 
@@ -148,7 +151,7 @@ export function InviteButton({
     try {
       await navigator.share({
         title: "Bisecco",
-        text: "Rejoins-moi sur Bisecco, l'annuaire d'artisans verifies gratuit",
+        text: "Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social d'Artisants pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊",
         url: referralUrl,
       });
       trackInvite("native_share", 0);

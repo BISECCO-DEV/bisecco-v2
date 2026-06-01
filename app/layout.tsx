@@ -56,8 +56,27 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
-  icons: { icon: "/favicon.ico" },
+  icons: {
+    icon: [
+      { url: "/icon-app.png", type: "image/png" },
+    ],
+    shortcut: "/icon-app.png",
+    apple: [
+      // Apple Touch Icon · utilisé quand un utilisateur iOS ajoute Bisecco à son écran d'accueil
+      { url: "/icon-app.png", sizes: "180x180", type: "image/png" },
+      { url: "/icon-app.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-app.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "Bisecco",
+    statusBarStyle: "default",
+    startupImage: ["/icon-app.png"],
+  },
+  applicationName: "Bisecco",
+  formatDetection: { telephone: true, email: true, address: true },
 };
 
 export const viewport: Viewport = {

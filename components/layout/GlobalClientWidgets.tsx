@@ -39,6 +39,11 @@ const ServiceWorkerRegister = dynamic(
   { ssr: false, loading: () => null },
 );
 
+const PwaInstallPrompt = dynamic(
+  () => import("./PwaInstallPrompt").then((m) => m.PwaInstallPrompt),
+  { ssr: false, loading: () => null },
+);
+
 export function GlobalClientWidgets() {
   return (
     <>
@@ -48,6 +53,7 @@ export function GlobalClientWidgets() {
       <Chatbot />
       <ScrollToTop />
       <ServiceWorkerRegister />
+      <PwaInstallPrompt />
     </>
   );
 }

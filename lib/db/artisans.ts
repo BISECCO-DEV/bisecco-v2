@@ -39,7 +39,7 @@ type ArtisanWithRelations = {
     artisan_profile_metier: Array<{
       metiers: { id: number; name: string; slug: string; icon: string | null } | null;
     }>;
-    reviews: Array<{ rating: number }>;
+    reviews: Array<{ rating: number; status: string | null; is_flagged: boolean | null }>;
   }>;
 };
 
@@ -54,7 +54,10 @@ function normalizeCity(city: string | null): string {
 
 function flattenArtisan(u: ArtisanWithRelations): ArtisanCard {
   const profile = u.artisan_profiles?.[0];
-  const reviews = profile?.reviews ?? [];
+  // Seuls les avis approuvés (et non signalés) comptent pour la moyenne publique.
+  const reviews = (profile?.reviews ?? []).filter(
+    (r) => r.status === "approved" && !r.is_flagged,
+  );
   const avgRating = reviews.length
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : null;
@@ -90,7 +93,7 @@ const ARTISAN_SELECT = `
     artisan_profile_metier (
       metiers (id, name, slug, icon)
     ),
-    reviews (rating)
+    reviews (rating, status, is_flagged)
   )
 `;
 
@@ -229,6 +232,7 @@ export async function fetchArtisanProfileDetail(
              users (name, profile_photo)`,
           )
           .eq("artisan_profile_id", profileId)
+          .eq("status", "approved") // ← affiche uniquement les avis validés par l'admin
           .eq("is_flagged", false)
           .order("created_at", { ascending: false })
           .limit(20)

@@ -3,12 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
-import { StickyMobileCTA } from "@/components/layout/StickyMobileCTA";
-import { CookieBanner } from "@/components/layout/CookieBanner";
-import { Chatbot } from "@/components/layout/Chatbot";
-import { ScrollToTop } from "@/components/ui/ScrollToTop";
-import { ServiceWorkerRegister } from "@/components/ui/ServiceWorkerRegister";
+import { GlobalClientWidgets } from "@/components/layout/GlobalClientWidgets";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { getCurrentUser } from "@/lib/db/current-user";
 import { countUnreadNotifications } from "@/lib/notifications/actions";
@@ -125,12 +120,7 @@ export default async function RootLayout({
         <Header user={headerUser} unreadNotifications={unreadNotifs} currentUserId={current?.id ?? null} metierOptions={metierOptions} />
         <main className="flex-1">{children}</main>
         <Footer />
-        <MobileBottomNav />
-        <StickyMobileCTA />
-        <CookieBanner />
-        <Chatbot />
-        <ScrollToTop />
-        <ServiceWorkerRegister />
+        <GlobalClientWidgets />
       </body>
     </html>
   );

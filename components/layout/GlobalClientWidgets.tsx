@@ -44,7 +44,18 @@ const MessageriedDock = dynamic(
   { ssr: false, loading: () => null },
 );
 
-export function GlobalClientWidgets({ currentUserId }: { currentUserId: number | null }) {
+const InviteFab = dynamic(
+  () => import("./InviteFab").then((m) => m.InviteFab),
+  { ssr: false, loading: () => null },
+);
+
+export function GlobalClientWidgets({
+  currentUserId,
+  referralUrl,
+}: {
+  currentUserId: number | null;
+  referralUrl: string | null;
+}) {
   return (
     <>
       <CookieBanner />
@@ -54,6 +65,7 @@ export function GlobalClientWidgets({ currentUserId }: { currentUserId: number |
       <PwaInstallPrompt />
       <InAppLinkViewer />
       <MessageriedDock currentUserId={currentUserId} />
+      <InviteFab referralUrl={referralUrl} />
     </>
   );
 }

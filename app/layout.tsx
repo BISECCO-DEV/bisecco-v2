@@ -43,13 +43,13 @@ export const metadata: Metadata = {
     siteName: "Bisecco",
     title: "Bisecco · Le réseau social des artisans français",
     description: "Trouvez un artisan qualifié et vérifié près de chez vous.",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/og-image.jpg?v=3", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Bisecco",
     description: "Le réseau social des artisans français",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.jpg?v=3"],
   },
   robots: {
     index: true,
@@ -179,7 +179,14 @@ export default async function RootLayout({
         <Header user={headerUser} unreadNotifications={unreadNotifs} currentUserId={current?.id ?? null} metierOptions={metierOptions} unreadCvs={unreadCvs} />
         <main className="flex-1">{children}</main>
         <Footer />
-        <GlobalClientWidgets currentUserId={current?.id ?? null} />
+        <GlobalClientWidgets
+          currentUserId={current?.id ?? null}
+          referralUrl={
+            current?.referral_code
+              ? `https://bisecco.fr/r/${current.referral_code}`
+              : null
+          }
+        />
       </body>
     </html>
   );

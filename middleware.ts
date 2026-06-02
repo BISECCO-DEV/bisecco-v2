@@ -65,6 +65,7 @@ const PUBLIC_ROUTES = [
   "/robots.txt",
   "/sitemap.xml",
   "/llms.txt",
+  "/r/", // Liens de parrainage : doivent être accessibles sans bypass coming-soon
 ];
 
 // Routes accessibles uniquement aux membres connectés.

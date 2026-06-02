@@ -20,8 +20,8 @@ declare global {
 export interface InviteButtonProps {
   /** Lien de parrainage unique du user (ex: https://bisecco.fr/r/laurent-a3f7) */
   referralUrl: string;
-  /** Variant visuel du bouton */
-  variant?: "primary" | "ghost" | "compact";
+  /** Variant visuel du bouton. `fab` = bouton flottant rond pour le coin de l'écran. */
+  variant?: "primary" | "ghost" | "compact" | "fab";
   /** Texte custom (par défaut "Inviter mes contacts") */
   label?: string;
   className?: string;
@@ -176,7 +176,9 @@ export function InviteButton({
       ? "inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-500 text-white font-bold text-sm hover:bg-brand-600 active:scale-[0.98] transition-all shadow-[0_4px_14px_rgba(240,122,47,0.35)]"
       : variant === "ghost"
         ? "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border-2 border-ink-100 text-ink-700 font-bold text-sm hover:border-brand-300 hover:text-brand-600 transition"
-        : "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-50 text-brand-700 font-bold text-xs hover:bg-brand-100 transition";
+        : variant === "fab"
+          ? "inline-flex items-center gap-2 pl-3 pr-4 h-12 rounded-full bg-brand-500 text-white font-extrabold text-[0.78rem] hover:bg-brand-600 active:scale-[0.96] transition-all shadow-[0_8px_24px_-4px_rgba(240,122,47,0.55)] whitespace-nowrap"
+          : "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-50 text-brand-700 font-bold text-xs hover:bg-brand-100 transition";
 
   return (
     <>
@@ -186,7 +188,7 @@ export function InviteButton({
         className={`${buttonClass} ${className}`}
         aria-label={label}
       >
-        <UserPlus size={variant === "compact" ? 13 : 16} strokeWidth={2.5} />
+        <UserPlus size={variant === "compact" ? 13 : variant === "fab" ? 18 : 16} strokeWidth={2.5} />
         <span>{label}</span>
       </button>
 

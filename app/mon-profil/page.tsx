@@ -45,7 +45,7 @@ export default async function MonProfilPage() {
   const completion = Math.round(
     (fields.filter(Boolean).length / fields.length) * 100,
   );
-  const baseUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+  const baseUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
   const referralUrl = user.referral_code
     ? `${baseUrl}/r/${user.referral_code}`
     : `${baseUrl}/inscription`;

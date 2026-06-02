@@ -6,6 +6,8 @@ import { fetchMetierBySlug } from "@/lib/db/metiers";
 import { fetchArtisansForMetier } from "@/lib/db/artisans";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
+import { getMetierContent } from "@/lib/seo/metier-content";
+import { schemaTypeForMetier } from "@/lib/seo/metier-schema-type";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -104,9 +106,60 @@ export default async function MetierPage({ params }: Props) {
     { name: metier.name, url: `/metiers/${slug}` },
   ]);
 
+  // Contenu enrichi unique (top 10 métiers) ou null si générique
+  const content = getMetierContent(slug);
+
+  // Schema.org Service spécifique au métier (boost AI Overviews)
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `https://bisecco.fr/metiers/${slug}#service`,
+    name: `${metier.name} vérifié SIREN`,
+    serviceType: metier.name,
+    description: content?.definition ?? `Trouvez un ${metier.name.toLowerCase()} qualifié et vérifié SIREN près de chez vous sur Bisecco.`,
+    provider: { "@type": "Organization", "@id": "https://bisecco.fr/#organization" },
+    areaServed: { "@type": "Country", name: "France" },
+    url: `https://bisecco.fr/metiers/${slug}`,
+    offers: {
+      "@type": "Offer",
+      description: "Mise en relation gratuite avec des artisans vérifiés SIREN",
+      price: "0",
+      priceCurrency: "EUR",
+    },
+    additionalType: `https://schema.org/${schemaTypeForMetier(slug)}`,
+  };
+
+  // Schema FAQPage si du contenu enrichi est dispo (FAQ générée depuis tips)
+  const faqSchema = content
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `Qu'est-ce qu'un ${metier.name.toLowerCase()} ?`,
+            acceptedAnswer: { "@type": "Answer", text: content.definition },
+          },
+          {
+            "@type": "Question",
+            name: `Combien coûte un ${metier.name.toLowerCase()} en France ?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: content.prices.map((p) => `${p.label} : ${p.range}`).join(". "),
+            },
+          },
+          {
+            "@type": "Question",
+            name: `Comment choisir un bon ${metier.name.toLowerCase()} ?`,
+            acceptedAnswer: { "@type": "Answer", text: content.tips.join(" ") },
+          },
+        ],
+      }
+    : null;
+
   return (
     <div className="bg-ink-50 min-h-screen pb-20">
-      <JsonLd data={breadcrumbs} />
+      <JsonLd data={faqSchema ? [breadcrumbs, serviceSchema, faqSchema] : [breadcrumbs, serviceSchema]} />
       {/* Hero */}
       <section className="bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[300px] rounded-full bg-brand-500/15 blur-[120px] pointer-events-none" />
@@ -167,6 +220,70 @@ export default async function MetierPage({ params }: Props) {
             </div>
           ))}
         </section>
+
+        {/* ─── CONTENU UNIQUE PAR MÉTIER (top 10 SEO) ─── */}
+        {content && (
+          <section className="bg-white rounded-3xl border border-ink-100 p-8 md:p-10 mb-12 shadow-[0_1px_4px_-2px_rgba(13,30,74,0.06)]">
+            {/* Définition */}
+            <h2 className="text-2xl md:text-3xl font-extrabold text-ink-700 tracking-tight mb-3">
+              Qu&apos;est-ce qu&apos;un {metier.name.toLowerCase()} ?
+            </h2>
+            <p className="text-[1rem] text-ink-600 leading-relaxed">{content.definition}</p>
+
+            {/* Services */}
+            <h3 className="mt-8 text-xl font-extrabold text-ink-700">Principales prestations</h3>
+            <ul className="mt-3 grid sm:grid-cols-2 gap-2">
+              {content.services.map((s) => (
+                <li key={s} className="flex items-start gap-2 text-[0.92rem] text-ink-600 leading-snug">
+                  <CheckCircle2 size={15} className="text-emerald-500 flex-shrink-0 mt-0.5" />
+                  <span>{s}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Prix moyens */}
+            <h3 className="mt-8 text-xl font-extrabold text-ink-700">Prix moyens indicatifs en France</h3>
+            <div className="mt-3 overflow-hidden rounded-2xl border border-ink-100">
+              <table className="w-full text-[0.92rem]">
+                <thead className="bg-ink-50 text-ink-600 text-[0.78rem] uppercase tracking-wider">
+                  <tr>
+                    <th className="text-left px-4 py-2.5 font-bold">Prestation</th>
+                    <th className="text-right px-4 py-2.5 font-bold">Fourchette</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-ink-100">
+                  {content.prices.map((p) => (
+                    <tr key={p.label}>
+                      <td className="px-4 py-2.5 text-ink-700">{p.label}</td>
+                      <td className="px-4 py-2.5 text-right font-bold text-brand-700 tabular-nums">{p.range}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-2 text-[0.72rem] text-ink-400">
+              Ces fourchettes sont indicatives et varient selon la région, la complexité du chantier et les options.
+              Demandez plusieurs devis gratuits sur Bisecco pour un prix juste.
+            </p>
+
+            {/* Conseils */}
+            <h3 className="mt-8 text-xl font-extrabold text-ink-700">Comment bien choisir votre {metier.name.toLowerCase()}</h3>
+            <ul className="mt-3 space-y-2.5">
+              {content.tips.map((t, i) => (
+                <li key={i} className="flex items-start gap-3 text-[0.92rem] text-ink-600 leading-relaxed">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-100 text-brand-700 inline-flex items-center justify-center font-extrabold text-xs">
+                    {i + 1}
+                  </span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Long content */}
+            <h3 className="mt-8 text-xl font-extrabold text-ink-700">Pourquoi passer par un {metier.name.toLowerCase()} vérifié SIREN ?</h3>
+            <p className="mt-3 text-[0.95rem] text-ink-600 leading-relaxed">{content.longContent}</p>
+          </section>
+        )}
 
         {/* Liste villes · SEO levier */}
         <section>

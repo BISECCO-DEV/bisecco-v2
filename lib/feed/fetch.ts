@@ -3,6 +3,29 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 export type FeedKind = "realisation" | "question" | "conseil";
 export type FeedStatus = "pending" | "approved" | "rejected" | "removed";
 
+export type FeedPostAuthor = {
+  id: number;
+  name: string;
+  company_name: string | null;
+  profile_photo: string | null;
+  role: "admin" | "artisan" | "particulier";
+  client_number: string | null;
+};
+
+export type RepostTarget = {
+  id: number;
+  kind: FeedKind;
+  content: string | null;
+  images: string[];
+  created_at: string;
+  link_url: string | null;
+  link_title: string | null;
+  link_description: string | null;
+  link_image: string | null;
+  link_site_name: string | null;
+  author: FeedPostAuthor;
+};
+
 export type FeedPost = {
   id: number;
   kind: FeedKind;
@@ -16,14 +39,16 @@ export type FeedPost = {
   approved_at: string | null;
   likes_count: number;
   comments_count: number;
-  author: {
-    id: number;
-    name: string;
-    company_name: string | null;
-    profile_photo: string | null;
-    role: "admin" | "artisan" | "particulier";
-    client_number: string | null;
-  };
+  // Aperçu Open Graph capturé à la publication (si l'auteur a collé un lien)
+  link_url: string | null;
+  link_title: string | null;
+  link_description: string | null;
+  link_image: string | null;
+  link_site_name: string | null;
+  // Repartage : si renseigné, ce post est un repost du post repost_of (embed)
+  repost_of_id: number | null;
+  repost_of: RepostTarget | null;
+  author: FeedPostAuthor;
   metier: { id: number; name: string; slug: string; icon: string | null } | null;
 };
 
@@ -40,6 +65,29 @@ export type FeedComment = {
   };
 };
 
+type RawAuthor = {
+  id: number;
+  name: string;
+  profile_photo: string | null;
+  role: string;
+  client_number: string | null;
+  artisan_profiles: { company_name: string | null }[] | null;
+} | null;
+
+type RepostRow = {
+  id: number;
+  kind: FeedKind;
+  content: string | null;
+  images: string[] | null;
+  created_at: string;
+  link_url: string | null;
+  link_title: string | null;
+  link_description: string | null;
+  link_image: string | null;
+  link_site_name: string | null;
+  author: RawAuthor;
+} | null;
+
 type PostRow = {
   id: number;
   kind: FeedKind;
@@ -53,18 +101,18 @@ type PostRow = {
   approved_at: string | null;
   likes_count: number;
   comments_count: number;
-  author: {
-    id: number;
-    name: string;
-    profile_photo: string | null;
-    role: string;
-    client_number: string | null;
-    artisan_profiles: { company_name: string | null }[] | null;
-  } | null;
+  link_url: string | null;
+  link_title: string | null;
+  link_description: string | null;
+  link_image: string | null;
+  link_site_name: string | null;
+  repost_of_id: number | null;
+  repost_of: RepostRow;
+  author: RawAuthor;
   metier: { id: number; name: string; slug: string; icon: string | null } | null;
 };
 
-function normalizeAuthor(a: PostRow["author"]): FeedPost["author"] {
+function normalizeAuthor(a: RawAuthor): FeedPostAuthor {
   if (!a) {
     return { id: 0, name: "Utilisateur", company_name: null, profile_photo: null, role: "particulier", client_number: null };
   }
@@ -74,19 +122,46 @@ function normalizeAuthor(a: PostRow["author"]): FeedPost["author"] {
     name: a.name,
     company_name: company,
     profile_photo: a.profile_photo,
-    role: (a.role as FeedPost["author"]["role"]) ?? "particulier",
+    role: (a.role as FeedPostAuthor["role"]) ?? "particulier",
     client_number: a.client_number,
+  };
+}
+
+function normalizeRepostTarget(r: RepostRow): RepostTarget | null {
+  if (!r) return null;
+  return {
+    id: r.id,
+    kind: r.kind,
+    content: r.content,
+    images: Array.isArray(r.images) ? r.images : [],
+    created_at: r.created_at,
+    link_url: r.link_url,
+    link_title: r.link_title,
+    link_description: r.link_description,
+    link_image: r.link_image,
+    link_site_name: r.link_site_name,
+    author: normalizeAuthor(r.author),
   };
 }
 
 const POST_SELECT = `
   id, kind, content, images, city, metier_id, status, rejection_reason,
   created_at, approved_at, likes_count, comments_count,
+  link_url, link_title, link_description, link_image, link_site_name,
+  repost_of_id,
   author:author_id (
     id, name, profile_photo, role, client_number,
     artisan_profiles ( company_name )
   ),
-  metier:metier_id ( id, name, slug, icon )
+  metier:metier_id ( id, name, slug, icon ),
+  repost_of:repost_of_id (
+    id, kind, content, images, created_at,
+    link_url, link_title, link_description, link_image, link_site_name,
+    author:author_id (
+      id, name, profile_photo, role, client_number,
+      artisan_profiles ( company_name )
+    )
+  )
 `;
 
 export type FeedFilter = {
@@ -95,14 +170,18 @@ export type FeedFilter = {
   city?: string;
 };
 
-export async function fetchApprovedFeed(filter: FeedFilter = {}, limit = 30): Promise<FeedPost[]> {
+export async function fetchApprovedFeed(
+  filter: FeedFilter = {},
+  limit = 10,
+  offset = 0,
+): Promise<FeedPost[]> {
   const admin = createSupabaseAdminClient();
   let q = admin
     .from("feed_posts")
     .select(POST_SELECT)
     .eq("status", "approved")
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .range(offset, offset + limit - 1);
 
   if (filter.kind) q = q.eq("kind", filter.kind);
   if (filter.metierId) q = q.eq("metier_id", filter.metierId);
@@ -118,6 +197,7 @@ export async function fetchApprovedFeed(filter: FeedFilter = {}, limit = 30): Pr
     images: Array.isArray(p.images) ? p.images : [],
     author: normalizeAuthor(p.author),
     metier: p.metier ?? null,
+    repost_of: normalizeRepostTarget(p.repost_of),
   }));
 }
 
@@ -139,6 +219,7 @@ export async function fetchPendingFeed(limit = 100): Promise<FeedPost[]> {
     images: Array.isArray(p.images) ? p.images : [],
     author: normalizeAuthor(p.author),
     metier: p.metier ?? null,
+    repost_of: normalizeRepostTarget(p.repost_of),
   }));
 }
 
@@ -161,6 +242,7 @@ export async function fetchRecentApprovedForAdmin(limit = 50): Promise<FeedPost[
     images: Array.isArray(p.images) ? p.images : [],
     author: normalizeAuthor(p.author),
     metier: p.metier ?? null,
+    repost_of: normalizeRepostTarget(p.repost_of),
   }));
 }
 
@@ -201,6 +283,7 @@ export async function fetchReportedPosts(limit = 50): Promise<Array<FeedPost & {
       images: Array.isArray(p.images) ? p.images : [],
       author: normalizeAuthor(p.author),
       metier: p.metier ?? null,
+      repost_of: normalizeRepostTarget(p.repost_of),
       reportsCount: info.count,
       reasons: info.reasons,
     };
@@ -221,6 +304,7 @@ export async function fetchPostById(id: number): Promise<FeedPost | null> {
     images: Array.isArray(row.images) ? row.images : [],
     author: normalizeAuthor(row.author),
     metier: row.metier ?? null,
+    repost_of: normalizeRepostTarget(row.repost_of),
   };
 }
 

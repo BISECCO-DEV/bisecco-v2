@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import withSerwistInit from "@serwist/next";
 
 const nextConfig: NextConfig = {
   // Limite d'upload des Server Actions (par défaut 1 Mo, on monte à 6 Mo pour
@@ -40,6 +41,22 @@ const nextConfig: NextConfig = {
         source: "/(admin|mon-profil|messagerie|supabase-test)/:path*",
         headers: [{ key: "Cache-Control", value: "no-store, max-age=0" }],
       },
+      // Digital Asset Links Android TWA (PWABuilder) — doit être JSON
+      {
+        source: "/.well-known/assetlinks.json",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+        ],
+      },
+      // Apple App Site Association iOS Universal Links — JSON sans extension
+      {
+        source: "/.well-known/apple-app-site-association",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+        ],
+      },
     ];
   },
   // Compression standard
@@ -47,4 +64,18 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 };
 
-export default nextConfig;
+// Wrapper Serwist — génère le Service Worker à partir de app/sw.ts
+// vers public/sw.js. Désactivé en dev pour ne pas casser le hot reload.
+const withSerwist = withSerwistInit({
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+  cacheOnNavigation: true,
+  reloadOnOnline: true,
+  disable: process.env.NODE_ENV === "development",
+  additionalPrecacheEntries: [
+    { url: "/offline", revision: null },
+    { url: "/", revision: null },
+  ],
+});
+
+export default withSerwist(nextConfig);

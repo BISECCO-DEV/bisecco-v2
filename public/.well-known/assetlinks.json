@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "eu.bisecco.app",
+      "sha256_cert_fingerprints": [
+        "REMPLACER_PAR_LE_SHA256_DU_KEYSTORE_PWABUILDER"
+      ]
+    }
+  }
+]

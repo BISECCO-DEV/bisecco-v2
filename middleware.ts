@@ -142,10 +142,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── 2. Coming-soon gate : authentifiés + bypass cookie + routes publiques passent ──
+  // Les crawlers SEO/AI bypassent aussi pour permettre l'indexation et la citation.
   if (COMING_SOON_ENABLED && !user) {
     const hasBypass = request.cookies.get(BYPASS_COOKIE)?.value === "ok";
     const isPublic = PUBLIC_ROUTES.some((r) => pathname.startsWith(r));
-    if (!hasBypass && !isPublic) {
+    const ua = request.headers.get("user-agent") ?? "";
+    const isCrawler = /googlebot|bingbot|duckduckbot|baiduspider|yandexbot|sogou|exabot|facebookexternalhit|twitterbot|linkedinbot|slackbot|whatsapp|telegrambot|gptbot|oai-searchbot|chatgpt-user|claudebot|claude-web|perplexitybot|perplexity-user|cohere-ai|google-extended|applebot|applebot-extended|amazonbot|bytespider|ccbot|petalbot|mojeekbot|seznambot|ahrefsbot|semrushbot|mj12bot|dotbot|rogerbot|screaming frog/i.test(ua);
+    if (!hasBypass && !isPublic && !isCrawler) {
       const url = request.nextUrl.clone();
       url.pathname = "/coming-soon";
       url.search = "";
@@ -187,6 +190,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|\\.well-known|manifest.json|sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

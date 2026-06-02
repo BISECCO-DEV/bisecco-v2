@@ -66,24 +66,26 @@ export function UserMenu({ user, unreadCvs = 0 }: UserMenuProps) {
         : "from-blue-500 to-blue-600";
 
   return (
-    <div ref={dropdownRef} className="hidden lg:block relative">
+    <div ref={dropdownRef} className="block relative">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex items-center gap-2 h-10 pl-1 pr-3 rounded-lg text-white bg-white/[0.10] border border-white/[0.20] hover:bg-white/[0.18] hover:border-white/[0.32] backdrop-blur-md transition"
+        className="inline-flex items-center gap-1.5 lg:gap-2 h-9 lg:h-10 pl-1 pr-1.5 lg:pr-3 rounded-lg text-white bg-white/[0.10] border border-white/[0.20] hover:bg-white/[0.18] hover:border-white/[0.32] backdrop-blur-md transition"
+        aria-label="Menu utilisateur"
+        aria-expanded={open}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={avatarUrl}
           alt=""
-          className="w-8 h-8 rounded-md object-cover bg-white/10 border border-white/15"
+          className="w-7 h-7 lg:w-8 lg:h-8 rounded-md object-cover bg-white/10 border border-white/15"
         />
-        <span className="text-[0.84rem] font-bold truncate max-w-[110px]">{firstName}</span>
+        <span className="hidden lg:inline text-[0.84rem] font-bold truncate max-w-[110px]">{firstName}</span>
         <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-white shadow-2xl border border-ink-100 overflow-hidden z-50 animate-fade-in">
+        <div className="absolute right-0 top-full mt-2 w-[calc(100vw-1.5rem)] max-w-[18rem] sm:w-72 rounded-2xl bg-white shadow-2xl border border-ink-100 overflow-hidden z-50 animate-fade-in">
           {/* En-tête */}
           <div className="p-4 bg-gradient-to-br from-ink-50 to-white border-b border-ink-100">
             <div className="flex items-center gap-3">

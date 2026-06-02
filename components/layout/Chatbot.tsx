@@ -52,9 +52,11 @@ function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 }
 
-export function Chatbot() {
+/** Chatbot support Camille — uniquement pour les VISITEURS non connectés.
+ *  Les utilisateurs connectés ont la messagerie réelle (MessageriedDock). */
+export function Chatbot({ currentUserId }: { currentUserId?: number | null } = {}) {
   const pathname = usePathname();
-  const hidden = pathname ? HIDDEN_ROUTES.some((r) => pathname.startsWith(r)) : false;
+  const hidden = (pathname ? HIDDEN_ROUTES.some((r) => pathname.startsWith(r)) : false) || Boolean(currentUserId);
 
   const [open, setOpen] = useState(false);
   const [convId, setConvId] = useState<string | null>(null);

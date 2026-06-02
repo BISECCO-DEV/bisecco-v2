@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Smartphone, Share2, Plus, X, Check } from "lucide-react";
 import { pwaInstall } from "@/lib/pwa/install";
+import { isCapacitorApp } from "@/lib/native/platform";
 
 type Variant = "default" | "compact" | "menu";
 
@@ -39,6 +40,8 @@ export function InstallAppButton({ variant = "default", alwaysShow = false, clas
   // Masque le bouton si déjà installé (sauf alwaysShow)
   if (!mounted) return null;
   if (installed && !alwaysShow) return null;
+  // Dans l'app native Capacitor → cacher (déjà installé par définition)
+  if (isCapacitorApp()) return null;
 
   // Caché sur desktop si le navigateur ne supporte pas l'install (sauf alwaysShow)
   if (platform === "desktop" && !canInstall && !alwaysShow) return null;
@@ -58,7 +61,7 @@ export function InstallAppButton({ variant = "default", alwaysShow = false, clas
       // Fallback : explique selon la plateforme
       setToast(
         platform === "desktop"
-          ? "Sur ordinateur, l'install est plus utile sur mobile. Scannez bisecco.eu depuis votre téléphone."
+          ? "Sur ordinateur, l'install est plus utile sur mobile. Scannez bisecco.fr depuis votre téléphone."
           : "Votre navigateur ne propose pas l'installation. Essayez Chrome/Safari à jour.",
       );
       setTimeout(() => setToast(null), 4000);
@@ -121,7 +124,7 @@ export function InstallAppButton({ variant = "default", alwaysShow = false, clas
             <div className="text-center">
               <div className="w-14 h-14 rounded-2xl mx-auto overflow-hidden ring-2 ring-brand-100 mb-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/icon-app.png" alt="Bisecco" className="w-full h-full object-cover" />
+                <img src="/icon-512.png" alt="Bisecco" className="w-full h-full object-cover" />
               </div>
               <h3 className="font-extrabold text-ink-700 text-lg">Installer Bisecco sur iPhone</h3>
               <p className="text-sm text-ink-500 mt-1">3 étapes simples</p>

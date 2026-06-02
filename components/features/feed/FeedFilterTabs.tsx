@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { useSearchParams, usePathname } from "next/navigation";
-import { Sparkles, Hammer, HelpCircle, Lightbulb } from "lucide-react";
 
 const TABS = [
-  { value: null,           label: "Tout",         icon: Sparkles,   color: "text-ink-600" },
-  { value: "realisation",  label: "Réalisations", icon: Hammer,     color: "text-brand-600" },
-  { value: "conseil",      label: "Conseils",     icon: Lightbulb,  color: "text-violet-600" },
-  { value: "question",     label: "Questions",    icon: HelpCircle, color: "text-blue-600" },
+  { value: null, label: "Tout" },
+  { value: "realisation", label: "Réalisations" },
+  { value: "conseil", label: "Conseils" },
+  { value: "question", label: "Questions" },
 ];
 
+/**
+ * Tabs minimalistes style X / Threads : texte uniquement, indicateur barre orange
+ * sous l'onglet actif. Pas d'icône, pas de fond, juste typographie.
+ */
 export function FeedFilterTabs() {
   const sp = useSearchParams();
   const pathname = usePathname();
@@ -25,25 +28,33 @@ export function FeedFilterTabs() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-ink-100 p-1.5 flex items-center gap-1 overflow-x-auto scrollbar-hide">
+    <nav
+      aria-label="Filtrer le fil"
+      className="flex items-center gap-1 overflow-x-auto scrollbar-hide -mx-1 px-1"
+    >
       {TABS.map((t) => {
         const isActive = active === t.value;
-        const Icon = t.icon;
         return (
           <Link
             key={t.label}
             href={buildHref(t.value)}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[0.82rem] font-bold whitespace-nowrap transition flex-shrink-0 ${
+            className={`relative inline-flex items-center px-4 py-3 text-[0.86rem] font-bold whitespace-nowrap transition flex-shrink-0 ${
               isActive
-                ? "bg-ink-900 text-white shadow-sm"
-                : `${t.color} hover:bg-ink-50`
+                ? "text-ink-900"
+                : "text-ink-400 hover:text-ink-700"
             }`}
           >
-            <Icon size={13} strokeWidth={2.4} />
             {t.label}
+            <span
+              className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] rounded-full transition-all ${
+                isActive
+                  ? "w-12 bg-brand-500"
+                  : "w-0 bg-transparent"
+              }`}
+            />
           </Link>
         );
       })}
-    </div>
+    </nav>
   );
 }

@@ -6,59 +6,12 @@ import {
   Mail, Headphones,
 } from "lucide-react";
 import { CtaButton } from "@/components/ui/CtaButton";
-import { JsonLd } from "@/components/ui/JsonLd";
-import { faqSchema } from "@/lib/seo/schemas";
+import { HOME_FAQ_ITEMS, type HomeFaqItem } from "@/lib/seo/home-faq";
 
 type FaqCategory = "Tous" | "Tarifs" | "Sécurité" | "Fonctionnement" | "Données";
 
-type FaqItem = {
-  q: string;
-  a: string;
-  category: Exclude<FaqCategory, "Tous">;
-};
-
-const FAQ: FaqItem[] = [
-  {
-    q: "Bisecco est-il vraiment gratuit ?",
-    a: "Oui, 100 % gratuit pour les particuliers et pour les artisans. Pas de carte bancaire requise à l'inscription, pas de commission sur vos chantiers, pas de frais cachés. Les artisans peuvent souscrire un service premium optionnel pour booster leur visibilité, mais ce n'est jamais imposé.",
-    category: "Tarifs",
-  },
-  {
-    q: "Comment vérifiez-vous les artisans ?",
-    a: "Tous les artisans doivent fournir leur numéro SIREN à l'inscription. Nous le vérifions automatiquement via l'API officielle Sirene de l'INSEE (recherche-entreprises.api.gouv.fr). Si l'entreprise n'est pas active ou n'existe pas, l'inscription est refusée. Aucun faux profil ne passe.",
-    category: "Sécurité",
-  },
-  {
-    q: "Comment fonctionnent les avis clients ?",
-    a: "Après chaque mission terminée, le particulier reçoit un email lui demandant de noter l'artisan. Seuls les vrais clients ayant échangé via la messagerie Bisecco peuvent laisser un avis. Aucune note achetée, aucune fraude possible. Les avis négatifs ne sont jamais supprimés sur demande commerciale.",
-    category: "Sécurité",
-  },
-  {
-    q: "Combien de temps pour recevoir un devis ?",
-    a: "La majorité des artisans répondent en moins de 24 heures. Vous recevez généralement 2 à 5 propositions de devis par projet. Plus votre description est précise (avec photos, surface, urgence), plus la réponse est rapide · souvent en quelques heures.",
-    category: "Fonctionnement",
-  },
-  {
-    q: "Comment se déroule la mise en relation ?",
-    a: "Vous décrivez votre projet, vous recevez les devis par email et messagerie. Vous comparez, vous discutez en direct avec les artisans qui vous intéressent, vous choisissez librement. Bisecco n'intervient jamais dans la transaction ni dans le paiement.",
-    category: "Fonctionnement",
-  },
-  {
-    q: "Bisecco prend-il une commission sur les chantiers ?",
-    a: "Non, aucune commission n'est prélevée sur vos chantiers ou paiements. Vous travaillez en direct avec l'artisan, sans aucun intermédiaire financier. C'est l'engagement écrit dans nos CGV · la différence fondamentale avec les autres plateformes.",
-    category: "Tarifs",
-  },
-  {
-    q: "Mes données personnelles sont-elles sécurisées ?",
-    a: "Oui. Bisecco est hébergé en France et conforme RGPD. Vos données ne sont jamais revendues à des tiers, vos échanges sont chiffrés en transit (HTTPS), et vous pouvez à tout moment exporter ou supprimer toutes vos données depuis votre espace personnel · conformément au droit à l'oubli.",
-    category: "Données",
-  },
-  {
-    q: "Que faire en cas de litige avec un artisan ?",
-    a: "Bisecco propose une médiation amiable gratuite. Contactez notre service support, nous étudions votre dossier et tentons de trouver un accord avec l'artisan. Si la médiation échoue, nous vous orientons vers le médiateur de la consommation compétent en France.",
-    category: "Sécurité",
-  },
-];
+const FAQ: HomeFaqItem[] = HOME_FAQ_ITEMS;
+type FaqItem = HomeFaqItem;
 
 const CATEGORIES: FaqCategory[] = ["Tous", "Tarifs", "Sécurité", "Fonctionnement", "Données"];
 
@@ -75,12 +28,11 @@ export function HomeFaq() {
 
   const filtered = FAQ.filter((f) => category === "Tous" || f.category === category);
 
-  // Schema.org FAQPage : top 8 questions pour rich snippet Google
-  const faqLd = faqSchema(FAQ.slice(0, 8).map((f) => ({ question: f.q, answer: f.a })));
+  // Note : le schema FAQPage JSON-LD est injecté côté Server Component (app/page.tsx)
+  // pour être visible dans le HTML initial par Googlebot et les crawlers IA.
 
   return (
     <section className="relative py-20 sm:py-28 bg-gradient-to-b from-white via-ink-50/40 to-white overflow-hidden">
-      <JsonLd data={faqLd} />
       {/* Décors */}
       <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] rounded-full bg-brand-500/[0.05] blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 -right-32 w-[500px] h-[500px] rounded-full bg-blue-500/[0.05] blur-[140px] pointer-events-none" />

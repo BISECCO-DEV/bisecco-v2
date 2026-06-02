@@ -8,13 +8,13 @@ export const metadata: Metadata = {
   description:
     "Bisecco · Annuaire d'artisans français vérifiés SIREN. Trouvez un artisan qualifié près de chez vous (plombier, électricien, maçon, menuisier, développeur web…). 100% gratuit, 0% commission. Nouvelle version bientôt disponible.",
   keywords: ["artisans", "artisans vérifiés", "SIREN", "plombier", "électricien", "annuaire artisans", "devis gratuit"],
-  alternates: { canonical: "https://bisecco.eu" },
+  alternates: { canonical: "https://bisecco.fr" },
   openGraph: {
     title: "Bisecco · Réseau d'artisans français vérifiés",
     description: "Annuaire 100% gratuit · 0% commission · SIREN vérifié.",
     type: "website",
     locale: "fr_FR",
-    url: "https://bisecco.eu",
+    url: "https://bisecco.fr",
     siteName: "Bisecco",
   },
 };
@@ -143,8 +143,8 @@ export default function ComingSoonPage() {
         {/* Footer fixe en bas · contraste renforcé */}
         <footer className="absolute bottom-4 left-0 right-0 text-center text-[0.72rem] text-white/60">
           © {new Date().getFullYear()} Bisecco · Tous droits réservés ·{" "}
-          <a href="https://bisecco.eu" className="text-white/75 hover:text-white transition underline-offset-2 hover:underline">
-            bisecco.eu
+          <a href="https://bisecco.fr" className="text-white/75 hover:text-white transition underline-offset-2 hover:underline">
+            bisecco.fr
           </a>
         </footer>
       </main>

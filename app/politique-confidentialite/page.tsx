@@ -16,7 +16,7 @@ export default function PolitiqueConfidentialitePage() {
     >
       <h2>1. Responsable du traitement</h2>
       <p>
-        Le responsable du traitement des données collectées sur bisecco.eu est&nbsp;:
+        Le responsable du traitement des données collectées sur bisecco.fr est&nbsp;:
       </p>
       <ul>
         <li><strong>AGISCO HOLDING SAS</strong></li>

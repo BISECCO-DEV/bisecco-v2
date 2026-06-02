@@ -1,10 +1,17 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 
 const URL_REGEX = /(https?:\/\/[^\s<>"']+)/gi;
 
 // Domaines considérés comme "internes" → navigation in-app (Next.js Link)
-const INTERNAL_HOSTS = new Set(["bisecco.eu", "www.bisecco.eu", "bisecco.fr", "www.bisecco.fr"]);
+const INTERNAL_HOSTS = new Set([
+  "bisecco.eu",
+  "www.bisecco.eu",
+  "bisecco.fr",
+  "www.bisecco.fr",
+]);
 
 function isInternalUrl(url: string): { internal: boolean; path?: string } {
   try {
@@ -18,14 +25,28 @@ function isInternalUrl(url: string): { internal: boolean; path?: string } {
   return { internal: false };
 }
 
+/** Ouvre une URL externe DANS Bisecco (modale iframe) — sauf si cmd/ctrl-clic. */
+function openInApp(e: React.MouseEvent<HTMLAnchorElement>, url: string) {
+  // Cmd/Ctrl/middle clic → laisse le navigateur ouvrir un nouvel onglet classique
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+  e.preventDefault();
+  window.dispatchEvent(new CustomEvent("bisecco:open-link", { detail: { url } }));
+}
+
 /**
  * Affiche du texte en transformant les URLs en liens cliquables.
  * - URLs internes (bisecco.eu / bisecco.fr) → Next.js Link, navigation in-app sans rechargement
- * - URLs externes → <a target="_blank">
+ * - URLs externes → ouverture DANS Bisecco via modale iframe (comme Facebook / Instagram)
  *
- * Sécurisé : pas de dangerouslySetInnerHTML, tout passe par des nodes React.
+ * Cmd/Ctrl-clic conserve le comportement classique "nouvel onglet".
  */
-export function LinkifiedText({ children, className }: { children: string; className?: string }) {
+export function LinkifiedText({
+  children,
+  className,
+}: {
+  children: string;
+  className?: string;
+}) {
   const parts = children.split(URL_REGEX);
 
   return (
@@ -39,7 +60,7 @@ export function LinkifiedText({ children, className }: { children: string; class
           const { internal, path } = isInternalUrl(url);
 
           if (internal && path) {
-            // Lien interne · ouvre dans la même fenêtre, comme Facebook → soft navigation
+            // Lien interne · soft navigation Next.js
             return (
               <React.Fragment key={i}>
                 <Link
@@ -53,11 +74,12 @@ export function LinkifiedText({ children, className }: { children: string; class
             );
           }
 
-          // Lien externe · nouvel onglet
+          // Lien externe · ouvre dans la modale viewer in-app
           return (
             <React.Fragment key={i}>
               <a
                 href={url}
+                onClick={(e) => openInApp(e, url)}
                 target="_blank"
                 rel="noopener noreferrer nofollow ugc"
                 className="text-brand-600 font-semibold hover:underline break-all"

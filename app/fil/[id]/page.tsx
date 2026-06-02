@@ -52,7 +52,13 @@ export default async function FilPostPage({ params }: Props) {
         </Link>
 
         <div className="mt-4 space-y-3">
-          <FeedPostCard post={post} liked={likedIds.has(post.id)} canInteract={canInteract} />
+          <FeedPostCard
+            post={post}
+            liked={likedIds.has(post.id)}
+            canInteract={canInteract}
+            currentUserId={user?.id ?? null}
+            isAdmin={user?.role === "admin"}
+          />
 
           <section className="bg-white rounded-2xl border border-ink-100 shadow-[0_1px_2px_rgba(13,30,74,0.04)] p-5">
             <div className="flex items-center gap-2 mb-5 pb-3 border-b border-ink-100">

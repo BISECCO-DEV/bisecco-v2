@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TrendingUp, Sparkles, Hash, ArrowRight } from "lucide-react";
+import { TrendingUp, Sparkles, Hash, ArrowRight, Shield, Users } from "lucide-react";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type TopMetier = { id: number; name: string; slug: string; icon: string | null; count: number };
@@ -43,17 +43,21 @@ async function fetchFeedStats() {
   const admin = createSupabaseAdminClient();
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [{ count: weekPosts }, { count: totalPosts }] = await Promise.all([
+  const [{ count: weekPosts }, { count: totalPosts }, { count: activeUsers }] = await Promise.all([
     admin.from("feed_posts").select("*", { count: "exact", head: true })
       .eq("status", "approved")
       .gte("created_at", weekAgo),
     admin.from("feed_posts").select("*", { count: "exact", head: true })
       .eq("status", "approved"),
+    admin.from("users").select("*", { count: "exact", head: true })
+      .eq("validation_status", "approved")
+      .is("deleted_at", null),
   ]);
 
   return {
     weekPosts: weekPosts ?? 0,
     totalPosts: totalPosts ?? 0,
+    activeUsers: activeUsers ?? 0,
   };
 }
 
@@ -64,98 +68,99 @@ export async function FeedSidebar() {
   ]);
 
   return (
-    <aside className="space-y-4 sticky top-[120px]">
-      {/* Stats compactes */}
-      <div className="bg-gradient-to-br from-ink-800 to-ink-900 text-white rounded-2xl p-5 relative overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-brand-500/20 blur-2xl" />
-        <div className="relative">
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[0.62rem] font-bold tracking-[0.12em] uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Cette semaine
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold tracking-tight">{stats.weekPosts}</span>
-            <span className="text-xs text-white/65">publication{stats.weekPosts > 1 ? "s" : ""}</span>
-          </div>
-          <div className="mt-1 text-[0.78rem] text-white/55">
-            {stats.totalPosts} au total depuis le lancement
-          </div>
+    <aside className="space-y-4 sticky top-24">
+      {/* En direct — bandeau live élégant */}
+      <div className="bg-white rounded-3xl border border-ink-100 p-5 shadow-[0_2px_8px_-2px_rgba(13,30,74,0.04)]">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          <span className="text-[0.72rem] font-extrabold text-emerald-700 tracking-wider uppercase">
+            En direct
+          </span>
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <StatBlock value={stats.weekPosts} label="cette semaine" />
+          <StatBlock value={stats.totalPosts} label="au total" />
+          <StatBlock value={stats.activeUsers} label="membres" />
         </div>
       </div>
 
       {/* Tendances métiers */}
       {topMetiers.length > 0 && (
-        <div className="bg-white rounded-2xl border border-ink-100 p-5">
+        <div className="bg-white rounded-3xl border border-ink-100 p-5 shadow-[0_2px_8px_-2px_rgba(13,30,74,0.04)]">
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 inline-flex items-center justify-center">
-              <TrendingUp size={15} />
-            </span>
-            <h3 className="font-extrabold text-ink-700 text-sm">Métiers tendances</h3>
+            <TrendingUp size={15} className="text-brand-500" />
+            <h3 className="font-extrabold text-ink-700 text-sm">Tendances cette semaine</h3>
           </div>
-          <div className="space-y-2">
-            {topMetiers.map((m, i) => (
+          <div className="space-y-1">
+            {topMetiers.map((m) => (
               <Link
                 key={m.id}
                 href={`/fil?metier=${m.slug}`}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-ink-50 transition group"
+                className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-brand-50 transition group"
               >
-                <span className="text-[0.7rem] font-extrabold text-ink-300 w-4">#{i + 1}</span>
-                <span className="text-base flex-shrink-0">{m.icon ?? "🛠️"}</span>
+                <span className="text-xl flex-shrink-0">{m.icon ?? "🛠️"}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold text-ink-700 group-hover:text-brand-600 truncate transition">
-                    {m.name}
+                  <div className="text-[0.86rem] font-bold text-ink-700 group-hover:text-brand-700 truncate transition">
+                    #{m.name}
                   </div>
-                  <div className="text-[0.66rem] text-ink-400">
-                    {m.count} post{m.count > 1 ? "s" : ""}
+                  <div className="text-[0.7rem] text-ink-400">
+                    {m.count} post{m.count > 1 ? "s" : ""} ce mois
                   </div>
                 </div>
+                <ArrowRight size={12} className="text-ink-300 group-hover:text-brand-500 transition flex-shrink-0" />
               </Link>
             ))}
           </div>
         </div>
       )}
 
-      {/* Encart "Qui peut publier ?" */}
-      <div className="bg-white rounded-2xl border border-ink-100 p-5">
-        <h3 className="font-extrabold text-ink-700 text-sm mb-3">Qui peut publier ?</h3>
-        <ul className="space-y-2.5 text-[0.78rem] text-ink-600 leading-relaxed">
-          <li className="flex gap-2">
-            <span className="text-brand-500 font-bold flex-shrink-0">→</span>
-            <span><strong className="text-ink-700">Artisans</strong> : partagez vos chantiers, donnez vos conseils, répondez aux questions.</span>
-          </li>
-          <li className="flex gap-2">
-            <span className="text-blue-500 font-bold flex-shrink-0">→</span>
-            <span><strong className="text-ink-700">Particuliers</strong> : posez vos questions travaux, demandez des conseils avant un projet.</span>
-          </li>
-        </ul>
+      {/* CTA invitation — orange éclatant */}
+      <div className="relative bg-gradient-to-br from-brand-500 to-brand-600 text-white rounded-3xl p-5 overflow-hidden shadow-[0_8px_24px_-6px_rgba(240,122,47,0.45)]">
+        <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/10 blur-2xl" />
+        <div className="relative">
+          <Users size={20} strokeWidth={2.4} />
+          <h3 className="mt-3 font-extrabold text-base leading-tight">
+            Invitez vos proches
+          </h3>
+          <p className="text-[0.78rem] text-white/85 mt-1.5 leading-snug">
+            Plus on est de monde, plus le fil est riche.
+          </p>
+          <Link
+            href="/parrainage"
+            className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-brand-700 text-[0.78rem] font-extrabold hover:bg-brand-50 transition"
+          >
+            Inviter <ArrowRight size={12} />
+          </Link>
+        </div>
       </div>
 
-      {/* CTA invitation */}
-      <div className="bg-gradient-to-br from-brand-50 to-amber-50 rounded-2xl border border-brand-200 p-5">
-        <div className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-brand-500 text-white shadow-[0_4px_12px_rgba(240,122,47,0.3)]">
-          <Sparkles size={15} />
+      {/* Footer infos */}
+      <div className="px-3 space-y-2 text-[0.72rem] text-ink-400 leading-relaxed">
+        <div className="flex items-center gap-1.5 font-bold text-ink-500">
+          <Shield size={11} /> Règles du fil
         </div>
-        <h3 className="mt-3 font-extrabold text-ink-700 text-sm leading-tight">
-          Faites grandir la communauté
-        </h3>
-        <p className="text-xs text-ink-600 mt-1.5 leading-relaxed">
-          Invitez vos proches · artisans ou particuliers. Plus de membres = un fil plus riche pour tout le monde.
-        </p>
-        <Link
-          href="/parrainage"
-          className="mt-3 inline-flex items-center gap-1.5 text-[0.76rem] font-extrabold text-brand-700 hover:underline"
-        >
-          Inviter un proche <ArrowRight size={11} />
-        </Link>
-      </div>
-
-      {/* Règles communautaires (footer mini) */}
-      <div className="text-[0.7rem] text-ink-400 px-2 leading-relaxed">
-        <div className="flex items-center gap-1.5 mb-1.5 font-semibold text-ink-500">
-          <Hash size={10} /> Règles du fil
+        <p>Pas de pub · respect des autres membres · contenu lié à l&apos;artisanat ou aux travaux.</p>
+        <div className="pt-2 flex items-center gap-1.5 font-bold text-ink-500">
+          <Hash size={11} /> Communauté
         </div>
-        Modération en amont · pas de publicité · respect des autres membres · contenu lié aux travaux et à l&apos;artisanat.
+        <p>Comptes vérifiés SIREN · publication immédiate · modération a posteriori.</p>
       </div>
     </aside>
+  );
+}
+
+function StatBlock({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="text-center">
+      <div className="text-xl font-extrabold text-ink-700 tabular-nums leading-none">
+        {value}
+      </div>
+      <div className="text-[0.62rem] text-ink-400 mt-1 uppercase tracking-wider leading-tight">
+        {label}
+      </div>
+    </div>
   );
 }

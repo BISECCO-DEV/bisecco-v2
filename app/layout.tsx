@@ -27,7 +27,7 @@ const instrumentSans = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bisecco.eu"),
+  metadataBase: new URL("https://bisecco.fr"),
   title: {
     default: "Bisecco · Le réseau social des artisans français",
     template: "%s | Bisecco",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: "https://bisecco.eu",
+    url: "https://bisecco.fr",
     siteName: "Bisecco",
     title: "Bisecco · Le réseau social des artisans français",
     description: "Trouvez un artisan qualifié et vérifié près de chez vous.",
@@ -58,22 +58,37 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon-app.png", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    shortcut: "/icon-app.png",
+    shortcut: "/icon-192.png",
     apple: [
-      // Apple Touch Icon · utilisé quand un utilisateur iOS ajoute Bisecco à son écran d'accueil
-      { url: "/icon-app.png", sizes: "180x180", type: "image/png" },
-      { url: "/icon-app.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-app.png", sizes: "512x512", type: "image/png" },
+      // Toutes les tailles iOS — évite le fallback "B sur fond orange" généré
+      // automatiquement par iOS quand il ne trouve pas la bonne taille
+      { url: "/apple-touch-icon-57x57.png", sizes: "57x57", type: "image/png" },
+      { url: "/apple-touch-icon-60x60.png", sizes: "60x60", type: "image/png" },
+      { url: "/apple-touch-icon-72x72.png", sizes: "72x72", type: "image/png" },
+      { url: "/apple-touch-icon-76x76.png", sizes: "76x76", type: "image/png" },
+      { url: "/apple-touch-icon-114x114.png", sizes: "114x114", type: "image/png" },
+      { url: "/apple-touch-icon-120x120.png", sizes: "120x120", type: "image/png" },
+      { url: "/apple-touch-icon-144x144.png", sizes: "144x144", type: "image/png" },
+      { url: "/apple-touch-icon-152x152.png", sizes: "152x152", type: "image/png" },
+      { url: "/apple-touch-icon-167x167.png", sizes: "167x167", type: "image/png" },
+      { url: "/apple-touch-icon-180x180.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      // Précomposé : ancien iOS, mais ne mange pas de bande passante en plus
+      { rel: "apple-touch-icon-precomposed", url: "/apple-touch-icon-precomposed.png" },
     ],
   },
-  manifest: "/manifest.json",
+  // Le manifest est généré automatiquement par app/manifest.ts à /manifest.webmanifest
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     title: "Bisecco",
     statusBarStyle: "default",
-    startupImage: ["/icon-app.png"],
+    startupImage: ["/apple-touch-icon.png"],
   },
   applicationName: "Bisecco",
   formatDetection: { telephone: true, email: true, address: true },
@@ -88,10 +103,26 @@ export const viewport: Viewport = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": "https://bisecco.fr/#organization",
   name: "Bisecco",
-  url: "https://bisecco.eu",
-  logo: "https://bisecco.eu/logo.jpg",
+  legalName: "AGISCO HOLDING SAS",
+  url: "https://bisecco.fr",
+  logo: {
+    "@type": "ImageObject",
+    url: "https://bisecco.fr/logo.jpg",
+    width: 400,
+    height: 400,
+  },
   description: "Le 1er réseau social des artisans français vérifiés. SIREN contrôlé, avis authentiques, devis gratuit.",
+  foundingDate: "2026",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "45 Boulevard de la Croisette",
+    postalCode: "06400",
+    addressLocality: "Cannes",
+    addressRegion: "Provence-Alpes-Côte d'Azur",
+    addressCountry: "FR",
+  },
   sameAs: ["https://www.linkedin.com/company/bisecco", "https://twitter.com/bisecco_fr"],
   contactPoint: {
     "@type": "ContactPoint",
@@ -105,11 +136,16 @@ const organizationJsonLd = {
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
+  "@id": "https://bisecco.fr/#website",
   name: "Bisecco",
-  url: "https://bisecco.eu",
+  url: "https://bisecco.fr",
+  publisher: { "@id": "https://bisecco.fr/#organization" },
   potentialAction: {
     "@type": "SearchAction",
-    target: "https://bisecco.eu/rechercher?metier={search_term_string}",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://bisecco.fr/rechercher?metier={search_term_string}",
+    },
     "query-input": "required name=search_term_string",
   },
 };
@@ -143,7 +179,7 @@ export default async function RootLayout({
         <Header user={headerUser} unreadNotifications={unreadNotifs} currentUserId={current?.id ?? null} metierOptions={metierOptions} unreadCvs={unreadCvs} />
         <main className="flex-1">{children}</main>
         <Footer />
-        <GlobalClientWidgets />
+        <GlobalClientWidgets currentUserId={current?.id ?? null} />
       </body>
     </html>
   );

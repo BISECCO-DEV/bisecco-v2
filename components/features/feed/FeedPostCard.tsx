@@ -1,14 +1,18 @@
 import Link from "next/link";
 import {
-  MessageCircle, MapPin, ShieldCheck, Hammer, HelpCircle, Lightbulb,
-  MoreHorizontal,
+  MessageCircle, MapPin, ShieldCheck, Hammer, HelpCircle, Lightbulb, Repeat2,
 } from "lucide-react";
 import type { FeedPost } from "@/lib/feed/fetch";
 import { FeedLikeButton } from "./FeedLikeButton";
 import { FeedReportButton } from "./FeedReportButton";
 import { FeedShareButton } from "./FeedShareButton";
 import { FeedImageGrid } from "./FeedImageGrid";
-import { LinkifiedText } from "./LinkifiedText";
+import { FeedPostContent } from "./FeedPostContent";
+import { FeedPostMenu } from "./FeedPostMenu";
+import { FeedPostLinkCard } from "./FeedPostLinkCard";
+import { FeedPostAutoLinkCard } from "./FeedPostAutoLinkCard";
+import { FeedRepostButton } from "./FeedRepostButton";
+import { RepostEmbed } from "./RepostEmbed";
 
 const KIND_CFG: Record<FeedPost["kind"], { label: string; tint: string; icon: typeof Hammer }> = {
   realisation: { label: "Réalisation",      tint: "text-brand-600",  icon: Hammer },
@@ -32,11 +36,18 @@ type Props = {
   post: FeedPost;
   liked: boolean;
   canInteract: boolean;
+  /** Id de l'utilisateur connecté (pour afficher le menu Supprimer si auteur). */
+  currentUserId?: number | null;
+  /** True si l'utilisateur connecté est admin (menu Supprimer en modération). */
+  isAdmin?: boolean;
   /** Mode compact (sans bord arrondi top, utilisé dans /fil/[id]) */
   flat?: boolean;
 };
 
-export function FeedPostCard({ post, liked, canInteract }: Props) {
+export function FeedPostCard({ post, liked, canInteract, currentUserId, isAdmin }: Props) {
+  const isOwner = currentUserId != null && post.author.id === currentUserId;
+  const showMenu = canInteract && (isOwner || Boolean(isAdmin));
+  const isRepost = post.repost_of != null;
   const author = post.author;
   const displayName = author.company_name || author.name;
   const kind = KIND_CFG[post.kind];
@@ -51,6 +62,13 @@ export function FeedPostCard({ post, liked, canInteract }: Props) {
 
   return (
     <article className="bg-white rounded-2xl shadow-[0_1px_2px_rgba(13,30,74,0.04),0_4px_16px_-8px_rgba(13,30,74,0.06)] border border-ink-100/80 overflow-hidden hover:shadow-[0_2px_4px_rgba(13,30,74,0.06),0_12px_24px_-12px_rgba(13,30,74,0.12)] transition-shadow">
+      {/* Bandeau "a repartagé" si c'est un repost */}
+      {isRepost && (
+        <div className="px-5 pt-3 -mb-1 flex items-center gap-1.5 text-[0.72rem] text-emerald-700 font-bold">
+          <Repeat2 size={12} />
+          <span>{displayName} a repartagé</span>
+        </div>
+      )}
       {/* ─── HEADER ─── */}
       <header className="px-5 pt-5 pb-3 flex items-start gap-3">
         <Link href={profileHref} className="flex-shrink-0 group/avatar">
@@ -108,22 +126,43 @@ export function FeedPostCard({ post, liked, canInteract }: Props) {
           </div>
         </div>
 
-        {/* Menu (placeholder) */}
-        <button
-          type="button"
-          className="flex-shrink-0 w-8 h-8 rounded-full hover:bg-ink-50 text-ink-400 inline-flex items-center justify-center transition"
-          aria-label="Options"
-        >
-          <MoreHorizontal size={16} />
-        </button>
+        {showMenu && (
+          <FeedPostMenu postId={post.id} isOwner={isOwner} isAdmin={Boolean(isAdmin)} />
+        )}
       </header>
 
-      {/* ─── CONTENT ─── (URLs rendues cliquables via LinkifiedText) */}
-      <div className="px-5 pb-4">
-        <LinkifiedText className="text-[0.96rem] text-ink-700 leading-[1.65] whitespace-pre-wrap break-words">
-          {post.content}
-        </LinkifiedText>
-      </div>
+      {/* ─── CONTENT ─── (LinkedIn-style : tronqué à 3 lignes / 280 chars avec "… voir plus") */}
+      {post.content && (
+        <div className="px-5 pb-4">
+          <FeedPostContent content={post.content} />
+        </div>
+      )}
+
+      {/* ─── APERÇU DE LIEN OG ─── */}
+      {/* Cas 1 : l'aperçu a été capturé à la publication → carte instantanée */}
+      {post.link_url ? (
+        <div className="px-5 pb-4">
+          <FeedPostLinkCard
+            url={post.link_url}
+            title={post.link_title}
+            description={post.link_description}
+            image={post.link_image}
+            siteName={post.link_site_name}
+          />
+        </div>
+      ) : post.content && /https?:\/\//i.test(post.content) ? (
+        // Cas 2 : URL dans le texte mais pas de capture stockée → fetch côté client
+        <div className="px-5 pb-4">
+          <FeedPostAutoLinkCard content={post.content} />
+        </div>
+      ) : null}
+
+      {/* ─── POST REPARTAGÉ (embed du post original) ─── */}
+      {post.repost_of && (
+        <div className="px-5 pb-4">
+          <RepostEmbed target={post.repost_of} />
+        </div>
+      )}
 
       {/* ─── IMAGES (grid intelligent) ─── */}
       {post.images.length > 0 && (
@@ -164,6 +203,8 @@ export function FeedPostCard({ post, liked, canInteract }: Props) {
         </Link>
 
         <FeedShareButton postId={post.id} excerpt={post.content} />
+
+        <FeedRepostButton post={post} canInteract={canInteract} isOwner={isOwner} />
 
         {canInteract ? (
           <div className="px-3">

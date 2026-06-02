@@ -17,7 +17,7 @@ export function ParrainageClient({ referralCode, stats, signedIn }: Props) {
   const [copiedUrl, setCopiedUrl] = useState(false);
 
   // baseUrl côté client : window.location.origin permet de marcher en local + prod sans hardcoder
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://bisecco.eu";
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://bisecco.fr";
   const referralUrl = referralCode
     ? `${baseUrl}/r/${referralCode}`
     : `${baseUrl}/inscription`;

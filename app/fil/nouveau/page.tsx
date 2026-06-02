@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, PenSquare, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { requireUser } from "@/lib/db/current-user";
 import { fetchAllMetiers } from "@/lib/db/metiers";
 import { getMetierOptions } from "@/lib/db/metier-options";
@@ -23,9 +23,9 @@ export default async function NouveauPostPage({ searchParams }: { searchParams: 
 
   if (user.validation_status !== "approved") {
     return (
-      <div className="bg-[#f4f5f9] min-h-screen py-16">
+      <div className="bg-[#fafbfc] min-h-screen py-16">
         <div className="container-default max-w-md text-center">
-          <div className="bg-white rounded-3xl border border-ink-100 p-10">
+          <div className="bg-white rounded-3xl border border-ink-100 p-10 shadow-[0_4px_24px_-4px_rgba(13,30,74,0.08)]">
             <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-4">
               <ShieldCheck size={24} className="text-amber-500" />
             </div>
@@ -52,33 +52,23 @@ export default async function NouveauPostPage({ searchParams }: { searchParams: 
   ]);
 
   return (
-    <div className="bg-[#f4f5f9] min-h-screen pb-16">
-      <div className="container-default py-6 max-w-6xl">
-        {/* Breadcrumb */}
-        <Link
-          href="/fil"
-          className="inline-flex items-center gap-1.5 text-sm text-ink-500 hover:text-brand-500 font-semibold transition"
-        >
-          <ArrowLeft size={14} /> Retour au fil
-        </Link>
+    <div className="bg-[#fafbfc] min-h-screen pb-16">
+      {/* Header sticky minimal style LinkedIn modal */}
+      <header className="sticky top-0 z-20 bg-white/85 backdrop-blur-xl border-b border-ink-100">
+        <div className="container-default py-3 max-w-2xl flex items-center gap-3">
+          <Link
+            href="/fil"
+            className="w-9 h-9 rounded-xl hover:bg-ink-100 text-ink-700 inline-flex items-center justify-center transition"
+            aria-label="Retour au fil"
+          >
+            <ArrowLeft size={18} />
+          </Link>
+          <h1 className="text-base font-extrabold text-ink-700">Créer un post</h1>
+        </div>
+      </header>
 
-        {/* Header */}
-        <header className="mt-5 mb-6 flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center flex-shrink-0 shadow-[0_8px_20px_-4px_rgba(240,122,47,0.45)]">
-            <PenSquare size={20} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-[1.7rem] font-extrabold text-ink-700 tracking-tight leading-tight">
-              Nouvelle publication
-            </h1>
-            <p className="text-ink-500 text-sm mt-1 leading-relaxed">
-              Partagez avec la communauté Bisecco · publication immédiate.
-              Visualisez le rendu final en temps réel sur la droite.
-            </p>
-          </div>
-        </header>
-
-        {/* Composer + Preview */}
+      {/* Composer centré, modal-style */}
+      <div className="container-default py-6 max-w-2xl">
         <FeedComposer
           userRole={user.role}
           userDisplayName={user.display_name || user.name}
@@ -87,6 +77,12 @@ export default async function NouveauPostPage({ searchParams }: { searchParams: 
           metiers={metiers.map((m) => ({ id: m.id, name: m.name, slug: m.slug }))}
           initialKind={initialKind}
         />
+
+        {/* Footer info règles */}
+        <p className="mt-4 text-center text-[0.72rem] text-ink-400 leading-relaxed">
+          En publiant, vous acceptez les <strong className="text-ink-500">règles de la communauté</strong> :
+          contenu lié aux travaux ou à l&apos;artisanat, respect des autres membres, pas de publicité.
+        </p>
       </div>
     </div>
   );

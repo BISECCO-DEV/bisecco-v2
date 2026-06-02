@@ -1,8 +1,11 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { ScrollIndicator } from "@/components/ui/ScrollIndicator";
 import { CtaButton } from "@/components/ui/CtaButton";
+import { JsonLd } from "@/components/ui/JsonLd";
 import { HomeLocalSearch } from "@/components/features/home/HomeLocalSearch";
 import { HomeFaq } from "@/components/features/home/HomeFaq";
+import { HOME_FAQ_ITEMS } from "@/lib/seo/home-faq";
+import { faqSchema } from "@/lib/seo/schemas";
 import { HomeHowItWorks } from "@/components/features/home/HomeHowItWorks";
 import { HomeMetiers } from "@/components/features/home/HomeMetiers";
 import { HomeComparison } from "@/components/features/home/HomeComparison";
@@ -32,8 +35,13 @@ import {
 export const revalidate = 300;
 
 export default function HomePage() {
+  // JSON-LD FAQPage server-rendered (visible aux crawlers dans le HTML initial,
+  // contrairement à un <script> injecté depuis un client component).
+  const faqLd = faqSchema(HOME_FAQ_ITEMS.slice(0, 8).map((f) => ({ question: f.q, answer: f.a })));
+
   return (
     <>
+      <JsonLd data={faqLd} />
       {/* ═══════════ HERO ═══════════ */}
       <section className="relative flex items-start md:items-center min-h-[78vh] md:min-h-[78vh] lg:min-h-[95vh] bg-[#05122e] overflow-hidden">
         {/* Image de fond · <picture> responsive (mobile portrait / desktop landscape) */}
@@ -129,6 +137,14 @@ export default function HomePage() {
                   Déposer mon CV
                 </CtaButton>
               </div>
+
+              {/* Accroche sous les CTAs */}
+              <p
+                className="text-center md:text-left mt-4 sm:mt-5 text-[0.92rem] sm:text-[1rem] font-semibold text-white/90 animate-reveal-up"
+                style={{ animationDelay: "950ms" }}
+              >
+                Inscrivez-vous gratuitement et prenez une longueur d&rsquo;avance. 🚀
+              </p>
 
               {/* Live social proof · entrance delay + counter animation */}
             </div>

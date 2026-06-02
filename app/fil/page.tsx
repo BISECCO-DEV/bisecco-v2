@@ -2,23 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   PenSquare, Sparkles, MessageSquare, Hammer, Lightbulb, HelpCircle,
-  ShieldCheck,
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/db/current-user";
 import { fetchApprovedFeed, fetchLikedPostIds, type FeedKind } from "@/lib/feed/fetch";
-import { FeedPostCard } from "@/components/features/feed/FeedPostCard";
-import { FeedComposerTrigger } from "@/components/features/feed/FeedComposerTrigger";
+import { FeedComposer } from "@/components/features/feed/FeedComposer";
 import { FeedFilterTabs } from "@/components/features/feed/FeedFilterTabs";
 import { FeedSidebar } from "@/components/features/feed/FeedSidebar";
+import { FeedLeftSidebar } from "@/components/features/feed/FeedLeftSidebar";
+import { FeedInfiniteList } from "@/components/features/feed/FeedInfiniteList";
+import { FeedRealtime } from "@/components/features/feed/FeedRealtime";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { fetchAllMetiers } from "@/lib/db/metiers";
+import { getMetierOptions } from "@/lib/db/metier-options";
 
 export const metadata: Metadata = {
-  title: "Fil d'actualité · Bisecco",
+  title: "Le Fil · Bisecco",
   description:
-    "Le fil d'actualité où artisans et particuliers échangent : réalisations de chantiers, questions travaux, conseils pratiques. Tous les comptes sont vérifiés SIREN et validés manuellement.",
+    "Le fil d'actualité où artisans et particuliers échangent : réalisations de chantiers, questions travaux, conseils pratiques. Tous les comptes sont vérifiés SIREN.",
 };
 
-export const revalidate = 60;
+export const revalidate = 10;
 
 type SearchParams = Promise<{ published?: string; kind?: string; metier?: string }>;
 
@@ -36,7 +39,14 @@ export default async function FilPage({ searchParams }: { searchParams: SearchPa
 
   const [user, metierId] = await Promise.all([getCurrentUser(), resolveMetierId(metier)]);
 
-  const posts = await fetchApprovedFeed({ kind: validKind, metierId }, 40);
+  const canPostEarly = Boolean(user?.id && user.validation_status === "approved");
+
+  const [posts, metiers, metierOptions] = await Promise.all([
+    fetchApprovedFeed({ kind: validKind, metierId }, 10, 0),
+    // Charge les métiers seulement si l'user peut publier (sinon inutile)
+    canPostEarly ? fetchAllMetiers() : Promise.resolve([]),
+    canPostEarly ? getMetierOptions() : Promise.resolve([]),
+  ]);
 
   const likedIds = user?.id
     ? await fetchLikedPostIds(user.id, posts.map((p) => p.id))
@@ -45,46 +55,57 @@ export default async function FilPage({ searchParams }: { searchParams: SearchPa
   const canPost = Boolean(user?.id && user.validation_status === "approved");
 
   return (
-    <div className="bg-[#f4f5f9] min-h-screen pb-16">
-      {/* ─── HERO COMPACT ─── */}
-      <section className="relative bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 text-white overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[400px] rounded-full bg-brand-500/20 blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[300px] rounded-full bg-blue-500/10 blur-[100px] pointer-events-none" />
-
-        <div className="container-default relative py-10 sm:py-14">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-300 text-[0.65rem] font-bold tracking-[0.14em] uppercase">
-              <MessageSquare size={11} /> Communauté Bisecco
+    <div className="bg-[#fafbfc] min-h-screen pb-24">
+      {/* ═══════ HEADER STICKY LIGHT ═══════ */}
+      <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-ink-100">
+        <div className="container-default">
+          <div className="grid xl:grid-cols-[260px_1fr_320px] lg:grid-cols-[1fr_320px] gap-6 max-w-5xl mx-auto lg:max-w-none lg:mx-0">
+            {/* Espace colonne gauche (xl seulement) — vide pour aligner header */}
+            <div className="hidden xl:block" aria-hidden="true" />
+            <div className="max-w-2xl mx-auto lg:max-w-none lg:mx-0 w-full">
+              {/* Ligne 1 : titre + live indicator */}
+              <div className="flex items-center justify-between py-3">
+                <div className="flex items-baseline gap-2.5">
+                  <h1 className="text-[1.5rem] font-extrabold text-ink-900 tracking-tight">
+                    Le Fil
+                  </h1>
+                  <span className="hidden sm:inline-flex items-center gap-1.5 text-[0.7rem] font-bold text-emerald-700">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    </span>
+                    En direct
+                  </span>
+                </div>
+                {canPost && (
+                  <Link
+                    href="/fil/nouveau"
+                    className="sm:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-xs font-extrabold shadow-[0_4px_12px_-2px_rgba(240,122,47,0.5)] transition"
+                  >
+                    <PenSquare size={12} /> Publier
+                  </Link>
+                )}
+              </div>
+              {/* Ligne 2 : tabs filtres */}
+              <FeedFilterTabs />
             </div>
-            <h1 className="text-3xl sm:text-[2.4rem] font-bold mt-4 tracking-[-0.02em] leading-[1.1]">
-              Le fil <span className="text-brand-500">en direct</span> des artisans et des particuliers.
-            </h1>
-            <p className="mt-3 text-white/65 leading-relaxed max-w-xl text-[0.96rem]">
-              Un seul fil pour <strong className="text-white">tous les membres Bisecco</strong> : artisans partagent
-              leurs réalisations et conseils, particuliers posent leurs questions travaux et témoignent de leurs projets.
-            </p>
-
-            {/* Trust chips */}
-            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.78rem] text-white/65">
-              <span className="inline-flex items-center gap-1.5">
-                <ShieldCheck size={13} className="text-emerald-400" /> Comptes vérifiés SIREN
-              </span>
-              <span className="text-white/20">·</span>
-              <span className="inline-flex items-center gap-1.5">
-                <Sparkles size={13} className="text-brand-400" /> Publication immédiate
-              </span>
-              <span className="text-white/20">·</span>
-              <span className="inline-flex items-center gap-1.5">
-                <Hammer size={13} className="text-blue-400" /> Ouvert aux deux audiences
-              </span>
-            </div>
+            {/* Espace pour aligner avec sidebar desktop (vide intentionnel) */}
+            <div className="hidden lg:block" aria-hidden="true" />
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* ─── LAYOUT 2 COLONNES ─── */}
-      <div className="container-default py-6">
-        <div className="grid lg:grid-cols-[1fr_320px] gap-6 max-w-5xl mx-auto lg:max-w-none lg:mx-0">
+      {/* ═══════ LAYOUT 3 COLONNES (xl) / 2 COLONNES (lg) / 1 COLONNE (mobile) ═══════ */}
+      <div className="container-default pt-5">
+        <div className="grid xl:grid-cols-[260px_1fr_320px] lg:grid-cols-[1fr_320px] gap-6 max-w-5xl mx-auto lg:max-w-none lg:mx-0">
+          {/* SIDEBAR GAUCHE (xl only) — mini profil + complétion + raccourcis */}
+          {user && (
+            <div className="hidden xl:block">
+              <FeedLeftSidebar user={user} />
+            </div>
+          )}
+          {!user && <div className="hidden xl:block" aria-hidden="true" />}
+
           {/* COLONNE PRINCIPALE */}
           <div className="max-w-2xl mx-auto lg:max-w-none lg:mx-0 w-full space-y-4">
             {/* Bannière succès post publié */}
@@ -95,39 +116,34 @@ export default async function FilPage({ searchParams }: { searchParams: SearchPa
               </div>
             )}
 
-            {/* Composer trigger */}
+            {/* Composer inline — pas de redirection, on poste direct depuis le fil */}
             {canPost && user && (
-              <FeedComposerTrigger
-                userName={user.display_name || user.name}
-                userAvatar={user.profile_photo}
+              <FeedComposer
                 userRole={user.role}
+                userDisplayName={user.display_name || user.name}
+                userAvatar={user.profile_photo}
+                metierOptions={metierOptions}
+                metiers={metiers.map((m) => ({ id: m.id, name: m.name, slug: m.slug }))}
+                initialKind={validKind}
               />
             )}
 
-            {/* Filtres pills */}
-            <FeedFilterTabs />
+            {/* Realtime — abonnement websocket aux nouveaux posts/likes/comments */}
+            <FeedRealtime />
 
-            {/* Liste posts */}
+            {/* Liste posts avec scroll infini (10 par 10) */}
             {posts.length === 0 ? (
               <EmptyFeed canPost={canPost} hasFilter={Boolean(validKind || metierId)} />
             ) : (
-              <div className="space-y-4">
-                {posts.map((p) => (
-                  <FeedPostCard
-                    key={p.id}
-                    post={p}
-                    liked={likedIds.has(p.id)}
-                    canInteract={canPost}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Footer de fin de feed (subtil) */}
-            {posts.length > 0 && (
-              <div className="text-center py-6 text-xs text-ink-400">
-                Vous avez atteint la fin du fil · Plus de posts à venir bientôt.
-              </div>
+              <FeedInfiniteList
+                initialPosts={posts}
+                initialLikedIds={Array.from(likedIds)}
+                canInteract={canPost}
+                currentUserId={user?.id ?? null}
+                isAdmin={user?.role === "admin"}
+                kind={validKind}
+                metierId={metierId}
+              />
             )}
           </div>
 
@@ -144,7 +160,7 @@ export default async function FilPage({ searchParams }: { searchParams: SearchPa
 function EmptyFeed({ canPost, hasFilter }: { canPost: boolean; hasFilter: boolean }) {
   if (hasFilter) {
     return (
-      <div className="bg-white rounded-2xl border border-ink-100 p-10 text-center">
+      <div className="bg-white rounded-3xl border border-ink-100 p-10 text-center shadow-[0_2px_8px_-2px_rgba(13,30,74,0.04)]">
         <div className="w-14 h-14 rounded-2xl bg-ink-50 flex items-center justify-center mx-auto mb-4">
           <MessageSquare size={22} className="text-ink-400" />
         </div>
@@ -163,7 +179,7 @@ function EmptyFeed({ canPost, hasFilter }: { canPost: boolean; hasFilter: boolea
   }
 
   return (
-    <div className="bg-white rounded-3xl border border-ink-100 p-10 text-center relative overflow-hidden">
+    <div className="bg-white rounded-3xl border border-ink-100 p-10 text-center relative overflow-hidden shadow-[0_2px_8px_-2px_rgba(13,30,74,0.04)]">
       <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-brand-500/10 blur-2xl" />
       <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl" />
 
@@ -174,18 +190,18 @@ function EmptyFeed({ canPost, hasFilter }: { canPost: boolean; hasFilter: boolea
         <h2 className="text-xl font-bold text-ink-700">Le fil démarre tout juste</h2>
         <p className="text-sm text-ink-500 mt-2 max-w-md mx-auto leading-relaxed">
           Que vous soyez <strong className="text-ink-700">artisan</strong> ou <strong className="text-ink-700">particulier</strong>,
-          soyez parmi les premiers à publier. Partagez un chantier, posez une question travaux, donnez un conseil.
+          soyez parmi les premiers à publier.
         </p>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold">
-            <Hammer size={12} /> Réalisations <span className="text-brand-400 font-normal">· artisans</span>
+            <Hammer size={12} /> Réalisations
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-xs font-bold">
-            <Lightbulb size={12} /> Conseils <span className="text-violet-400 font-normal">· artisans</span>
+            <Lightbulb size={12} /> Conseils
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
-            <HelpCircle size={12} /> Questions <span className="text-blue-400 font-normal">· tous</span>
+            <HelpCircle size={12} /> Questions
           </span>
         </div>
 

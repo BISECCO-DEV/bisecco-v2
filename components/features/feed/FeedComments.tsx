@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition, useActionState } from "react";
+import { useRef, useState, useTransition, useActionState } from "react";
 import { Send, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { addCommentAction } from "@/lib/feed/actions";
 import type { FeedComment } from "@/lib/feed/fetch";
 import { LinkifiedText } from "./LinkifiedText";
+import { EmojiPickerButton } from "./EmojiPickerButton";
 
 function timeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
@@ -29,6 +30,23 @@ export function FeedComments({ postId, initialComments, canComment }: Props) {
   const [state, formAction] = useActionState(addCommentAction, undefined);
   const [content, setContent] = useState("");
   const [pending, startTransition] = useTransition();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertEmoji = (emoji: string) => {
+    const el = textareaRef.current;
+    if (!el) {
+      setContent((c) => c + emoji);
+      return;
+    }
+    const start = el.selectionStart ?? content.length;
+    const end = el.selectionEnd ?? content.length;
+    setContent(content.slice(0, start) + emoji + content.slice(end));
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + emoji.length;
+      el.setSelectionRange(pos, pos);
+    });
+  };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,17 +64,23 @@ export function FeedComments({ postId, initialComments, canComment }: Props) {
       {canComment ? (
         <form onSubmit={onSubmit} className="flex gap-2 items-start">
           <input type="hidden" name="post_id" value={postId} />
-          <textarea
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            minLength={2}
-            maxLength={1500}
-            rows={2}
-            placeholder="Écrire un commentaire…"
-            className="flex-1 px-3 py-2 rounded-xl border-2 border-ink-200 focus:border-brand-500 outline-none text-sm resize-none"
-          />
+          <div className="flex-1 relative">
+            <textarea
+              ref={textareaRef}
+              name="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              required
+              minLength={2}
+              maxLength={1500}
+              rows={2}
+              placeholder="Écrire un commentaire… 😊"
+              className="w-full px-3 py-2 pr-12 rounded-xl border-2 border-ink-200 focus:border-brand-500 outline-none text-sm resize-none"
+            />
+            <div className="absolute bottom-1.5 right-1.5">
+              <EmojiPickerButton onSelect={insertEmoji} />
+            </div>
+          </div>
           <button
             type="submit"
             disabled={pending || content.length < 2}

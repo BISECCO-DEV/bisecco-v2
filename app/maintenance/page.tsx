@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Bisecco · Annuaire d'artisans français vérifiés SIREN. Plombier, électricien, maçon, menuisier, développeur web. 100% gratuit, 0% commission. Plateforme en mise à jour, retour très prochain.",
   keywords: ["artisans", "artisans vérifiés", "SIREN", "annuaire artisans", "devis gratuit"],
-  alternates: { canonical: "https://bisecco.eu" },
+  alternates: { canonical: "https://bisecco.fr" },
 };
 
 export default function MaintenancePage() {

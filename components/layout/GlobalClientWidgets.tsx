@@ -9,16 +9,6 @@ import dynamic from "next/dynamic";
  * Effet PageSpeed : -94 Kio JS render-blocking → meilleur FCP/LCP mobile.
  */
 
-const MobileBottomNav = dynamic(
-  () => import("./MobileBottomNav").then((m) => m.MobileBottomNav),
-  { ssr: false, loading: () => null },
-);
-
-const StickyMobileCTA = dynamic(
-  () => import("./StickyMobileCTA").then((m) => m.StickyMobileCTA),
-  { ssr: false, loading: () => null },
-);
-
 const CookieBanner = dynamic(
   () => import("./CookieBanner").then((m) => m.CookieBanner),
   { ssr: false, loading: () => null },
@@ -44,16 +34,26 @@ const PwaInstallPrompt = dynamic(
   { ssr: false, loading: () => null },
 );
 
-export function GlobalClientWidgets() {
+const InAppLinkViewer = dynamic(
+  () => import("./InAppLinkViewer").then((m) => m.InAppLinkViewer),
+  { ssr: false, loading: () => null },
+);
+
+const MessageriedDock = dynamic(
+  () => import("./MessageriedDock").then((m) => m.MessageriedDock),
+  { ssr: false, loading: () => null },
+);
+
+export function GlobalClientWidgets({ currentUserId }: { currentUserId: number | null }) {
   return (
     <>
-      <MobileBottomNav />
-      <StickyMobileCTA />
       <CookieBanner />
-      <Chatbot />
+      <Chatbot currentUserId={currentUserId} />
       <ScrollToTop />
       <ServiceWorkerRegister />
       <PwaInstallPrompt />
+      <InAppLinkViewer />
+      <MessageriedDock currentUserId={currentUserId} />
     </>
   );
 }

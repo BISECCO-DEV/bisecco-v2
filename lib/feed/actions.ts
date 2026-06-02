@@ -15,7 +15,7 @@ export type FeedActionState =
   | { ok: false; error: string }
   | undefined;
 
-const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 // ─────────────────── CREATE POST ───────────────────
 export async function createFeedPostAction(
@@ -33,6 +33,13 @@ export async function createFeedPostAction(
   const city = formData.get("city")?.toString().trim() || null;
   const metierIdRaw = formData.get("metier_id")?.toString().trim();
   const imagesRaw = formData.get("images")?.toString() ?? "[]";
+
+  // Aperçu de lien (Open Graph) capturé côté client pendant la rédaction
+  const linkUrl = formData.get("link_url")?.toString().trim() || null;
+  const linkTitle = formData.get("link_title")?.toString().trim() || null;
+  const linkDescription = formData.get("link_description")?.toString().trim() || null;
+  const linkImage = formData.get("link_image")?.toString().trim() || null;
+  const linkSiteName = formData.get("link_site_name")?.toString().trim() || null;
 
   if (!KIND_VALUES.includes(kind as FeedKind)) {
     return { ok: false, error: "Type de post invalide." };
@@ -75,6 +82,11 @@ export async function createFeedPostAction(
       city,
       metier_id: Number.isFinite(metierId) ? metierId : null,
       images,
+      link_url: linkUrl,
+      link_title: linkTitle,
+      link_description: linkDescription,
+      link_image: linkImage,
+      link_site_name: linkSiteName,
       status: "approved",
       approved_at: new Date().toISOString(),
     })
@@ -181,6 +193,108 @@ export async function removeFeedPostAction(postId: number): Promise<{ ok: boolea
   await requireAdmin();
   const admin = createSupabaseAdminClient();
   await admin.from("feed_posts").update({ status: "removed" }).eq("id", postId);
+  revalidatePath("/fil");
+  revalidatePath("/admin/fil");
+  return { ok: true };
+}
+
+/**
+ * Suppression d'un post par son propre auteur (ou un admin).
+ * Hard-delete : retire aussi likes + commentaires + signalements via cascade.
+ */
+/**
+ * Repartage d'un post — crée un NOUVEAU feed_post avec repost_of_id renseigné.
+ * Le commentaire est optionnel (peut être vide).
+ *
+ * Anti-chaînage : si l'utilisateur repartage un repost, on enregistre l'id du
+ * post original (le grand-père), pas l'intermédiaire.
+ */
+export async function repostFeedPostAction(args: {
+  originalPostId: number;
+  comment?: string;
+}): Promise<{ ok: boolean; error?: string; postId?: number }> {
+  const user = await requireUser();
+  if (!user.id) return { ok: false, error: "Compte non trouvé." };
+  if (user.validation_status !== "approved") {
+    return { ok: false, error: "Votre compte doit être validé pour repartager." };
+  }
+
+  const comment = (args.comment ?? "").trim().slice(0, 1000);
+
+  const admin = createSupabaseAdminClient();
+
+  // Récupère le post original — si c'est déjà un repost, on cible le grand-père
+  const { data: original } = await admin
+    .from("feed_posts")
+    .select("id, repost_of_id, status, author_id")
+    .eq("id", args.originalPostId)
+    .maybeSingle();
+
+  if (!original) return { ok: false, error: "Post introuvable." };
+  if (original.status !== "approved") {
+    return { ok: false, error: "Ce post n'est plus disponible." };
+  }
+  if (original.author_id === user.id) {
+    return { ok: false, error: "Vous ne pouvez pas repartager votre propre post." };
+  }
+
+  const targetId = original.repost_of_id ?? original.id;
+
+  // Anti-spam : pas de double-repost du même post par le même user
+  const { data: existing } = await admin
+    .from("feed_posts")
+    .select("id")
+    .eq("author_id", user.id)
+    .eq("repost_of_id", targetId)
+    .limit(1)
+    .maybeSingle();
+  if (existing) {
+    return { ok: false, error: "Vous avez déjà repartagé ce post." };
+  }
+
+  const { data: created, error } = await admin
+    .from("feed_posts")
+    .insert({
+      author_id: user.id,
+      kind: "question", // repost utilise kind=question par défaut (peu importe)
+      content: comment || null,
+      images: [],
+      repost_of_id: targetId,
+      status: "approved",
+      approved_at: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
+
+  if (error || !created) {
+    return { ok: false, error: error?.message ?? "Erreur lors du repartage." };
+  }
+
+  revalidatePath("/fil");
+  return { ok: true, postId: created.id };
+}
+
+export async function deleteOwnFeedPostAction(
+  postId: number,
+): Promise<{ ok: boolean; error?: string }> {
+  const user = await requireUser();
+  if (!user.id) return { ok: false, error: "Non autorisé." };
+
+  const admin = createSupabaseAdminClient();
+  const { data: post, error: fetchErr } = await admin
+    .from("feed_posts")
+    .select("id, author_id")
+    .eq("id", postId)
+    .maybeSingle();
+
+  if (fetchErr || !post) return { ok: false, error: "Post introuvable." };
+  if (post.author_id !== user.id && user.role !== "admin") {
+    return { ok: false, error: "Vous n'êtes pas l'auteur de ce post." };
+  }
+
+  const { error: delErr } = await admin.from("feed_posts").delete().eq("id", postId);
+  if (delErr) return { ok: false, error: "Erreur suppression : " + delErr.message };
+
   revalidatePath("/fil");
   revalidatePath("/admin/fil");
   return { ok: true };

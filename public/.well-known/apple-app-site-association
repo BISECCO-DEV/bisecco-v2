@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "REMPLACER_TEAM_ID.eu.bisecco.app",
+        "paths": ["*"]
+      }
+    ]
+  }
+}

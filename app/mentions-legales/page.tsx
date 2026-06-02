@@ -11,21 +11,21 @@ export default function MentionsLegalesPage() {
   return (
     <LegalLayout
       title="Mentions légales"
-      subtitle="Informations légales concernant l'éditeur du site bisecco.eu, conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique."
+      subtitle="Informations légales concernant l'éditeur du site bisecco.fr, conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique."
       updatedAt="2026-05-28"
     >
       <h2>1. Éditeur du site</h2>
       <p>
-        Le site <strong>bisecco.eu</strong> est édité par&nbsp;:
+        Le site <strong>bisecco.fr</strong> est édité par&nbsp;:
       </p>
       <ul>
         <li><strong>Raison sociale&nbsp;:</strong> AGISCO HOLDING SAS</li>
         <li><strong>Forme juridique&nbsp;:</strong> Société par actions simplifiée</li>
         <li><strong>Capital social&nbsp;:</strong> 1 000 €</li>
-        <li><strong>Siège social&nbsp;:</strong> Cannes, France</li>
-        <li><strong>RCS&nbsp;:</strong> Cannes</li>
-        <li><strong>SIREN&nbsp;:</strong> en cours d&apos;immatriculation</li>
-        <li><strong>Numéro de TVA intracommunautaire&nbsp;:</strong> en cours d&apos;attribution</li>
+        <li><strong>Siège social&nbsp;:</strong> 45 Boulevard de la Croisette, 06400 Cannes, France</li>
+        <li><strong>RCS&nbsp;:</strong> Cannes 750 463 317</li>
+        <li><strong>SIREN&nbsp;:</strong> 750 463 317</li>
+        <li><strong>Numéro de TVA intracommunautaire&nbsp;:</strong> FR 27 750463317</li>
         <li><strong>Email de contact&nbsp;:</strong> <a href="mailto:contact@bisecco.fr">contact@bisecco.fr</a></li>
       </ul>
 
@@ -53,7 +53,7 @@ export default function MentionsLegalesPage() {
 
       <h2>4. Propriété intellectuelle</h2>
       <p>
-        L&apos;ensemble du contenu présent sur le site bisecco.eu (textes, logos, images,
+        L&apos;ensemble du contenu présent sur le site bisecco.fr (textes, logos, images,
         graphismes, vidéos, base de données métiers, code source) est la propriété exclusive
         d&apos;AGISCO HOLDING SAS, ou fait l&apos;objet d&apos;une autorisation d&apos;utilisation.
         Toute reproduction, représentation, modification, publication, adaptation ou exploitation
@@ -77,7 +77,7 @@ export default function MentionsLegalesPage() {
 
       <h2>6. Cookies</h2>
       <p>
-        Le site bisecco.eu utilise des cookies strictement nécessaires à son fonctionnement
+        Le site bisecco.fr utilise des cookies strictement nécessaires à son fonctionnement
         (session, authentification) ainsi que des cookies de mesure d&apos;audience (avec
         votre consentement). Vous pouvez gérer vos préférences via le bandeau cookies présent
         en bas de page.
@@ -101,7 +101,7 @@ export default function MentionsLegalesPage() {
 
       <h2>9. Droit applicable et juridiction</h2>
       <p>
-        Le site bisecco.eu est régi par le droit français. Tout litige relatif à son
+        Le site bisecco.fr est régi par le droit français. Tout litige relatif à son
         utilisation relève de la compétence exclusive des tribunaux français.
       </p>
 

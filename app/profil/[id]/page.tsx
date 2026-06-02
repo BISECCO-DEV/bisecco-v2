@@ -20,7 +20,9 @@ import { extractClientNumber } from "@/lib/utils";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { LiveViewersCounter } from "@/components/features/LiveViewersCounter";
+import { FollowButton } from "@/components/features/FollowButton";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
+import { countFollowers, isFollowing } from "@/lib/follows/actions";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -79,6 +81,15 @@ export default async function ProfilPage({ params }: Props) {
   const canFavorite = !!dbUser && dbUser.role !== "artisan";
   const canReview = !!dbUser && dbUser.role !== "artisan" && dbUser.id !== artisanIdResolved;
 
+  // ─── Abonnements (suivre / abonné) ───
+  const [followerCount, alreadyFollowing] = await Promise.all([
+    countFollowers(artisanIdResolved),
+    currentUser?.id && currentUser.id !== artisanIdResolved
+      ? isFollowing(currentUser.id, artisanIdResolved)
+      : Promise.resolve(false),
+  ]);
+  const isOwnProfile = currentUser?.id === artisanIdResolved;
+
   const { artisan: a, services, gallery, reviews } = detail;
   const metierLabel = a.metiers[0]?.name ?? "Artisan";
 
@@ -107,9 +118,14 @@ export default async function ProfilPage({ params }: Props) {
 
   // ─── Schema.org LocalBusiness · gros boost SEO local + citations IA ────
   const profileUrl = `https://bisecco.fr/profil/${id}`;
+  // Sous-type schema.org spécifique au métier (Plumber, Electrician, etc.)
+  // Facteur #1 du classement Local Pack (Whitespark 2026).
+  const { schemaTypeForMetier } = await import("@/lib/seo/metier-schema-type");
+  const primaryMetierSlug = a.metiers[0]?.slug ?? null;
+  const schemaType = schemaTypeForMetier(primaryMetierSlug);
   const localBusinessSchema = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": schemaType,
     "@id": profileUrl,
     name: companyName,
     description: a.description ?? `${metierLabel} à ${cityLabel}, vérifié SIREN sur Bisecco.`,
@@ -133,7 +149,7 @@ export default async function ProfilPage({ params }: Props) {
     aggregateRating: reviewCount > 0
       ? {
           "@type": "AggregateRating",
-          ratingValue: rating.toFixed(1),
+          ratingValue: parseFloat(rating.toFixed(1)),
           reviewCount,
           bestRating: 5,
           worstRating: 1,
@@ -279,6 +295,18 @@ export default async function ProfilPage({ params }: Props) {
 
               {/* CTAs principaux à droite */}
               <div className="flex flex-col gap-2 w-full md:w-auto md:min-w-[210px]">
+                {/* Bouton Suivre (style social, en premier pour visibilité) */}
+                {!isOwnProfile && (
+                  <div className="flex justify-center md:justify-start mb-1">
+                    <FollowButton
+                      targetUserId={artisanIdResolved}
+                      initialFollowing={alreadyFollowing}
+                      initialFollowerCount={followerCount}
+                      canFollow={!!currentUser}
+                      isOwnProfile={false}
+                    />
+                  </div>
+                )}
                 <Link
                   href={`/devis?artisan=${id}`}
                   className="group inline-flex items-center justify-between gap-2 pl-5 pr-2.5 py-3 bg-brand-500 text-white font-semibold text-[0.92rem] hover:bg-brand-600 hover:-translate-y-0.5 transition-all shadow-[0_8px_20px_-4px_rgba(240,122,47,0.45)]"

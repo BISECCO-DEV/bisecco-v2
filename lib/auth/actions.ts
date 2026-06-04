@@ -570,7 +570,8 @@ export async function signupAction(
   redirect(`/inscription/succes?role=particulier&email=${encodeURIComponent(email)}`);
 }
 
-/** Génère un lien de confirmation email + envoie l'email via nodemailer */
+/** Génère un lien de confirmation email + envoie l'email via nodemailer.
+ *  Logging amélioré : en cas d'échec, on notifie aussi le support pour diagnostic. */
 async function sendVerificationEmail(
   email: string,
   name: string,
@@ -579,8 +580,9 @@ async function sendVerificationEmail(
   const admin = createSupabaseAdminClient();
   const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
+  console.log(`[sendVerificationEmail] Sending to ${email} (${role})...`);
+
   // Génère un magic link qui confirmera l'email au clic
-  // Le redirect passe par /auth/callback pour échanger le code puis arriver sur /email-verifie
   const { data, error } = await admin.auth.admin.generateLink({
     type: "magiclink",
     email,
@@ -588,7 +590,16 @@ async function sendVerificationEmail(
   });
 
   if (error || !data?.properties?.action_link) {
-    console.error("[sendVerificationEmail] generateLink failed:", error?.message);
+    console.error("[sendVerificationEmail] generateLink failed:", error?.message, error);
+    // Notifie le support pour qu'il sache qu'un user n'a pas reçu son mail
+    try {
+      await sendMail({
+        to: "contact@bisecco.fr",
+        subject: `[ALERTE] Échec génération magic link · ${email}`,
+        html: `<p>Le user <strong>${email}</strong> (${role}, ${name}) n'a pas reçu son email de validation.</p><p>Erreur generateLink : ${error?.message ?? "inconnu"}</p><p>Vérifier les logs Supabase Auth.</p>`,
+        text: `Échec magic link pour ${email}. Erreur : ${error?.message ?? "inconnu"}`,
+      });
+    } catch {/* best effort */}
     return;
   }
 
@@ -596,6 +607,17 @@ async function sendVerificationEmail(
   const result = await sendMail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text });
   if (!result.ok) {
     console.error("[sendVerificationEmail] sendMail failed:", result.error);
+    // Notifie le support si SMTP échoue (peut-être env var SMTP_PASSWORD manquante)
+    try {
+      await sendMail({
+        to: "contact@bisecco.fr",
+        subject: `[ALERTE SMTP] Email validation non envoyé · ${email}`,
+        html: `<p>SMTP a échoué pour <strong>${email}</strong> (${role}, ${name}).</p><p>Erreur : ${result.error}</p><p>Vérifier les env vars SMTP_HOST, SMTP_USER, SMTP_PASSWORD sur cPanel.</p><p>Lien magic à envoyer manuellement :<br><a href="${data.properties.action_link}">${data.properties.action_link}</a></p>`,
+        text: `SMTP fail pour ${email}. Erreur : ${result.error}. Lien : ${data.properties.action_link}`,
+      });
+    } catch {/* best effort */}
+  } else {
+    console.log(`[sendVerificationEmail] Sent OK to ${email}, messageId: ${result.messageId}`);
   }
 }
 

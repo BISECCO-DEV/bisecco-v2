@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles, ArrowUp, PenSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { FeedPost } from "@/lib/feed/fetch";
 import type { FeedKind } from "@/lib/feed/actions";
@@ -123,8 +123,31 @@ export function FeedInfiniteList({
       )}
 
       {!hasMore && allPosts.length > 0 && (
-        <div className="text-center py-6 text-xs text-ink-400">
-          Vous avez atteint la fin du fil · Plus de posts à venir bientôt.
+        <div className="py-8 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-50 text-brand-600 mb-3">
+            <Sparkles size={20} />
+          </div>
+          <h3 className="text-base font-extrabold text-ink-700">Tu as fait le tour 👀</h3>
+          <p className="mt-1 text-sm text-ink-500 max-w-xs mx-auto leading-relaxed">
+            Reviens dans quelques heures, ou anime la communauté en publiant à ton tour.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-ink-200 text-ink-700 text-sm font-bold hover:bg-ink-50 transition"
+            >
+              <ArrowUp size={13} /> Remonter en haut
+            </button>
+            {canInteract && (
+              <a
+                href="/fil/nouveau"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold transition shadow-[0_4px_12px_-2px_rgba(240,122,47,0.4)]"
+              >
+                <PenSquare size={13} /> Publier
+              </a>
+            )}
+          </div>
         </div>
       )}
     </div>

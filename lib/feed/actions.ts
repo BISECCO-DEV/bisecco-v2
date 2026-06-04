@@ -58,16 +58,19 @@ export async function createFeedPostAction(
     images = [];
   }
 
-  // Anti-spam : max 10 posts/24h
+  // Anti-spam léger : max 50 posts/24h (au-delà c'est suspect)
+  // Admin bypass : pas de limite pour les comptes admin
   const admin = createSupabaseAdminClient();
-  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { count: recentCount } = await admin
-    .from("feed_posts")
-    .select("*", { count: "exact", head: true })
-    .eq("author_id", user.id)
-    .gte("created_at", since);
-  if ((recentCount ?? 0) >= 10) {
-    return { ok: false, error: "Limite atteinte : 10 posts par 24h." };
+  if (user.role !== "admin") {
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { count: recentCount } = await admin
+      .from("feed_posts")
+      .select("*", { count: "exact", head: true })
+      .eq("author_id", user.id)
+      .gte("created_at", since);
+    if ((recentCount ?? 0) >= 50) {
+      return { ok: false, error: "Limite atteinte : 50 posts par 24h. Reviens demain." };
+    }
   }
 
   const metierId = metierIdRaw ? Number(metierIdRaw) : null;

@@ -7,6 +7,7 @@ import {
   fetchWeeklyActivity,
   fetchAdminTasks,
   fetchArtisanPipeline,
+  fetchParticulierPipeline,
 } from "@/lib/db/admin-dashboard";
 import { requireAdmin } from "@/lib/db/current-user";
 import {
@@ -53,10 +54,11 @@ const AVATAR_VARIANTS: Array<PipelineRow["avatarVariant"]> = ["a", "p", "v", "g"
 export default async function AdminDashboardPage() {
   const admin = await requireAdmin();
 
-  const [stats, recent, pipeline, tasks, categories, activity] = await Promise.all([
+  const [stats, recent, pipeline, particulierPipeline, tasks, categories, activity] = await Promise.all([
     fetchAdminStats(),
     fetchRecentSignups(8),
     fetchArtisanPipeline(6),
+    fetchParticulierPipeline(6),
     fetchAdminTasks(),
     fetchTopCategories(),
     fetchWeeklyActivity(),
@@ -78,6 +80,17 @@ export default async function AdminDashboardPage() {
     avatarVariant: AVATAR_VARIANTS[i % AVATAR_VARIANTS.length],
     name: p.name,
     subtitle: p.company ?? p.email,
+    category: p.category,
+    status: p.status,
+    href: `/admin/utilisateurs/${p.id}`,
+  }));
+
+  const particulierPipelineRows: PipelineRow[] = particulierPipeline.map((p, i) => ({
+    id: p.id,
+    initial: p.name.charAt(0).toUpperCase(),
+    avatarVariant: AVATAR_VARIANTS[i % AVATAR_VARIANTS.length],
+    name: p.name,
+    subtitle: p.email,
     category: p.category,
     status: p.status,
     href: `/admin/utilisateurs/${p.id}`,
@@ -178,16 +191,29 @@ export default async function AdminDashboardPage() {
         />
       </div>
 
-      {/* Pipeline + Recent feed */}
-      <div className="grid lg:grid-cols-[1.5fr_1fr] gap-3.5">
+      {/* Pipeline artisans + particuliers côte à côte
+          Le compteur affiche le TOTAL d'inscrits, pas juste les 6 visibles
+          (auto-incrémenté à chaque nouvelle inscription via stats temps réel). */}
+      <div className="grid lg:grid-cols-2 gap-3.5">
         <AdminCard
           title="Suivi des artisans"
-          count={pipelineRows.length}
-          link={{ href: "/admin/utilisateurs", label: "Voir tout" }}
+          count={stats.total_artisans}
+          link={{ href: "/admin/utilisateurs?role=artisan", label: "Voir tout" }}
         >
           <PipelineTable rows={pipelineRows} />
         </AdminCard>
 
+        <AdminCard
+          title="Suivi des particuliers"
+          count={stats.total_particuliers}
+          link={{ href: "/admin/utilisateurs?role=particulier", label: "Voir tout" }}
+        >
+          <PipelineTable rows={particulierPipelineRows} />
+        </AdminCard>
+      </div>
+
+      {/* Inscriptions récentes en pleine largeur sous les pipelines */}
+      <div className="grid grid-cols-1 gap-3.5">
         <AdminCard
           title="Inscriptions récentes"
           count={recentFeedItems.length}

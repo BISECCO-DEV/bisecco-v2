@@ -2,8 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Search, X, ArrowRight, MapPin, Briefcase, FileText, Users, Newspaper } from "lucide-react";
+import { Search, X, ArrowRight, MapPin, Briefcase, FileText, Users, Newspaper, User, ShieldCheck } from "lucide-react";
 import { METIER_OPTIONS, type MetierOption } from "@/lib/metiers";
+
+type UserResult = {
+  id: number;
+  display_name: string;
+  client_number: string | null;
+  role: "artisan" | "particulier";
+  city: string | null;
+  profile_photo: string | null;
+  metier: string | null;
+};
 
 type Suggestion = {
   type: "metier" | "page" | "ville";
@@ -29,8 +39,31 @@ function slugify(s: string) {
 export function GlobalSearch({ metierOptions }: { metierOptions?: MetierOption[] } = {}) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [userResults, setUserResults] = useState<{ artisans: UserResult[]; particuliers: UserResult[] }>({ artisans: [], particuliers: [] });
+  const [searchingUsers, setSearchingUsers] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const metierSource = metierOptions && metierOptions.length > 0 ? metierOptions : METIER_OPTIONS;
+
+  // Recherche utilisateurs (debounced 300ms)
+  useEffect(() => {
+    if (!query || query.trim().length < 2) {
+      setUserResults({ artisans: [], particuliers: [] });
+      return;
+    }
+    setSearchingUsers(true);
+    const ctrl = new AbortController();
+    const t = setTimeout(() => {
+      fetch(`/api/users/search?q=${encodeURIComponent(query.trim())}`, { signal: ctrl.signal })
+        .then((r) => r.json())
+        .then((data) => setUserResults({ artisans: data.artisans ?? [], particuliers: data.particuliers ?? [] }))
+        .catch(() => setUserResults({ artisans: [], particuliers: [] }))
+        .finally(() => setSearchingUsers(false));
+    }, 300);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [query]);
 
   // Open on Ctrl/Cmd+K
   useEffect(() => {
@@ -102,7 +135,7 @@ export function GlobalSearch({ metierOptions }: { metierOptions?: MetierOption[]
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Rechercher un métier, une page, un artisan…"
+                placeholder="Rechercher un membre, un métier, une page…"
                 className="flex-1 bg-transparent outline-none text-base text-ink-700 placeholder:text-ink-300"
               />
               <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-ink-50 border border-ink-200 text-ink-500 font-mono">
@@ -115,9 +148,33 @@ export function GlobalSearch({ metierOptions }: { metierOptions?: MetierOption[]
 
             {/* Résultats */}
             <div className="max-h-[400px] overflow-y-auto p-2">
+              {/* Artisans (membres) */}
+              {userResults.artisans.length > 0 && (
+                <>
+                  <div className="px-3 py-2 text-[0.65rem] font-bold tracking-[0.14em] uppercase text-ink-400">
+                    Artisans
+                  </div>
+                  {userResults.artisans.map((u) => (
+                    <UserResultItem key={`a-${u.id}`} user={u} onClick={() => setOpen(false)} />
+                  ))}
+                </>
+              )}
+
+              {/* Particuliers */}
+              {userResults.particuliers.length > 0 && (
+                <>
+                  <div className="px-3 py-2 mt-2 text-[0.65rem] font-bold tracking-[0.14em] uppercase text-ink-400">
+                    Particuliers
+                  </div>
+                  {userResults.particuliers.map((u) => (
+                    <UserResultItem key={`p-${u.id}`} user={u} onClick={() => setOpen(false)} />
+                  ))}
+                </>
+              )}
+
               {metierMatches.length > 0 && (
                 <>
-                  <div className="px-3 py-2 text-[0.65rem] font-bold tracking-[0.14em] uppercase text-ink-400">Métiers</div>
+                  <div className="px-3 py-2 mt-2 text-[0.65rem] font-bold tracking-[0.14em] uppercase text-ink-400">Métiers</div>
                   {metierMatches.map((s, i) => (
                     <ResultItem key={`m-${i}`} {...s} onClick={() => setOpen(false)} />
                   ))}
@@ -133,13 +190,19 @@ export function GlobalSearch({ metierOptions }: { metierOptions?: MetierOption[]
                 </>
               )}
 
-              {q && metierMatches.length === 0 && pageMatches.length === 0 && (
+              {q && !searchingUsers && userResults.artisans.length === 0 && userResults.particuliers.length === 0 && metierMatches.length === 0 && pageMatches.length === 0 && (
                 <div className="px-4 py-12 text-center text-ink-400">
                   <Search size={24} className="mx-auto text-ink-300 mb-2" />
                   <div className="text-sm">Aucun résultat pour <strong className="text-ink-700">&quot;{query}&quot;</strong></div>
                   <Link href={`/rechercher?q=${encodeURIComponent(query)}`} onClick={() => setOpen(false)} className="text-brand-500 font-bold text-sm mt-2 inline-block">
                     Lancer une recherche complète →
                   </Link>
+                </div>
+              )}
+
+              {searchingUsers && q && (
+                <div className="px-4 py-3 text-xs text-ink-400 text-center">
+                  Recherche en cours…
                 </div>
               )}
             </div>
@@ -156,6 +219,46 @@ export function GlobalSearch({ metierOptions }: { metierOptions?: MetierOption[]
         </div>
       )}
     </>
+  );
+}
+
+function UserResultItem({ user, onClick }: { user: UserResult; onClick: () => void }) {
+  // Particulier → /membre/[client_number], Artisan → /profil/[client_number]
+  const href = user.role === "artisan"
+    ? `/profil/${user.client_number ?? user.id}`
+    : `/membre/${user.client_number ?? user.id}`;
+  const avatar = user.profile_photo ?? `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.display_name)}`;
+  const isPro = user.role === "artisan";
+  const sub = user.metier
+    ? `${user.metier}${user.city ? ` · ${user.city}` : ""}`
+    : user.city ?? (isPro ? "Artisan" : "Particulier");
+
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-ink-50 transition group"
+    >
+      <div className="relative flex-shrink-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={avatar} alt="" className="w-9 h-9 rounded-full object-cover bg-ink-100 border border-ink-200" />
+        {isPro && (
+          <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white inline-flex items-center justify-center">
+            <ShieldCheck size={8} className="text-white" strokeWidth={3} />
+          </span>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-semibold text-ink-700 truncate">
+          {user.display_name}
+          <span className={`ml-1.5 text-[0.62rem] font-bold uppercase tracking-wider ${isPro ? "text-brand-600" : "text-blue-600"}`}>
+            {isPro ? "Pro" : "Particulier"}
+          </span>
+        </div>
+        <div className="text-xs text-ink-400 truncate">{sub}</div>
+      </div>
+      <ArrowRight size={14} className="text-ink-300 group-hover:text-brand-500 group-hover:translate-x-0.5 transition flex-shrink-0" />
+    </Link>
   );
 }
 

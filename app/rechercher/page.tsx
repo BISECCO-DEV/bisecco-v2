@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FileText, ArrowRight, ShieldCheck, Star, CheckCircle2, Briefcase } from "lucide-react";
-import { SearchClient, type ArtisanCard } from "./SearchClient";
+import { SearchClient, type ArtisanCard, type ParticulierPin } from "./SearchClient";
 import { getMetierOptions } from "@/lib/db/metier-options";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { MetiersDirectory, type MetierWithCount } from "@/app/metiers/MetiersDirectory";
+import { getCurrentUser } from "@/lib/db/current-user";
+import { ParticuliersSection, type ParticulierCard } from "./ParticuliersSection";
 
 async function fetchMetiersWithCounts(): Promise<MetierWithCount[]> {
   const supabase = createSupabaseAdminClient();
@@ -117,14 +119,55 @@ async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
     .filter((a): a is ArtisanCard => a !== null);
 }
 
+async function fetchApprovedParticuliers(limit = 60): Promise<ParticulierCard[]> {
+  const supabase = createSupabaseAdminClient();
+  const { data } = await supabase
+    .from("users")
+    .select("id, client_number, name, city, profile_photo, created_at")
+    .eq("role", "particulier")
+    .eq("validation_status", "approved")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  return (data ?? []).map((u) => ({
+    id: u.client_number ?? String(u.id),
+    name: u.name,
+    city: u.city,
+    avatar: u.profile_photo,
+  }));
+}
+
+/** Construit les pins map des particuliers (lat/lng dérivés du hash de la ville). */
+function buildParticulierPins(particuliers: ParticulierCard[]): ParticulierPin[] {
+  return particuliers
+    .filter((p) => p.city)
+    .map((p) => {
+      const seed = hashCity(p.city ?? p.name);
+      // Scatter autour de l'IDF · même heuristique que les artisans sans coords
+      const lat = 48.85 + ((seed % 100) / 100 - 0.5) * 0.6;
+      const lng = 2.55 + (((seed >> 8) % 100) / 100 - 0.5) * 1.0;
+      return {
+        id: p.id,
+        name: p.name,
+        city: p.city ?? "France",
+        lat,
+        lng,
+        avatar: p.avatar ?? undefined,
+      };
+    });
+}
+
 export default async function RechercherPage({ searchParams }: { searchParams: SearchParams }) {
   const { intent } = await searchParams;
   const isCvIntent = intent === "cv";
 
-  const [metierOptions, artisans, metiersWithCounts] = await Promise.all([
+  const [metierOptions, artisans, metiersWithCounts, currentUser, particuliers] = await Promise.all([
     getMetierOptions(),
     fetchAllApprovedArtisans(),
     fetchMetiersWithCounts(),
+    getCurrentUser(),
+    fetchApprovedParticuliers(60),
   ]);
 
   return (
@@ -170,7 +213,17 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
           </>
         )}
 
-        <SearchClient artisans={artisans} metierOptions={metierOptions} />
+        <SearchClient
+          artisans={artisans}
+          particuliers={currentUser ? buildParticulierPins(particuliers) : []}
+          metierOptions={metierOptions}
+        />
+
+        {/* Section particuliers (auth requise pour respect RGPD) */}
+        <ParticuliersSection
+          particuliers={particuliers}
+          isLoggedIn={!!currentUser}
+        />
 
         {/* ─────── Sections SEO/conversion · inspirées des pages métier ─────── */}
 

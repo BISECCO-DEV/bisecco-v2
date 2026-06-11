@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  Newspaper, ArrowRight, Clock, Calendar, TrendingUp, BookOpen,
-  ShieldCheck, Lightbulb, Mail, Sparkles,
+  Newspaper, ArrowRight, TrendingUp, BookOpen,
+  ShieldCheck, Sparkles, Hammer, Mail, Calendar, Clock,
 } from "lucide-react";
-import { BLOG_POSTS } from "@/lib/blog";
-import { BlogClient } from "./BlogClient";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = {
@@ -15,35 +14,63 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-const blogSchema = {
-  "@context": "https://schema.org",
-  "@type": "Blog",
-  name: "Blog Bisecco",
-  url: "https://bisecco.fr/blog",
-  description: "Conseils, guides et actualités sur l'artisanat français.",
-  publisher: { "@type": "Organization", name: "Bisecco" },
-  blogPost: BLOG_POSTS.slice(0, 5).map((p) => ({
-    "@type": "BlogPosting",
-    headline: p.title,
-    description: p.excerpt,
-    image: p.cover,
-    datePublished: p.dateIso,
-    author: { "@type": "Person", name: p.author.name },
-    url: `https://bisecco.fr/blog/${p.slug}`,
-  })),
+export const dynamic = "force-dynamic";
+
+type Article = {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  image_url: string | null;
+  author: string;
+  read_time: string | null;
+  published_at: string;
 };
 
-export default function BlogPage() {
-  const featured = BLOG_POSTS.find((p) => p.featured) ?? BLOG_POSTS[0];
-  const otherPosts = BLOG_POSTS.filter((p) => p.slug !== featured.slug);
-  const popularPosts = [...BLOG_POSTS].slice(0, 4);
+async function fetchPublishedArticles(): Promise<Article[]> {
+  const admin = createSupabaseAdminClient();
+  const { data } = await admin
+    .from("blog_articles")
+    .select("id, slug, title, excerpt, image_url, author, read_time, published_at")
+    .eq("status", "published")
+    .lte("published_at", new Date().toISOString())
+    .order("published_at", { ascending: false });
+  return (data ?? []) as Article[];
+}
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+}
+
+export default async function BlogPage() {
+  const articles = await fetchPublishedArticles();
+  const hasPosts = articles.length > 0;
+  const featured = hasPosts ? articles[0] : null;
+  const otherPosts = hasPosts ? articles.slice(1) : [];
+
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Blog Bisecco",
+    url: "https://bisecco.fr/blog",
+    description: "Conseils, guides et actualités sur l'artisanat français.",
+    publisher: { "@type": "Organization", name: "Bisecco" },
+    blogPost: articles.slice(0, 5).map((p) => ({
+      "@type": "BlogPosting",
+      headline: p.title,
+      description: p.excerpt ?? "",
+      image: p.image_url ?? undefined,
+      datePublished: p.published_at,
+      author: { "@type": "Person", name: p.author },
+      url: `https://bisecco.fr/blog/${p.slug}`,
+    })),
+  };
 
   return (
     <>
       <JsonLd data={blogSchema} />
 
       <div className="bg-gradient-to-b from-ink-50 via-white to-ink-50 min-h-screen">
-
         {/* ═══════════ HERO ═══════════ */}
         <section className="relative bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-brand-500/15 blur-[120px] pointer-events-none" />
@@ -53,18 +80,15 @@ export default function BlogPage() {
             <div className="max-w-3xl mx-auto text-center">
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.08] border border-white/[0.12] backdrop-blur-md text-white/95 text-[0.72rem] font-bold tracking-[0.10em] uppercase">
                 <Newspaper size={11} strokeWidth={2.6} className="text-brand-400" />
-                Blog Bisecco · {BLOG_POSTS.length} articles
+                Blog Bisecco {hasPosts && `· ${articles.length} article${articles.length > 1 ? "s" : ""}`}
               </span>
               <h1 className="mt-5 text-[40px] sm:text-[48px] lg:text-[56px] leading-[1.05] font-extrabold tracking-[-0.025em] text-white">
                 Conseils, guides<br />
-                <span className="text-brand-500">
-                  & actualités artisanat.
-                </span>
+                <span className="text-brand-500">&amp; actualités artisanat.</span>
               </h1>
               <p className="mt-6 text-[1.08rem] lg:text-[1.18rem] text-white/75 max-w-2xl mx-auto leading-relaxed">
                 Tout ce qu&apos;il faut savoir pour vos travaux, choisir le bon artisan,
-                vérifier un SIREN, comprendre la rénovation énergétique. Mis à jour
-                <strong className="text-white"> chaque semaine</strong>.
+                vérifier un SIREN, comprendre la rénovation énergétique.
               </p>
 
               <div className="mt-7 flex flex-wrap justify-center gap-2">
@@ -88,178 +112,144 @@ export default function BlogPage() {
           </div>
         </section>
 
-        {/* ═══════════ FEATURED + SIDEBAR ═══════════ */}
+        {/* ═══════════ CONTENU ═══════════ */}
         <section className="container-default py-14">
-          <div className="grid lg:grid-cols-[1fr_320px] gap-8">
+          {!hasPosts && <EmptyBlogState />}
 
-            {/* Featured article · large card */}
-            <Link
-              href={`/blog/${featured.slug}`}
-              className="group relative block bg-ink-800 rounded-3xl overflow-hidden shadow-[0_20px_50px_-20px_rgba(13,30,74,0.35)] hover:shadow-[0_30px_60px_-20px_rgba(13,30,74,0.45)] transition-all"
-            >
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                style={{ backgroundImage: `url(${featured.cover})` }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/85 to-ink-900/20" />
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/15 via-transparent to-transparent" />
-
-              <div className="relative p-7 sm:p-10 lg:p-12 min-h-[460px] flex flex-col justify-end text-white">
-                <div className="inline-flex items-center gap-2 mb-4">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-500/40 text-brand-300 text-[0.7rem] font-bold uppercase tracking-[0.12em] backdrop-blur-sm">
-                    <Sparkles size={10} />
-                    À la une
-                  </span>
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/[0.10] border border-white/[0.15] text-white/85 text-[0.72rem] font-bold uppercase tracking-wider backdrop-blur-sm">
-                    {featured.category}
-                  </span>
-                </div>
-
-                <h2 className="text-2xl sm:text-3xl lg:text-[2.25rem] font-extrabold leading-[1.15] tracking-tight max-w-3xl">
-                  {featured.title}
-                </h2>
-                <p className="mt-4 text-white/80 max-w-2xl text-[0.95rem] leading-relaxed line-clamp-3">
-                  {featured.excerpt}
-                </p>
-
-                <div className="mt-6 flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={featured.author.avatar}
-                      alt=""
-                      className="w-10 h-10 rounded-full border-2 border-white/20"
-                      loading="lazy"
-                    />
-                    <div>
-                      <div className="font-bold text-[0.88rem]">{featured.author.name}</div>
-                      <div className="text-[0.74rem] text-white/55">
-                        {featured.date} · {featured.readTime} de lecture
-                      </div>
-                    </div>
-                  </div>
-                  <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white font-bold text-[0.88rem] shadow-[0_8px_20px_-4px_rgba(240,122,47,0.5)] group-hover:-translate-y-0.5 transition-all">
-                    Lire l&apos;article
-                    <ArrowRight size={15} strokeWidth={2.4} className="group-hover:translate-x-0.5 transition-transform" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Sidebar */}
-            <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-
-              {/* Top articles */}
-              <div className="bg-white rounded-2xl border border-ink-100 p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center text-brand-500">
-                    <TrendingUp size={15} strokeWidth={2.4} />
-                  </div>
-                  <h3 className="font-extrabold text-ink-700 text-[0.95rem]">Articles populaires</h3>
-                </div>
-                <ul className="space-y-3">
-                  {popularPosts.map((p, i) => (
-                    <li key={p.slug}>
-                      <Link
-                        href={`/blog/${p.slug}`}
-                        className="group flex items-start gap-3"
-                      >
-                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-ink-50 group-hover:bg-brand-500 group-hover:text-white text-ink-400 flex items-center justify-center text-[0.74rem] font-extrabold transition">
-                          {i + 1}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold text-ink-700 group-hover:text-brand-500 text-[0.86rem] leading-snug transition line-clamp-2">
-                            {p.title}
-                          </div>
-                          <div className="text-[0.7rem] text-ink-400 mt-1 inline-flex items-center gap-1.5">
-                            <Clock size={10} />
-                            {p.readTime}
-                          </div>
-                        </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Newsletter */}
-              <div className="relative bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 rounded-2xl p-5 text-white overflow-hidden">
-                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-brand-500/25 blur-2xl pointer-events-none" />
-                <div className="relative">
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-brand-500/15 border border-brand-500/25 text-brand-400 text-[0.65rem] font-bold tracking-[0.10em] uppercase">
-                    <Mail size={9} strokeWidth={2.8} />
-                    Newsletter
-                  </div>
-                  <h3 className="mt-3 font-extrabold text-[1.05rem] leading-tight">
-                    Le meilleur du blog,<br />
-                    <span className="text-brand-400">tous les mois</span>.
-                  </h3>
-                  <p className="text-[0.78rem] text-white/65 mt-2 leading-snug">
-                    1 email par mois. Aucun spam. Désinscription en 1 clic.
-                  </p>
-                  <form className="mt-4 space-y-2">
-                    <input
-                      type="email"
-                      required
-                      placeholder="votre@email.fr"
-                      aria-label="Email"
-                      className="w-full h-10 px-3 rounded-lg bg-white/[0.08] border border-white/[0.14] text-white text-[0.84rem] placeholder:text-white/40 focus:border-brand-500 outline-none transition"
-                    />
-                    <button
-                      type="submit"
-                      className="w-full inline-flex items-center justify-center gap-1.5 h-10 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 text-white font-extrabold text-[0.84rem] shadow-[0_6px_16px_-4px_rgba(240,122,47,0.5)] hover:-translate-y-0.5 transition-all"
-                    >
-                      Je m&apos;inscris
-                      <ArrowRight size={13} strokeWidth={2.6} />
-                    </button>
-                  </form>
-                </div>
-              </div>
-
-              {/* CTA artisan */}
+          {hasPosts && featured && (
+            <div className="grid lg:grid-cols-[1fr_320px] gap-8">
               <Link
-                href="/inscription"
-                className="group block bg-white rounded-2xl border border-ink-100 p-5 hover:border-brand-300 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_-10px_rgba(13,30,74,0.12)] transition-all"
+                href={`/blog/${featured.slug}`}
+                className="group relative block bg-ink-800 rounded-3xl overflow-hidden shadow-[0_20px_50px_-20px_rgba(13,30,74,0.35)] hover:shadow-[0_30px_60px_-20px_rgba(13,30,74,0.45)] transition-all"
               >
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0">
-                    <Lightbulb size={17} strokeWidth={2.2} />
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                  style={{ backgroundImage: featured.image_url ? `url(${featured.image_url})` : "linear-gradient(135deg, #0d1e4a, #1e3a8a)" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/85 to-ink-900/20" />
+
+                <div className="relative p-7 sm:p-10 lg:p-12 min-h-[460px] flex flex-col justify-end text-white">
+                  <div className="inline-flex items-center gap-2 mb-4">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-500/40 text-brand-300 text-[0.7rem] font-bold uppercase tracking-[0.12em] backdrop-blur-sm">
+                      <Sparkles size={10} /> À la une
+                    </span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-extrabold text-ink-700 text-[0.92rem]">Vous êtes artisan ?</div>
-                    <div className="text-[0.78rem] text-ink-500 mt-1 leading-snug">
-                      Rejoignez Bisecco gratuitement et boostez votre visibilité locale.
-                    </div>
-                    <span className="inline-flex items-center gap-1 mt-2 text-brand-500 text-[0.78rem] font-bold">
-                      Créer mon profil <ArrowRight size={11} strokeWidth={2.6} className="group-hover:translate-x-0.5 transition-transform" />
+
+                  <h2 className="text-2xl sm:text-3xl lg:text-[2.25rem] font-extrabold leading-[1.15] tracking-tight max-w-3xl">
+                    {featured.title}
+                  </h2>
+                  {featured.excerpt && (
+                    <p className="mt-4 text-white/80 max-w-2xl text-[0.95rem] leading-relaxed line-clamp-3">
+                      {featured.excerpt}
+                    </p>
+                  )}
+                  <div className="mt-6 flex items-center gap-3 text-xs text-white/70">
+                    <span className="inline-flex items-center gap-1"><Calendar size={11} /> {formatDate(featured.published_at)}</span>
+                    {featured.read_time && (
+                      <span className="inline-flex items-center gap-1"><Clock size={11} /> {featured.read_time}</span>
+                    )}
+                    <span className="ml-auto inline-flex items-center gap-1.5 text-brand-300 font-bold text-sm">
+                      Lire <ArrowRight size={14} />
                     </span>
                   </div>
                 </div>
               </Link>
-            </aside>
-          </div>
-        </section>
 
-        {/* ═══════════ ARTICLES GRID (avec filters client) ═══════════ */}
-        <section className="container-default pb-20">
-          <div className="flex items-end justify-between gap-4 flex-wrap mb-8">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-ink-700 tracking-tight">
+              <aside className="space-y-6">
+                <div className="bg-white rounded-3xl border border-ink-100 p-6">
+                  <h3 className="font-extrabold text-ink-700 text-sm flex items-center gap-2">
+                    <Mail size={14} className="text-brand-500" /> Newsletter
+                  </h3>
+                  <p className="mt-2 text-xs text-ink-500 leading-relaxed">
+                    Reçois 1 mail par semaine avec les meilleurs conseils travaux + nos nouveaux articles.
+                  </p>
+                  <Link
+                    href="/contact?sujet=newsletter"
+                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-extrabold text-brand-600 hover:underline"
+                  >
+                    S&apos;inscrire <ArrowRight size={11} />
+                  </Link>
+                </div>
+              </aside>
+            </div>
+          )}
+
+          {hasPosts && otherPosts.length > 0 && (
+            <div className="mt-14">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-ink-700 tracking-tight mb-6">
                 Tous les articles
               </h2>
-              <p className="mt-1.5 text-ink-500 text-[0.94rem]">
-                Filtrez par catégorie ou recherchez un sujet précis.
-              </p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {otherPosts.map((a) => (
+                  <Link
+                    key={a.id}
+                    href={`/blog/${a.slug}`}
+                    className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-ink-100 hover:border-brand-200 hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgba(13,30,74,0.18)] transition-all"
+                  >
+                    <div className="relative aspect-[16/10] overflow-hidden bg-ink-100">
+                      {a.image_url && (
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                          style={{ backgroundImage: `url(${a.image_url})` }}
+                        />
+                      )}
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="font-extrabold text-ink-700 text-[0.96rem] leading-snug group-hover:text-brand-500 transition line-clamp-2">
+                        {a.title}
+                      </h3>
+                      {a.excerpt && (
+                        <p className="text-[0.82rem] text-ink-500 mt-2 line-clamp-2">{a.excerpt}</p>
+                      )}
+                      <div className="mt-auto pt-4 flex items-center gap-2 text-[0.74rem] text-ink-400">
+                        <Calendar size={11} /> {formatDate(a.published_at)}
+                        {a.read_time && (
+                          <>
+                            <span className="text-ink-300">·</span>
+                            <Clock size={11} /> {a.read_time}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
-            <span className="inline-flex items-center gap-1.5 text-[0.78rem] text-ink-400 font-semibold">
-              <Calendar size={13} />
-              Mis à jour chaque semaine
-            </span>
-          </div>
-
-          <BlogClient posts={otherPosts} />
+          )}
         </section>
       </div>
     </>
+  );
+}
+
+function EmptyBlogState() {
+  return (
+    <div className="max-w-2xl mx-auto text-center py-12">
+      <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-brand-50 text-brand-500 mb-6">
+        <Hammer size={36} strokeWidth={2.2} />
+      </div>
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-ink-700 tracking-tight">
+        Les premiers articles arrivent bientôt
+      </h2>
+      <p className="mt-3 text-ink-500 leading-relaxed">
+        Notre équipe rédige actuellement les premiers guides pratiques et conseils
+        pour les artisans et les particuliers. Reviens dans quelques jours, ou
+        inscris-toi à la newsletter pour être prévenu dès qu&apos;un article est publié.
+      </p>
+      <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href="/contact?sujet=newsletter"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm transition shadow-[0_6px_18px_-4px_rgba(240,122,47,0.5)]"
+        >
+          <Mail size={14} /> M&apos;avertir des nouveautés
+        </Link>
+        <Link
+          href="/rechercher"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-ink-200 text-ink-700 font-bold text-sm hover:bg-ink-50 transition"
+        >
+          Trouver un artisan <ArrowRight size={14} />
+        </Link>
+      </div>
+    </div>
   );
 }

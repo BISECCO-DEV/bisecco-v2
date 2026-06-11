@@ -1,8 +1,14 @@
 import { LocalSearch } from "@/components/features/LocalSearch";
-import type { Artisan } from "@/components/features/LocalSearchMap";
+import type { Artisan, ParticulierPin } from "@/components/features/LocalSearchMap";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { getMetierOptions } from "@/lib/db/metier-options";
+
+function hashCity(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
 
 /**
  * Server component qui fetch les artisans réels depuis Supabase
@@ -93,5 +99,41 @@ export async function HomeLocalSearch() {
     getMetierOptions(),
   ]);
 
-  return <LocalSearch artisans={artisans} currentUserId={me?.id ?? null} metierOptions={metierOptions} />;
+  // Fetch particuliers pour pins map (visible uniquement quand connecté pour RGPD)
+  let particuliers: ParticulierPin[] = [];
+  if (me) {
+    const { data: partData } = await supabase
+      .from("users")
+      .select("id, client_number, name, city, profile_photo")
+      .eq("role", "particulier")
+      .eq("validation_status", "approved")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(60);
+
+    particuliers = (partData ?? [])
+      .filter((p) => p.city)
+      .map((p) => {
+        const seed = hashCity(p.city ?? p.name);
+        const lat = 48.85 + ((seed % 100) / 100 - 0.5) * 0.6;
+        const lng = 2.55 + (((seed >> 8) % 100) / 100 - 0.5) * 1.0;
+        return {
+          id: p.client_number ?? String(p.id),
+          name: p.name,
+          city: p.city?.replace(/^\d+\s*/, "") ?? "France",
+          lat,
+          lng,
+          avatar: imgUrl(p.profile_photo),
+        };
+      });
+  }
+
+  return (
+    <LocalSearch
+      artisans={artisans}
+      particuliers={particuliers}
+      currentUserId={me?.id ?? null}
+      metierOptions={metierOptions}
+    />
+  );
 }

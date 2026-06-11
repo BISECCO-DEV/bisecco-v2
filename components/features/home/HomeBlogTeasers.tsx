@@ -16,6 +16,9 @@ export function HomeBlogTeasers() {
     .sort((a, b) => b.dateIso.localeCompare(a.dateIso))
     .slice(0, 3);
 
+  // Cache la section si aucun article publié (blog vide → ne pas afficher de slot vide sur la home)
+  if (recent.length === 0) return null;
+
   return (
     <section className="relative py-20 sm:py-28 bg-[#0a1d44] overflow-hidden">
       {/* Pattern hexagones · cohérent avec autres sections dark DA */}

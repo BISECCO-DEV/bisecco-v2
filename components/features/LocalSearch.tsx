@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { MapPin, Search, Navigation, ArrowRight, Loader2 } from "lucide-react";
-import type { Artisan } from "./LocalSearchMap";
+import type { Artisan, ParticulierPin } from "./LocalSearchMap";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
 import type { MetierOption } from "@/lib/metiers";
 import { artisanProfilePath } from "@/lib/utils";
@@ -42,13 +42,15 @@ function distanceKm(a: [number, number], b: [number, number]): number {
 type LocalSearchProps = {
   /** Liste d'artisans à afficher (depuis Supabase). Si vide ou non fourni → fallback démo */
   artisans?: Artisan[];
+  /** Liste de particuliers à afficher sur la carte (pins bleus, optionnel). */
+  particuliers?: ParticulierPin[];
   /** ID du user courant (pour le bouton Contacter). null = non connecté */
   currentUserId?: number | null;
   /** Liste des métiers depuis la DB (server). Si absent → fallback hardcodé. */
   metierOptions?: MetierOption[];
 };
 
-export function LocalSearch({ artisans, metierOptions }: LocalSearchProps = {}) {
+export function LocalSearch({ artisans, particuliers = [], metierOptions }: LocalSearchProps = {}) {
   const dataSource = artisans && artisans.length > 0 ? artisans : DEMO_ARTISANS;
   const [query, setQuery] = useState({ metier: "", ville: "" });
   const [activeMetier, setActiveMetier] = useState("Tous");
@@ -261,6 +263,7 @@ export function LocalSearch({ artisans, metierOptions }: LocalSearchProps = {}) 
           <div className="rounded-3xl overflow-hidden border border-white/10 bg-ink-900/30 h-[480px] lg:h-auto relative">
             <LocalSearchMap
               artisans={sorted}
+              particuliers={particuliers}
               hoveredId={hoveredId}
               userPos={userPos}
               focusTarget={focusTarget}

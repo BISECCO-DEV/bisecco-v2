@@ -35,11 +35,28 @@ export type ArtisanCard = {
   lng: number;
 };
 
+export type ParticulierPin = {
+  id: string;
+  name: string;
+  city: string;
+  lat: number;
+  lng: number;
+  avatar?: string;
+};
+
 const QUICK_METIERS = ["Plombier", "Électricien", "Maçon", "Peintre", "Menuisier", "Couvreur"];
 
 type SortBy = "rating" | "recent" | "name";
 
-export function SearchClient({ artisans, metierOptions }: { artisans: ArtisanCard[]; metierOptions?: MetierOption[] }) {
+export function SearchClient({
+  artisans,
+  particuliers = [],
+  metierOptions,
+}: {
+  artisans: ArtisanCard[];
+  particuliers?: ParticulierPin[];
+  metierOptions?: MetierOption[];
+}) {
   const [metier, setMetier] = useState("");
   const [city, setCity] = useState("");
   const [sortBy, setSortBy] = useState<SortBy>("rating");
@@ -136,6 +153,7 @@ export function SearchClient({ artisans, metierOptions }: { artisans: ArtisanCar
               lng: a.lng,
               avatar: a.avatar,
             }))}
+            particuliers={particuliers}
             hoveredId={hoveredId}
             userPos={null}
             focusTarget={focusTarget}

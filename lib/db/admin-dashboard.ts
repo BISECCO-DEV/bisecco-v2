@@ -241,3 +241,45 @@ export async function fetchArtisanPipeline(limit = 6): Promise<AdminPipelineRow[
     };
   });
 }
+
+/**
+ * Pipeline des particuliers récents — équivalent fetchArtisanPipeline pour les particuliers.
+ * Pas de SIREN ni d'artisan_profiles côté particulier, donc on remonte juste
+ * name, email, ville, statut.
+ */
+export async function fetchParticulierPipeline(limit = 6): Promise<AdminPipelineRow[]> {
+  const supabase = createSupabaseAdminClient();
+  const { data } = await supabase
+    .from("users")
+    .select("id, name, email, city, validation_status, created_at")
+    .eq("role", "particulier")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  type Row = {
+    id: number;
+    name: string;
+    email: string;
+    city: string | null;
+    validation_status: string;
+  };
+
+  const STATUS_MAP: Record<string, { label: string; color: AdminPipelineRow["status"]["color"] }> = {
+    pending:  { label: "En attente", color: "warn" },
+    approved: { label: "Validé",     color: "ok" },
+    rejected: { label: "Rejeté",     color: "ink" },
+  };
+
+  return ((data ?? []) as Row[]).map((row) => {
+    const status = STATUS_MAP[row.validation_status] ?? STATUS_MAP.pending;
+    return {
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      company: row.city, // On affiche la ville à la place du nom commercial
+      category: row.city ? `Particulier · ${row.city}` : "Particulier",
+      status,
+    };
+  });
+}

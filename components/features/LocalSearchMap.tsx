@@ -99,8 +99,18 @@ function FitAllBounds({ markers, userPos }: { markers: Artisan[]; userPos: [numb
   return null;
 }
 
+export type ParticulierPin = {
+  id: string;
+  name: string;
+  city: string;
+  lat: number;
+  lng: number;
+  avatar?: string;
+};
+
 type Props = {
   artisans: Artisan[];
+  particuliers?: ParticulierPin[];
   hoveredId: string | null;
   userPos: [number, number] | null;
   focusTarget: [number, number] | null;
@@ -109,6 +119,7 @@ type Props = {
 
 export function LocalSearchMap({
   artisans,
+  particuliers = [],
   hoveredId,
   userPos,
   focusTarget,
@@ -131,7 +142,25 @@ export function LocalSearchMap({
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      <FitAllBounds markers={artisans} userPos={userPos} />
+      {/* Bounds inclus artisans + particuliers pour cadrer toute la carte */}
+      <FitAllBounds
+        markers={[
+          ...artisans,
+          ...particuliers.map((p): Artisan => ({
+            id: p.id,
+            name: p.name,
+            company: p.name,
+            metier: "Particulier",
+            city: p.city,
+            rating: 0,
+            reviews: 0,
+            lat: p.lat,
+            lng: p.lng,
+            avatar: p.avatar,
+          })),
+        ]}
+        userPos={userPos}
+      />
       <FlyToPoint target={focusTarget} />
 
       {/* Cercle rayon autour du user */}
@@ -159,12 +188,12 @@ export function LocalSearchMap({
         </Marker>
       )}
 
-      {/* Marqueurs artisans */}
+      {/* Marqueurs artisans (orange) */}
       {artisans.map((a) => {
         const active = hoveredId === a.id;
         const icon = makeMarkerIcon("#f07a2f", active);
         return (
-          <Marker key={a.id} position={[a.lat, a.lng]} icon={icon}>
+          <Marker key={`a-${a.id}`} position={[a.lat, a.lng]} icon={icon}>
             <Popup>
               <div className="text-sm">
                 <div className="font-bold text-ink-700">{a.company || a.name}</div>
@@ -179,6 +208,28 @@ export function LocalSearchMap({
                 <a
                   href={`/profil/${a.id}`}
                   className="inline-block mt-2 text-brand-500 font-semibold text-xs hover:underline"
+                >
+                  Voir le profil →
+                </a>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
+
+      {/* Marqueurs particuliers (bleu) */}
+      {particuliers.map((p) => {
+        const active = hoveredId === p.id;
+        const icon = makeMarkerIcon("#2563eb", active);
+        return (
+          <Marker key={`p-${p.id}`} position={[p.lat, p.lng]} icon={icon}>
+            <Popup>
+              <div className="text-sm">
+                <div className="font-bold text-ink-700">{p.name}</div>
+                <div className="text-ink-400 text-xs">Particulier · {p.city}</div>
+                <a
+                  href={`/membre/${p.id}`}
+                  className="inline-block mt-2 text-blue-600 font-semibold text-xs hover:underline"
                 >
                   Voir le profil →
                 </a>

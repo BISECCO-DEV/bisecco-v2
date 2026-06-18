@@ -14,11 +14,6 @@ const CookieBanner = dynamic(
   { ssr: false, loading: () => null },
 );
 
-const Chatbot = dynamic(
-  () => import("./Chatbot").then((m) => m.Chatbot),
-  { ssr: false, loading: () => null },
-);
-
 const ScrollToTop = dynamic(
   () => import("@/components/ui/ScrollToTop").then((m) => m.ScrollToTop),
   { ssr: false, loading: () => null },
@@ -26,11 +21,6 @@ const ScrollToTop = dynamic(
 
 const ServiceWorkerRegister = dynamic(
   () => import("@/components/ui/ServiceWorkerRegister").then((m) => m.ServiceWorkerRegister),
-  { ssr: false, loading: () => null },
-);
-
-const PwaInstallPrompt = dynamic(
-  () => import("./PwaInstallPrompt").then((m) => m.PwaInstallPrompt),
   { ssr: false, loading: () => null },
 );
 
@@ -59,10 +49,8 @@ export function GlobalClientWidgets({
   return (
     <>
       <CookieBanner />
-      <Chatbot currentUserId={currentUserId} />
       <ScrollToTop />
       <ServiceWorkerRegister />
-      <PwaInstallPrompt />
       <InAppLinkViewer />
       <MessageriedDock currentUserId={currentUserId} />
       <InviteFab referralUrl={referralUrl} />

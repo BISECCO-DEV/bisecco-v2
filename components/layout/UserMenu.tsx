@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/lib/auth/actions";
 import { CtaButton } from "@/components/ui/CtaButton";
-import { InstallAppButton } from "./InstallAppButton";
 
 export type UserMenuProps = {
   user: {
@@ -126,8 +125,6 @@ export function UserMenu({ user, unreadCvs = 0 }: UserMenuProps) {
             <MenuLink href="/mon-profil/avis" icon={Star} label="Mes avis" />
             <MenuLink href="/parrainage" icon={Gift} label="Parrainage" />
             <MenuLink href="/mon-profil/parametres" icon={Settings} label="Paramètres" />
-            <div className="my-1 border-t border-ink-100" />
-            <InstallAppButton variant="menu" />
           </nav>
 
           {/* Déconnexion */}

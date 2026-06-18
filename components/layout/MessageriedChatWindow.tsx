@@ -152,7 +152,7 @@ export function MessageriedChatWindow({ threadId, currentUserId, otherUser, onCl
             {otherUser.name}
           </div>
           <div className="text-[0.65rem] text-ink-400 leading-tight mt-0.5 capitalize">
-            {isPro ? "Artisan" : otherUser.role}
+            {isPro ? "Professionnel" : otherUser.role}
           </div>
         </Link>
         <button

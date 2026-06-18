@@ -15,6 +15,9 @@ export const METIER_OPTIONS: MetierOption[] = [
   { name: "Glacier",                          category: "Alimentation", icon: "🍦" },
   { name: "Biscuitier",                       category: "Alimentation", icon: "🍪" },
   { name: "Traiteur",                         category: "Alimentation", icon: "🍴" },
+  { name: "Restaurant",                       category: "Alimentation", icon: "🍽️" },
+  { name: "Pub",                              category: "Alimentation", icon: "🍺" },
+  { name: "Bar",                              category: "Alimentation", icon: "🍸" },
   { name: "Boucher",                          category: "Alimentation", icon: "🥩" },
   { name: "Charcutier",                       category: "Alimentation", icon: "🥓" },
   { name: "Poissonnier",                      category: "Alimentation", icon: "🐟" },
@@ -148,6 +151,9 @@ export const METIER_OPTIONS: MetierOption[] = [
   // ═══════════════════════════════════════════════════════════
   // SERVICES
   // ═══════════════════════════════════════════════════════════
+  { name: "Comptable",                        category: "Services", icon: "📊" },
+  { name: "Marchand de biens",                category: "Services", icon: "🏠" },
+  { name: "Promoteur immobilier",             category: "Services", icon: "🏗️" },
   { name: "Coiffeur",                         category: "Services", icon: "💇" },
   { name: "Barbier",                          category: "Services", icon: "✂️" },
   { name: "Esthéticienne",                    category: "Services", icon: "💅" },

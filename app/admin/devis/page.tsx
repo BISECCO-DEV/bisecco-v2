@@ -53,7 +53,7 @@ export default function AdminDevisPage() {
         <div className="bg-white rounded-2xl border border-ink-100 p-3 mb-4 flex items-center gap-2">
           <div className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-ink-50">
             <Search size={14} className="text-ink-300" />
-            <input type="text" placeholder="ID devis, client, artisan…" className="flex-1 bg-transparent outline-none text-sm" />
+            <input type="text" placeholder="ID devis, client, professionnel…" className="flex-1 bg-transparent outline-none text-sm" />
           </div>
         </div>
 
@@ -81,7 +81,7 @@ export default function AdminDevisPage() {
                     </td>
                     <td className="hidden lg:table-cell px-5 text-[0.78rem]">
                       <div className="text-ink-700">Client : <strong>{d.client}</strong></div>
-                      <div className="text-ink-500">Artisan : <strong>{d.artisan}</strong></div>
+                      <div className="text-ink-500">Professionnel : <strong>{d.artisan}</strong></div>
                     </td>
                     <td className="px-5 text-right font-bold text-brand-500">{d.amount.toLocaleString("fr-FR")} €</td>
                     <td className="px-5">

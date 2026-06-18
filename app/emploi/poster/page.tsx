@@ -23,7 +23,7 @@ export default function PosterPage() {
             Postez vos <span className="text-brand-500">offres d&apos;emploi</span>
           </h1>
           <p className="text-ink-400 mt-2">
-            Le dépôt d&apos;offres d&apos;emploi sera réservé aux entreprises abonnées au plan <strong>Pro</strong>. Bisecco reste 100% gratuit pour les particuliers et pour la mise en avant de votre profil artisan.
+            Le dépôt d&apos;offres d&apos;emploi sera réservé aux entreprises abonnées au plan <strong>Pro</strong>. Bisecco reste 100% gratuit pour les particuliers et pour la mise en avant de votre profil professionnel.
           </p>
         </div>
 

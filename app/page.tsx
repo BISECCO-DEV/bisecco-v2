@@ -4,8 +4,10 @@ import { CtaButton } from "@/components/ui/CtaButton";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { HomeLocalSearch } from "@/components/features/home/HomeLocalSearch";
 import { HomeFaq } from "@/components/features/home/HomeFaq";
+import { HomeSeoLinks } from "@/components/features/home/HomeSeoLinks";
 import { HOME_FAQ_ITEMS } from "@/lib/seo/home-faq";
-import { faqSchema } from "@/lib/seo/schemas";
+import { faqSchema, organizationSchema, websiteSchema, aggregateRatingSchema } from "@/lib/seo/schemas";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { HomeHowItWorks } from "@/components/features/home/HomeHowItWorks";
 import { HomeMetiers } from "@/components/features/home/HomeMetiers";
 import { HomeComparison } from "@/components/features/home/HomeComparison";
@@ -13,6 +15,7 @@ import { HomeArtisanPitch } from "@/components/features/home/HomeArtisanPitch";
 import { HomeBlogTeasers } from "@/components/features/home/HomeBlogTeasers";
 import { HomeReviews } from "@/components/features/home/HomeReviews";
 import { HomeCommunityStats } from "@/components/features/home/HomeCommunityStats";
+import { HomeTopPros } from "@/components/features/home/HomeTopPros";
 import {
   ShieldCheck,
   Sparkles,
@@ -34,14 +37,45 @@ import {
 // raisonnable au lieu de hit la DB à chaque visite.
 export const revalidate = 300;
 
-export default function HomePage() {
-  // JSON-LD FAQPage server-rendered (visible aux crawlers dans le HTML initial,
-  // contrairement à un <script> injecté depuis un client component).
+/**
+ * Récupère la note moyenne réelle des avis approuvés sur la plateforme.
+ * Utilisé pour le AggregateRating · Google n'aime PAS les fake ratings.
+ * Retourne null si moins de 3 avis (Google demande ce minimum pour afficher des étoiles).
+ */
+async function fetchGlobalRating(): Promise<{ ratingValue: number; reviewCount: number } | null> {
+  try {
+    const supabase = createSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("rating")
+      .eq("status", "approved")
+      .eq("is_flagged", false);
+    if (error || !data || data.length < 3) return null;
+    const total = data.reduce((sum, r) => sum + r.rating, 0);
+    return {
+      ratingValue: Number((total / data.length).toFixed(1)),
+      reviewCount: data.length,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export default async function HomePage() {
+  // JSON-LD : on agrège tous les schemas dans un seul block pour minimiser le HTML
   const faqLd = faqSchema(HOME_FAQ_ITEMS.slice(0, 8).map((f) => ({ question: f.q, answer: f.a })));
+  const orgLd = organizationSchema();
+  const siteLd = websiteSchema();
+
+  // Étoiles dans Google SERP · seulement si on a au moins 3 vrais avis
+  const rating = await fetchGlobalRating();
+  const ratingLd = rating ? aggregateRatingSchema(rating.ratingValue, rating.reviewCount) : null;
+
+  const allSchemas = [orgLd, siteLd, faqLd, ...(ratingLd ? [ratingLd] : [])];
 
   return (
     <>
-      <JsonLd data={faqLd} />
+      <JsonLd data={allSchemas} />
       {/* ═══════════ HERO ═══════════ */}
       <section className="relative flex items-start md:items-center min-h-[78vh] md:min-h-[78vh] lg:min-h-[95vh] bg-[#05122e] overflow-hidden">
         {/* Image de fond · <picture> responsive (mobile portrait / desktop landscape) */}
@@ -94,10 +128,10 @@ export default function HomePage() {
                 style={{ animationDelay: "100ms" }}
               >
                 <span className="block lg:whitespace-nowrap">
-                  1<sup className="text-[0.55em] font-extrabold align-super">er</sup> réseau social d&apos;artisans,
+                  1<sup className="text-[0.55em] font-extrabold align-super">er</sup> réseau social des Professionnels,
                 </span>
                 <span className="block text-brand-500 lg:whitespace-nowrap">
-                  développé pour les particuliers.
+                  pensé pour les particuliers.
                 </span>
               </h1>
 
@@ -113,7 +147,6 @@ export default function HomePage() {
               {/* Trust chips · cascade stagger */}
               <div className="flex flex-wrap justify-center md:justify-start gap-4 sm:gap-6 mt-5 sm:mt-7">
                 {[
-                  { icon: Zap,         label: "Devis 2 min" },
                   { icon: ShieldCheck, label: "Sans intermédiaire" },
                   { icon: Sparkles,    label: "100 % gratuit" },
                 ].map((chip, i) => (
@@ -155,8 +188,8 @@ export default function HomePage() {
         <ScrollIndicator targetId="gratuit" offset={110} label="Découvrir" />
       </section>
 
-      {/* ═══════════ STATS COMMUNAUTÉ LIVE · particuliers + artisans + villes ═══════════ */}
-      <HomeCommunityStats />
+      {/* ═══════════ STATS COMMUNAUTÉ LIVE · masqué temporairement (demande client 2026-06-14) ═══════════ */}
+      {/* <HomeCommunityStats /> */}
 
       {/* ═══════════ COMMENT ÇA MARCHE · dual particulier/artisan avec tabs ═══════════ */}
       <HomeHowItWorks />
@@ -166,6 +199,9 @@ export default function HomePage() {
 
       {/* ═══════════ RECHERCHE LOCALE · Carte interactive + Carousel ═══════════ */}
       <HomeLocalSearch />
+
+      {/* ═══════════ AVANT/APRÈS · vitrine des pros qui ont publié ═══════════ */}
+      <HomeTopPros />
 
 
       {/* ═══════════ 100 % GRATUIT · 2 cards style "pricing" pro ═══════════ */}
@@ -217,7 +253,7 @@ export default function HomePage() {
                         Particulier
                       </div>
                       <h3 className="mt-1 text-[1.4rem] sm:text-[1.55rem] font-extrabold text-ink-700 tracking-tight leading-tight">
-                        Je cherche un artisan
+                        Je cherche un professionnel
                       </h3>
                     </div>
                     {/* Icon badge */}
@@ -231,14 +267,14 @@ export default function HomePage() {
                     <span className="text-[2.6rem] sm:text-[3rem] font-extrabold text-ink-700 leading-none tracking-tight">0&nbsp;€</span>
                     <span className="text-[0.86rem] text-ink-400 font-semibold">à vie</span>
                   </div>
-                  <p className="mt-1 text-[0.82rem] text-ink-500">Trouvez votre artisan en 2 minutes.</p>
+                  <p className="mt-1 text-[0.82rem] text-ink-500">Trouvez votre professionnel en 2 minutes.</p>
                 </div>
 
                 {/* Liste features */}
                 <div className="px-7 sm:px-8 py-6 space-y-3">
                   {[
                     "Recherche illimitée par métier et ville",
-                    "Contactez les artisans directement",
+                    "Contactez les professionnels directement",
                     "Consultez les avis clients vérifiés",
                     "Demandez des devis sans engagement",
                     "Aucune commission sur vos travaux",
@@ -255,7 +291,7 @@ export default function HomePage() {
                 {/* CTA */}
                 <div className="px-7 sm:px-8 pb-7 sm:pb-8">
                   <CtaButton href="/rechercher" variant="primary" size="lg" className="w-full justify-center">
-                    Trouver un artisan
+                    Trouver un professionnel
                   </CtaButton>
                 </div>
               </div>
@@ -277,7 +313,7 @@ export default function HomePage() {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <div className="text-[0.7rem] font-bold tracking-[0.18em] uppercase text-brand-500">
-                        Artisan
+                        Professionnel
                       </div>
                       <h3 className="mt-1 text-[1.4rem] sm:text-[1.55rem] font-extrabold text-ink-700 tracking-tight leading-tight">
                         Je veux des clients
@@ -393,7 +429,7 @@ export default function HomePage() {
                   <Reveal delay={300} distance={20}>
                     <p className="mt-5 sm:mt-6 text-[0.94rem] sm:text-[1.02rem] text-white/75 leading-relaxed max-w-xl">
                       Bisecco est né d&apos;une conviction simple&nbsp;:
-                      <span className="text-white font-semibold"> chaque artisan mérite d&apos;être visible </span>
+                      <span className="text-white font-semibold"> chaque professionnel mérite d&apos;être visible </span>
                       et reconnu pour son savoir-faire. Nous construisons le premier réseau social dédié
                       aux professionnels du bâtiment, des services et de l&apos;artisanat.
                     </p>
@@ -429,7 +465,7 @@ export default function HomePage() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1200&h=960&fit=crop&q=80"
-                        alt="Artisan professionnel au travail · Bisecco valorise chaque savoir-faire"
+                        alt="Professionnel au travail · Bisecco valorise chaque savoir-faire"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         loading="lazy"
                       />
@@ -475,7 +511,7 @@ export default function HomePage() {
               <h2 className="mt-5 text-[32px] lg:text-[38px] leading-[1.25] font-semibold text-white tracking-[-0.025em]">
                 Un écosystème d&apos;experts pour{" "}
                 <span className="relative inline-block">
-                  <span className="text-brand-500">accompagner nos artisans</span>
+                  <span className="text-brand-500">accompagner nos professionnels</span>
                   <span className="text-brand-500">.</span>
                 </span>
               </h2>
@@ -542,7 +578,7 @@ export default function HomePage() {
 
                   {/* Pitch */}
                   <p className="mt-3 text-ink-500 text-[0.95rem] sm:text-[1rem] leading-relaxed max-w-2xl">
-                    Domiciliation d&apos;entreprise et accompagnement juridique pour artisans, auto-entrepreneurs
+                    Domiciliation d&apos;entreprise et accompagnement juridique pour professionnels, auto-entrepreneurs
                     et TPE. Une adresse professionnelle au cœur de Cannes, conseils sur-mesure et gestion
                     administrative simplifiée.
                   </p>
@@ -622,7 +658,7 @@ export default function HomePage() {
                     Programme partenaires
                   </span>
                   <h3 className="text-[1.5rem] sm:text-[1.85rem] font-extrabold tracking-tight leading-tight">
-                    Vous proposez un service B2B utile aux artisans&nbsp;?
+                    Vous proposez un service B2B utile aux professionnels&nbsp;?
                   </h3>
                   <p className="mt-2 text-white/85 text-[0.94rem] max-w-xl">
                     Rejoignez notre programme partenaires. Visibilité ciblée, mise en relation directe,
@@ -646,6 +682,9 @@ export default function HomePage() {
 
       {/* ═══════════ FAQ premium (client component, one-at-a-time) ═══════════ */}
       <HomeFaq />
+
+      {/* ═══════════ MAILLAGE SEO · liens vers pages métier × ville ═══════════ */}
+      <HomeSeoLinks />
     </>
   );
 }

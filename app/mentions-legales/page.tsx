@@ -83,10 +83,10 @@ export default function MentionsLegalesPage() {
         en bas de page.
       </p>
 
-      <h2>7. Vérification SIREN des artisans</h2>
+      <h2>7. Vérification SIREN des professionnels</h2>
       <p>
         Bisecco vérifie automatiquement l&apos;inscription au répertoire SIRENE de l&apos;INSEE
-        de chaque artisan inscrit sur la plateforme. Cette vérification est réalisée en temps
+        de chaque professionnel inscrit sur la plateforme. Cette vérification est réalisée en temps
         réel via l&apos;API publique de l&apos;INSEE et permet d&apos;attribuer le badge
         &laquo;&nbsp;Vérifié SIREN&nbsp;&raquo;.
       </p>
@@ -94,7 +94,7 @@ export default function MentionsLegalesPage() {
       <h2>8. Limite de responsabilité</h2>
       <p>
         Bisecco est un service de mise en relation. La société AGISCO HOLDING SAS n&apos;est
-        partie à aucune relation contractuelle entre les artisans et les particuliers utilisant
+        partie à aucune relation contractuelle entre les professionnels et les particuliers utilisant
         la plateforme. Elle ne saurait être tenue responsable des prestations, devis, travaux,
         litiges ou paiements intervenant entre ces parties.
       </p>

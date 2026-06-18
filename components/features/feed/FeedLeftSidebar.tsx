@@ -92,7 +92,7 @@ export async function FeedLeftSidebar({ user }: { user: CurrentUser }) {
               />
               {isArtisan && (
                 <span
-                  title="Artisan vérifié"
+                  title="Professionnel vérifié"
                   className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white inline-flex items-center justify-center"
                 >
                   <ShieldCheck size={12} className="text-white" strokeWidth={3} />
@@ -109,7 +109,7 @@ export async function FeedLeftSidebar({ user }: { user: CurrentUser }) {
               {user.display_name}
             </Link>
             <div className="text-[0.74rem] text-ink-500 mt-0.5 capitalize">
-              {user.role === "artisan" ? "Artisan" : user.role === "admin" ? "Admin" : "Particulier"}
+              {user.role === "artisan" ? "Professionnel" : user.role === "admin" ? "Admin" : "Particulier"}
             </div>
             {user.city && (
               <div className="mt-1 inline-flex items-center gap-1 text-[0.7rem] text-ink-400">

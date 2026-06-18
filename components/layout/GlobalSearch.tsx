@@ -24,7 +24,7 @@ type Suggestion = {
 };
 
 const STATIC_PAGES: Suggestion[] = [
-  { type: "page", label: "Trouver un artisan",  sub: "Recherche carte interactive", href: "/rechercher",          icon: <MapPin size={14} /> },
+  { type: "page", label: "Trouver un professionnel",  sub: "Recherche carte interactive", href: "/rechercher",          icon: <MapPin size={14} /> },
   { type: "page", label: "Tous les métiers",    sub: "Annuaire complet des métiers",      href: "/metiers",             icon: <Briefcase size={14} /> },
   { type: "page", label: "Tous les avis",       sub: "Avis vérifiés des clients",           href: "/avis",                icon: <Users size={14} /> },
   { type: "page", label: "Blog",                sub: "Guides et conseils",          href: "/blog",                icon: <Newspaper size={14} /> },
@@ -152,7 +152,7 @@ export function GlobalSearch({ metierOptions }: { metierOptions?: MetierOption[]
               {userResults.artisans.length > 0 && (
                 <>
                   <div className="px-3 py-2 text-[0.65rem] font-bold tracking-[0.14em] uppercase text-ink-400">
-                    Artisans
+                    Professionnels
                   </div>
                   {userResults.artisans.map((u) => (
                     <UserResultItem key={`a-${u.id}`} user={u} onClick={() => setOpen(false)} />
@@ -231,7 +231,7 @@ function UserResultItem({ user, onClick }: { user: UserResult; onClick: () => vo
   const isPro = user.role === "artisan";
   const sub = user.metier
     ? `${user.metier}${user.city ? ` · ${user.city}` : ""}`
-    : user.city ?? (isPro ? "Artisan" : "Particulier");
+    : user.city ?? (isPro ? "Professionnel" : "Particulier");
 
   return (
     <Link

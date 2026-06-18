@@ -18,10 +18,10 @@ const CATEGORIES: Record<string, { title: string; description: string; articles:
     ],
   },
   artisans: {
-    title: "Pour les artisans",
-    description: "Inscription artisan, validation SIREN, profil pro",
+    title: "Pour les professionnels",
+    description: "Inscription professionnel, validation SIREN, profil pro",
     articles: [
-      { slug: "inscription-artisan", title: "Comment m'inscrire en tant qu'artisan ?",            readTime: "3 min" },
+      { slug: "inscription-artisan", title: "Comment m'inscrire en tant que professionnel ?",            readTime: "3 min" },
       { slug: "siren-pourquoi",       title: "Pourquoi avoir besoin de mon numéro SIREN ?",        readTime: "2 min" },
       { slug: "validation-profil",    title: "Combien de temps pour valider mon profil ?",         readTime: "1 min" },
       { slug: "ajouter-services",     title: "Ajouter mes services et tarifs",                    readTime: "3 min" },
@@ -34,7 +34,7 @@ const CATEGORIES: Record<string, { title: string; description: string; articles:
     description: "Demander, comparer, accepter un devis",
     articles: [
       { slug: "demander-devis",       title: "Comment demander un devis gratuit ?",                readTime: "2 min" },
-      { slug: "delai-reponse",        title: "Délai de réponse moyen des artisans",                readTime: "1 min" },
+      { slug: "delai-reponse",        title: "Délai de réponse moyen des professionnels",                readTime: "1 min" },
       { slug: "comparer-devis",       title: "Comparer plusieurs devis efficacement",              readTime: "4 min" },
       { slug: "accepter-devis",       title: "Accepter un devis et signer le contrat",             readTime: "3 min" },
     ],
@@ -43,7 +43,7 @@ const CATEGORIES: Record<string, { title: string; description: string; articles:
     title: "Messagerie",
     description: "Envoyer, signaler, modérer",
     articles: [
-      { slug: "envoyer-message",      title: "Envoyer un premier message à un artisan",            readTime: "1 min" },
+      { slug: "envoyer-message",      title: "Envoyer un premier message à un professionnel",            readTime: "1 min" },
       { slug: "signaler-utilisateur", title: "Signaler un comportement inapproprié",               readTime: "2 min" },
     ],
   },

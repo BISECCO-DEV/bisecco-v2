@@ -27,6 +27,11 @@ const PILL = {
   particulier: "bg-info-soft text-info",
 };
 
+const ROLE_LABEL = {
+  artisan:     "professionnel",
+  particulier: "particulier",
+};
+
 /**
  * Feed scrollable d'inscriptions / activités récentes.
  */
@@ -50,7 +55,7 @@ export function RecentFeed({ items, emptyLabel = "Aucune activité récente." }:
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-[0.82rem] font-medium text-ink-900">{item.name}</span>
               <span className={`text-[0.6rem] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${PILL[item.role]}`}>
-                {item.role}
+                {ROLE_LABEL[item.role]}
               </span>
             </div>
             <div className="text-[0.72rem] text-ink-400 truncate mt-0.5">{item.meta}</div>

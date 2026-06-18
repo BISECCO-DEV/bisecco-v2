@@ -56,11 +56,11 @@ export default async function DevisConfirme({ searchParams }: { searchParams: Se
         <p className="text-ink-500 mt-2 leading-relaxed">
           {isTargeted ? (
             <>
-              Votre demande a bien été transmise à <strong>{info!.artisan_name}</strong>. L&apos;artisan a été notifié par email et vous répondra directement.
+              Votre demande a bien été transmise à <strong>{info!.artisan_name}</strong>. Le professionnel a été notifié par email et vous répondra directement.
             </>
           ) : (
             <>
-              Votre demande est enregistrée. L&apos;artisan a été notifié et reviendra vers vous directement.
+              Votre demande est enregistrée. Le professionnel a été notifié et reviendra vers vous directement.
             </>
           )}
         </p>

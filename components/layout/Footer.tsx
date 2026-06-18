@@ -11,7 +11,7 @@ import {
 const FOOTER_HIDDEN_ROUTES = ["/admin", "/coming-soon", "/maintenance"];
 
 const NAV_PARTICULIERS = [
-  { href: "/rechercher",  label: "Trouver un artisan" },
+  { href: "/rechercher",  label: "Trouver un professionnel" },
   { href: "/metiers",     label: "Tous les métiers" },
   { href: "/avis",        label: "Avis clients" },
   { href: "/devis",       label: "Demander un devis" },
@@ -24,7 +24,7 @@ const NAV_ARTISANS = [
   { href: "/partenaires-pro",  label: "Espace pros" },
   { href: "/emploi/poster",    label: "Poster une offre" },
   { href: "/parrainage",       label: "Parrainage" },
-  { href: "/aide",             label: "Aide artisans" },
+  { href: "/aide",             label: "Aide professionnels" },
 ];
 
 const TOP_METIERS = [
@@ -142,7 +142,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-5 text-white/60 text-[0.94rem] leading-relaxed max-w-sm">
-              Le 1<sup>er</sup> annuaire d&apos;artisans français vérifiés SIREN.
+              Le 1<sup>er</sup> annuaire de professionnels français vérifiés SIREN.
               Trouvez un pro de confiance près de chez vous, <strong className="text-white">sans commission</strong>,
               en contact direct.
             </p>
@@ -196,7 +196,7 @@ export function Footer() {
               <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-brand-500/10 border border-brand-500/25 text-brand-400">
                 <Hammer size={10} strokeWidth={2.6} />
               </span>
-              Artisans
+              Professionnels
             </h4>
             <ul className="space-y-2.5 text-[0.88rem]">
               {NAV_ARTISANS.map((l) => (
@@ -228,7 +228,7 @@ export function Footer() {
             iconColor="text-blue-400 bg-blue-500/10 border-blue-500/20"
             title="Top métiers"
             links={TOP_METIERS.slice(0, 6).map((m) => ({ href: `/metiers/${m.slug}`, label: m.name }))}
-            seeAll={{ href: "/metiers", label: "Voir plus de 176 métiers" }}
+            seeAll={{ href: "/metiers", label: "Voir plus de 189 métiers" }}
           />
 
           {/* Top villes · 2 cols */}
@@ -267,7 +267,7 @@ export function Footer() {
 
             {/* Credit (droite) */}
             <div className="text-[0.74rem] text-white/40 leading-relaxed text-left lg:text-right">
-              Fait avec <Heart size={10} strokeWidth={2.6} className="inline text-brand-400 mx-0.5 -mt-0.5" fill="currentColor" /> à <strong className="text-white/65">Cannes</strong> pour les artisans de France entière.
+              Fait avec <Heart size={10} strokeWidth={2.6} className="inline text-brand-400 mx-0.5 -mt-0.5" fill="currentColor" /> à <strong className="text-white/65">Cannes</strong> pour les professionnels de France entière.
             </div>
           </div>
         </div>

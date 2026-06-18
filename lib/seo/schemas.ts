@@ -5,6 +5,130 @@
 
 const BASE = "https://bisecco.fr";
 
+/**
+ * Schema Organization · à mettre sur la HOMEPAGE uniquement.
+ *
+ * Effets dans les SERP Google :
+ *   - Logo de Bisecco affiché dans le panneau de connaissances (Knowledge Panel)
+ *   - Liens vers réseaux sociaux affichés (sameAs)
+ *   - Coordonnées de l'entreprise affichées
+ *   - Boîte de recherche "site search" dans Google (potentialAction)
+ */
+export function organizationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${BASE}#organization`,
+    name: "Bisecco",
+    alternateName: ["Bisecco.fr", "Bisecco réseau professionnels"],
+    url: BASE,
+    logo: {
+      "@type": "ImageObject",
+      url: `${BASE}/logo.png`,
+      width: 512,
+      height: 512,
+    },
+    description:
+      "1er réseau social des Professionnels français vérifiés SIREN. " +
+      "Trouvez un professionnel qualifié près de chez vous, comparez les devis, " +
+      "consultez les avis authentiques. 100% gratuit, 0% commission.",
+    foundingDate: "2026-01-01",
+    founder: {
+      "@type": "Person",
+      name: "Laurent Nero",
+    },
+    legalName: "AGISCO HOLDING SAS",
+    email: "contact@bisecco.fr",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Cannes",
+      postalCode: "06400",
+      addressCountry: "FR",
+    },
+    areaServed: { "@type": "Country", name: "France" },
+    sameAs: [
+      // Décommente / ajoute tes vrais profils ici quand ils existent
+      // "https://www.linkedin.com/company/bisecco",
+      // "https://www.facebook.com/bisecco",
+      // "https://www.instagram.com/bisecco",
+      // "https://twitter.com/bisecco",
+    ],
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        email: "contact@bisecco.fr",
+        availableLanguage: ["French"],
+        areaServed: "FR",
+      },
+    ],
+  };
+}
+
+/**
+ * Schema WebSite · à mettre sur la HOMEPAGE uniquement.
+ *
+ * Effets dans les SERP Google :
+ *   - Barre de recherche directement intégrée sous le titre Bisecco
+ *     (les gens peuvent chercher "plombier" depuis Google sans cliquer)
+ *   - Sitelinks (liens vers /metiers, /rechercher, etc.)
+ */
+export function websiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${BASE}#website`,
+    name: "Bisecco",
+    url: BASE,
+    description:
+      "Réseau social des professionnels français vérifiés SIREN. Annuaire de professionnels, " +
+      "devis gratuits, avis clients authentiques.",
+    publisher: {
+      "@id": `${BASE}#organization`,
+    },
+    inLanguage: "fr-FR",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${BASE}/rechercher?metier={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+/**
+ * Schema AggregateRating · agrégat des notes sur l'ensemble du site.
+ *
+ * Effets dans les SERP Google :
+ *   - Étoiles ★★★★★ visibles directement dans les résultats Google
+ *   - CTR multiplié par 2-3× (gros impact trafic)
+ *
+ * À utiliser SEULEMENT si tu as au moins ~5 avis réels sur la plateforme.
+ * Google peut pénaliser les fake reviews → utilise vraies stats DB.
+ *
+ * @param ratingValue Note moyenne (1-5)
+ * @param reviewCount Nombre total d'avis
+ */
+export function aggregateRatingSchema(ratingValue: number, reviewCount: number) {
+  // Google n'affiche les étoiles que si bestRating, worstRating et ratingValue sont cohérents
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${BASE}#organization-ratings`,
+    name: "Bisecco",
+    url: BASE,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: ratingValue.toFixed(1),
+      reviewCount: reviewCount,
+      bestRating: "5",
+      worstRating: "1",
+    },
+  };
+}
+
 export type BreadcrumbItem = {
   name: string;
   url: string;

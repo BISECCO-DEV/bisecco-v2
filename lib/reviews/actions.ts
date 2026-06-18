@@ -6,9 +6,10 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { pushNotification } from "@/lib/notifications/actions";
 import { sendMail } from "@/lib/mail/mailer";
-import { newReviewEmail } from "@/lib/mail/templates";
+import { newReviewEmail, newReviewToModerateEmail, reviewApprovedEmail } from "@/lib/mail/templates";
 
 const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
+const CONTACT_INBOX = process.env.CONTACT_INBOX || "contact@bisecco.fr";
 
 export type ReviewState = { error?: string; success?: string } | undefined;
 
@@ -32,16 +33,18 @@ export async function submitReviewAction(_prev: ReviewState, formData: FormData)
 
   const { data: artisan } = await admin
     .from("users")
-    .select("id, role, client_number, artisan_profiles(id)")
+    .select("id, name, role, client_number, artisan_profiles(id, company_name)")
     .eq("id", artisanId)
     .single();
 
   if (!artisan || artisan.role !== "artisan") return { error: "Artisan introuvable." };
   if (me.id === artisanId) return { error: "Vous ne pouvez pas vous noter." };
 
-  const profileId = Array.isArray(artisan.artisan_profiles)
-    ? (artisan.artisan_profiles[0] as { id?: number } | undefined)?.id
-    : (artisan.artisan_profiles as { id?: number } | null)?.id;
+  const profileRow = Array.isArray(artisan.artisan_profiles)
+    ? (artisan.artisan_profiles[0] as { id?: number; company_name?: string | null } | undefined)
+    : (artisan.artisan_profiles as { id?: number; company_name?: string | null } | null);
+  const profileId = profileRow?.id;
+  const artisanDisplayName = profileRow?.company_name?.trim() || artisan.name || "Pro";
   if (!profileId) return { error: "Profil artisan incomplet." };
 
   const { data: existing } = await admin
@@ -65,30 +68,83 @@ export async function submitReviewAction(_prev: ReviewState, formData: FormData)
     }
   }
 
+  // ─── L'avis est créé en STATUS=PENDING : il faut une validation admin
+  //     avant qu'il soit visible publiquement. ─────────────────────────
   await admin.from("reviews").insert({
     artisan_profile_id: profileId,
     user_id: me.id,
     quote_request_id: quoteId,
     rating,
     comment,
-    status: "approved",
+    status: "pending",
     is_flagged: false,
   });
 
   // L'URL publique du profil utilise client_number, pas l'id numérique.
   const profilePath = `/profil/${artisan.client_number ?? artisanId}`;
 
-  await pushNotification(
-    artisanId,
-    "review_received",
-    "Nouvel avis sur votre profil",
-    `Vous avez reçu une note ${rating}/5`,
-    profilePath,
-    "⭐",
-  );
+  // ─── Notifier l'ÉQUIPE ADMIN (notif in-app + email) ─────────────────
+  // L'artisan ciblé sera notifié SEULEMENT à l'approbation (voir approveReviewAction).
+  await notifyAdminsNewReview({
+    reviewerName: me.name ?? "Un utilisateur",
+    artisanName: artisanDisplayName,
+    rating,
+    comment: comment ?? null,
+  });
 
   revalidatePath(profilePath);
+  revalidatePath("/admin/avis");
   redirect(`${profilePath}?review=submitted`);
+}
+
+/**
+ * Envoie une notification IN-APP à TOUS les admins + un email à CONTACT_INBOX
+ * pour signaler qu'un nouvel avis attend d'être modéré.
+ */
+async function notifyAdminsNewReview(opts: {
+  reviewerName: string;
+  artisanName: string;
+  rating: number;
+  comment: string | null;
+}): Promise<void> {
+  try {
+    const admin = createSupabaseAdminClient();
+    const moderationUrl = `${APP_URL_BASE}/admin/avis?filter=pending`;
+
+    // 1) Notif in-app à tous les admins
+    const { data: admins } = await admin
+      .from("users")
+      .select("id")
+      .eq("role", "admin")
+      .is("deleted_at", null);
+
+    if (admins && admins.length > 0) {
+      await Promise.all(
+        admins.map((a) =>
+          pushNotification(
+            a.id,
+            "review_to_moderate",
+            "Nouvel avis à modérer",
+            `${opts.reviewerName} a noté ${opts.artisanName} (${opts.rating}/5)`,
+            "/admin/avis?filter=pending",
+            "🛡️",
+          ),
+        ),
+      );
+    }
+
+    // 2) Email à la boîte contact (équipe modération)
+    const tpl = newReviewToModerateEmail({
+      reviewerName: opts.reviewerName,
+      artisanName: opts.artisanName,
+      rating: opts.rating,
+      comment: opts.comment,
+      moderationUrl,
+    });
+    await sendMail({ to: CONTACT_INBOX, subject: tpl.subject, html: tpl.html, text: tpl.text });
+  } catch {
+    // best-effort : on ne bloque jamais la création de l'avis sur ces notifs
+  }
 }
 
 /** Admin: approuve un avis */
@@ -99,7 +155,7 @@ export async function approveReviewAction(reviewId: number) {
   const admin = createSupabaseAdminClient();
   const { data: review } = await admin
     .from("reviews")
-    .select("id, user_id, artisan_profile_id, artisan_profiles(user_id)")
+    .select("id, rating, comment, user_id, artisan_profile_id, artisan_profiles(user_id, company_name, users(name, email, client_number))")
     .eq("id", reviewId)
     .single();
 
@@ -107,42 +163,70 @@ export async function approveReviewAction(reviewId: number) {
     .update({ status: "approved", moderated_at: new Date().toISOString(), moderated_by: me.id })
     .eq("id", reviewId);
 
+  type ProfileUser = { name: string | null; email: string | null; client_number: string | null };
+  type ProfileRow = { user_id?: number; company_name?: string | null; users: ProfileUser | ProfileUser[] | null };
+
+  const profileRow = Array.isArray(review?.artisan_profiles)
+    ? (review!.artisan_profiles[0] as unknown as ProfileRow | undefined)
+    : (review?.artisan_profiles as unknown as ProfileRow | null);
+  const artisanUserId = profileRow?.user_id;
+  const profileUsersRaw = profileRow?.users;
+  const proUser: ProfileUser | undefined = Array.isArray(profileUsersRaw)
+    ? profileUsersRaw[0]
+    : profileUsersRaw ?? undefined;
+  const proDisplayName = profileRow?.company_name?.trim() || proUser?.name || "Pro";
+  const proPublicUrl = `${APP_URL_BASE}/profil/${proUser?.client_number ?? artisanUserId ?? ""}`;
+
+  // ─── 1) Notif + email à l'ARTISAN qui a reçu l'avis ─────────────────
+  if (artisanUserId) {
+    await pushNotification(
+      artisanUserId,
+      "review_received",
+      `Nouvel avis ${review!.rating}★ sur votre profil`,
+      review?.comment?.slice(0, 100) ?? `Note ${review?.rating}/5`,
+      `/profil/${proUser?.client_number ?? artisanUserId}`,
+      "⭐",
+    );
+
+    if (proUser?.email && proUser.name) {
+      const tpl = newReviewEmail({
+        profileName: proUser.name,
+        rating: review!.rating,
+        comment: review!.comment,
+        profileUrl: proPublicUrl,
+      });
+      await sendMail({ to: proUser.email, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch(() => null);
+    }
+  }
+
+  // ─── 2) Notif + email au CLIENT qui a posté l'avis ──────────────────
   if (review?.user_id) {
-    const artisanUserId = Array.isArray(review.artisan_profiles)
-      ? (review.artisan_profiles[0] as { user_id?: number } | undefined)?.user_id
-      : (review.artisan_profiles as { user_id?: number } | null)?.user_id;
     await pushNotification(
       review.user_id,
       "review_approved",
-      "Votre avis a été publié",
-      "Il est désormais visible sur le profil de l'artisan.",
-      artisanUserId ? `/profil/${artisanUserId}` : "/mon-profil/avis",
+      "Ton avis a été publié",
+      `Il est désormais visible sur le profil de ${proDisplayName}.`,
+      `/profil/${proUser?.client_number ?? artisanUserId ?? ""}`,
       "✅",
     );
 
-    // Email à l'artisan ciblé pour l'informer du nouvel avis publié
-    if (artisanUserId) {
-      const { data: full } = await admin
-        .from("reviews")
-        .select("rating, comment, artisan_profiles(users(name, email, client_number))")
-        .eq("id", reviewId)
-        .maybeSingle();
-      type ProfileUser = { name: string | null; email: string | null; client_number: string | null };
-      const profileUsersRaw = full && (full as unknown as { artisan_profiles: { users: ProfileUser | ProfileUser[] } | null }).artisan_profiles?.users;
-      const profileUser: ProfileUser | undefined = Array.isArray(profileUsersRaw) ? profileUsersRaw[0] : profileUsersRaw ?? undefined;
-      if (profileUser?.email && profileUser.name) {
-        const tpl = newReviewEmail({
-          profileName: profileUser.name,
-          rating: (full as unknown as { rating: number }).rating,
-          comment: (full as unknown as { comment: string | null }).comment,
-          profileUrl: `${APP_URL_BASE}/profil/${profileUser.client_number ?? artisanUserId}`,
-        });
-        await sendMail({ to: profileUser.email, subject: tpl.subject, html: tpl.html, text: tpl.text });
-      }
+    const { data: client } = await admin
+      .from("users")
+      .select("name, email")
+      .eq("id", review.user_id)
+      .maybeSingle();
+    if (client?.email && client.name) {
+      const tpl = reviewApprovedEmail({
+        clientName: client.name,
+        artisanName: proDisplayName,
+        profileUrl: proPublicUrl,
+      });
+      await sendMail({ to: client.email, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch(() => null);
     }
   }
 
   revalidatePath("/admin/avis");
+  revalidatePath(`/profil/${proUser?.client_number ?? artisanUserId ?? ""}`);
   return { ok: true };
 }
 

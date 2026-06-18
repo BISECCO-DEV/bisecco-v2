@@ -28,7 +28,7 @@ function buildSeoDescription(metier: { name: string; description: string | null 
   const specifics = metier.description?.trim() ?? "";
 
   const parts = [
-    `Trouvez le meilleur ${nameLower} près de chez vous sur Bisecco, le réseau d'artisans français vérifiés.`,
+    `Trouvez le meilleur ${nameLower} près de chez vous sur Bisecco, le réseau de professionnels français vérifiés.`,
     specifics
       ? `Nos ${nameLower}s couvrent : ${specifics.toLowerCase()}.`
       : `Tous les ${nameLower}s inscrits exercent en France avec un numéro SIREN contrôlé.`,
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!m) return { title: "Métier introuvable · Bisecco" };
 
   const description = buildSeoDescription(m);
-  const titleTag = `${m.name} · Artisan vérifié SIREN près de chez vous`;
+  const titleTag = `${m.name} · Professionnel vérifié SIREN près de chez vous`;
   const nameLower = m.name.toLowerCase();
 
   return {
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `trouver un ${nameLower}`,
       `devis ${nameLower}`,
       `${nameLower} vérifié SIREN`,
-      "artisan français",
+      "professionnel français",
       "devis gratuit",
       "sans commission",
     ].join(", "),
@@ -122,7 +122,7 @@ export default async function MetierPage({ params }: Props) {
     url: `https://bisecco.fr/metiers/${slug}`,
     offers: {
       "@type": "Offer",
-      description: "Mise en relation gratuite avec des artisans vérifiés SIREN",
+      description: "Mise en relation gratuite avec des professionnels vérifiés SIREN",
       price: "0",
       priceCurrency: "EUR",
     },
@@ -160,8 +160,20 @@ export default async function MetierPage({ params }: Props) {
   return (
     <div className="bg-ink-50 min-h-screen pb-20">
       <JsonLd data={faqSchema ? [breadcrumbs, serviceSchema, faqSchema] : [breadcrumbs, serviceSchema]} />
-      {/* Hero */}
+      {/* Hero · cover image en arrière-plan si dispo, sinon gradient navy */}
       <section className="bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 text-white relative overflow-hidden">
+        {metier.cover_url && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={metier.cover_url}
+              alt={metier.cover_alt ?? metier.name}
+              className="absolute inset-0 w-full h-full object-cover opacity-30"
+              loading="eager"
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-ink-900/85 via-ink-800/80 to-ink-900/85" />
+          </>
+        )}
         <div className="absolute top-0 right-0 w-[500px] h-[300px] rounded-full bg-brand-500/15 blur-[120px] pointer-events-none" />
         <div className="container-default py-16 relative">
           <Link href="/metiers" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white font-semibold">
@@ -303,7 +315,7 @@ export default async function MetierPage({ params }: Props) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-bold text-ink-700 text-sm truncate">{metier.name} {city}</div>
-                  <div className="text-[0.72rem] text-ink-400">Voir les artisans →</div>
+                  <div className="text-[0.72rem] text-ink-400">Voir les professionnels →</div>
                 </div>
                 <ArrowRight size={14} className="text-ink-300 group-hover:text-brand-500 group-hover:translate-x-0.5 transition" />
               </Link>

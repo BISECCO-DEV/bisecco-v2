@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { sendMail } from "@/lib/mail/mailer";
 import { contactConfirmationEmail, contactAdminEmail } from "@/lib/mail/templates";
+import { rateLimitByIp } from "@/lib/security/rate-limit";
 
 const MAX_MESSAGE = 5000;
 const ADMIN_INBOX = process.env.CONTACT_INBOX || "contact@bisecco.fr";
@@ -29,6 +30,12 @@ export async function submitContactAction(formData: FormData): Promise<ContactRe
   if (!objet || objet.length < 3) return { ok: false, error: "Objet trop court (3 caractères min)." };
   if (!message || message.length < 10) return { ok: false, error: "Message trop court (10 caractères min)." };
   if (message.length > MAX_MESSAGE) return { ok: false, error: `Message trop long (max ${MAX_MESSAGE} caractères).` };
+
+  // Rate limit : 3 messages contact par IP / 1h (anti-spam)
+  const rl = await rateLimitByIp("contact", { limit: 3, windowMs: 60 * 60 * 1000 });
+  if (rl.limited) {
+    return { ok: false, error: "Trop de messages envoyés. Réessayez dans 1h." };
+  }
 
   const h = await headers();
   const ip = (h.get("x-forwarded-for")?.split(",")[0] || h.get("x-real-ip") || "").trim() || null;

@@ -31,14 +31,14 @@ export interface InviteButtonProps {
 // On utilise une version sans accents pour SMS, et avec accents pour WhatsApp / email.
 
 const SMS_MESSAGE = (url: string) =>
-  `Salut je viens de decouvrir Bisecco rejoins moi c'est nouveau un reseau social d'Artisants pour partager des infos sur nos besoins du quotidien, super sympa, et pratique :) ${url}`;
+  `Salut je viens de decouvrir Bisecco rejoins moi c'est nouveau un reseau social de professionnels pour partager des infos sur nos besoins du quotidien, super sympa, et pratique :) ${url}`;
 
 const WHATSAPP_MESSAGE = (url: string) =>
-  `Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social d'Artisants pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊\n${url}`;
+  `Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social de professionnels pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊\n${url}`;
 
 const EMAIL_SUBJECT = "Rejoins-moi sur Bisecco 😊";
 const EMAIL_BODY = (url: string) =>
-  `Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social d'Artisants pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊\n\n${url}`;
+  `Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social de professionnels pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊\n\n${url}`;
 
 type Platform = "android-picker" | "ios-sms" | "mobile" | "desktop";
 
@@ -151,7 +151,7 @@ export function InviteButton({
     try {
       await navigator.share({
         title: "Bisecco",
-        text: "Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social d'Artisants pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊",
+        text: "Salut je viens de découvrir Bisecco rejoins moi c'est nouveau un réseau social de professionnels pour partager des infos sur nos besoins du quotidien, super sympa, et pratique 😊",
         url: referralUrl,
       });
       trackInvite("native_share", 0);

@@ -15,7 +15,7 @@ export type ArtisanCard = {
   latitude: number | null;
   longitude: number | null;
   // Métiers (depuis la jointure)
-  metiers: { id: number; name: string; slug: string; icon: string | null }[];
+  metiers: { id: number; name: string; slug: string; icon: string | null; cover_url?: string | null; cover_alt?: string | null }[];
   // Stats agrégées
   avg_rating: number | null;
   review_count: number;
@@ -37,7 +37,7 @@ type ArtisanWithRelations = {
     latitude: number | null;
     longitude: number | null;
     artisan_profile_metier: Array<{
-      metiers: { id: number; name: string; slug: string; icon: string | null } | null;
+      metiers: { id: number; name: string; slug: string; icon: string | null; cover_url?: string | null; cover_alt?: string | null } | null;
     }>;
     reviews: Array<{ rating: number; status: string | null; is_flagged: boolean | null }>;
   }>;
@@ -65,7 +65,15 @@ function flattenArtisan(u: ArtisanWithRelations): ArtisanCard {
   const metiers =
     profile?.artisan_profile_metier
       ?.map((pm) => pm.metiers)
-      .filter((m): m is NonNullable<typeof m> => Boolean(m)) ?? [];
+      .filter((m): m is NonNullable<typeof m> => Boolean(m))
+      .map((m) => ({
+        id: m.id,
+        name: m.name,
+        slug: m.slug,
+        icon: m.icon,
+        cover_url: m.cover_url ?? null,
+        cover_alt: m.cover_alt ?? null,
+      })) ?? [];
 
   return {
     id: u.id,
@@ -86,7 +94,20 @@ function flattenArtisan(u: ArtisanWithRelations): ArtisanCard {
   };
 }
 
-const ARTISAN_SELECT = `
+// SELECT principal · inclut metiers.cover_url/cover_alt (migration 025).
+// Fallback automatique si la migration n'a pas tourné via essai puis retry sans cover.
+const ARTISAN_SELECT_WITH_COVERS = `
+  id, client_number, name, city, description, profile_photo, cover_photo, siren,
+  artisan_profiles!inner (
+    id, company_name, availability, latitude, longitude,
+    artisan_profile_metier (
+      metiers (id, name, slug, icon, cover_url, cover_alt)
+    ),
+    reviews (rating, status, is_flagged)
+  )
+`;
+
+const ARTISAN_SELECT_LEGACY = `
   id, client_number, name, city, description, profile_photo, cover_photo, siren,
   artisan_profiles!inner (
     id, company_name, availability, latitude, longitude,
@@ -96,6 +117,8 @@ const ARTISAN_SELECT = `
     reviews (rating, status, is_flagged)
   )
 `;
+
+const ARTISAN_SELECT = ARTISAN_SELECT_WITH_COVERS;
 
 /**
  * Récupère les artisans pour un métier (par slug) et une ville (par slug).
@@ -162,18 +185,32 @@ export async function fetchArtisanByClientNumber(
 ): Promise<ArtisanCard | null> {
   const supabase = await createSupabaseServerClient();
 
-  const { data, error } = await supabase
-    .from("users")
-    .select(ARTISAN_SELECT)
-    .eq("client_number", clientNumber)
-    .maybeSingle();
-
-  if (error || !data) {
-    if (error) console.error("[fetchArtisanByClientNumber]", error);
-    return null;
+  // SELECT défensif : si migration 025 (cover_url/cover_alt) pas faite → fallback
+  let data: ArtisanWithRelations | null = null;
+  {
+    const r = await supabase
+      .from("users")
+      .select(ARTISAN_SELECT_WITH_COVERS)
+      .eq("client_number", clientNumber)
+      .maybeSingle();
+    if (r.error) {
+      const r2 = await supabase
+        .from("users")
+        .select(ARTISAN_SELECT_LEGACY)
+        .eq("client_number", clientNumber)
+        .maybeSingle();
+      if (r2.error) {
+        console.error("[fetchArtisanByClientNumber]", r2.error);
+        return null;
+      }
+      data = r2.data as unknown as ArtisanWithRelations | null;
+    } else {
+      data = r.data as unknown as ArtisanWithRelations | null;
+    }
   }
 
-  return flattenArtisan(data as unknown as ArtisanWithRelations);
+  if (!data) return null;
+  return flattenArtisan(data);
 }
 
 export type ArtisanProfileDetail = {

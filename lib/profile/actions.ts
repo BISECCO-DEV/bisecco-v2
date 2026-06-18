@@ -22,6 +22,18 @@ const updateProfileSchema = z.object({
     .or(z.literal("")),
   city: z.string().trim().max(120).optional().or(z.literal("")),
   description: z.string().trim().max(2000).optional().or(z.literal("")),
+  street_address: z.string().trim().max(200).optional().or(z.literal("")),
+  latitude: z.coerce.number().min(-90).max(90).optional().or(z.literal(NaN)),
+  longitude: z.coerce.number().min(-180).max(180).optional().or(z.literal(NaN)),
+  contact_via_email: z.coerce.boolean().optional(),
+  contact_via_phone: z.coerce.boolean().optional(),
+  public_contact_email: z
+    .string()
+    .trim()
+    .email("Email invalide")
+    .max(191)
+    .optional()
+    .or(z.literal("")),
 });
 
 type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
@@ -45,6 +57,12 @@ export async function updateProfileAction(
     phone: formData.get("phone") ?? "",
     city: formData.get("city") ?? "",
     description: formData.get("description") ?? "",
+    street_address: formData.get("street_address") ?? "",
+    latitude: formData.get("latitude") ?? "",
+    longitude: formData.get("longitude") ?? "",
+    contact_via_email: formData.get("contact_via_email") === "on" || formData.get("contact_via_email") === "true",
+    contact_via_phone: formData.get("contact_via_phone") === "on" || formData.get("contact_via_phone") === "true",
+    public_contact_email: formData.get("public_contact_email") ?? "",
   });
 
   if (!parsed.success) {
@@ -56,22 +74,75 @@ export async function updateProfileAction(
     return { error: "Certains champs sont invalides.", fieldErrors };
   }
 
-  const { name, phone, city, description } = parsed.data;
+  const {
+    name, phone, city, description, street_address, latitude, longitude,
+    contact_via_email, contact_via_phone, public_contact_email,
+  } = parsed.data;
+  const hasCoords = Number.isFinite(latitude) && Number.isFinite(longitude);
+
+  // Pour les pros : au moins UN canal de contact doit être actif
+  // (si les 2 toggles sont décochés, on force email par défaut)
+  let effectiveEmail = contact_via_email;
+  let effectivePhone = contact_via_phone;
+  if (user.role === "artisan" && effectiveEmail === false && effectivePhone === false) {
+    effectiveEmail = true;
+  }
+  // Si téléphone activé mais pas de numéro → on refuse
+  if (user.role === "artisan" && effectivePhone === true && !phone) {
+    return {
+      error: "Pour être joignable par téléphone, renseigne ton numéro.",
+      fieldErrors: { phone: "Numéro requis pour activer le contact téléphonique." },
+    };
+  }
 
   const admin = createSupabaseAdminClient();
-  const { error } = await admin
-    .from("users")
-    .update({
-      name,
-      phone: phone || null,
-      city: city || null,
-      description: description || null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
+  const update: Record<string, unknown> = {
+    name,
+    phone: phone || null,
+    city: city || null,
+    description: description || null,
+    updated_at: new Date().toISOString(),
+  };
+  if (street_address !== undefined) {
+    update.street_address = street_address || null;
+  }
+  if (hasCoords) {
+    update.latitude = latitude;
+    update.longitude = longitude;
+  }
+  // Préférences contact (pros uniquement, mais on n'efface jamais pour un particulier)
+  if (user.role === "artisan") {
+    update.contact_via_email = effectiveEmail;
+    update.contact_via_phone = effectivePhone;
+    update.public_contact_email = public_contact_email || null;
+  }
+
+  let { error } = await admin.from("users").update(update).eq("id", user.id);
+
+  // Fallback : si une migration récente n'a pas été appliquée (lat/lng,
+  // street_address, contact_via_*…), on retombe sur les champs historiques.
+  if (error && /column .* does not exist/i.test(error.message)) {
+    const legacyUpdate = {
+      name: update.name,
+      phone: update.phone,
+      city: update.city,
+      description: update.description,
+      updated_at: update.updated_at,
+    };
+    const retry = await admin.from("users").update(legacyUpdate).eq("id", user.id);
+    error = retry.error;
+  }
 
   if (error) {
     return { error: "Erreur lors de l'enregistrement. Réessayez." };
+  }
+
+  // Pour les artisans : synchronise aussi artisan_profiles.latitude/longitude
+  if (hasCoords && user.role === "artisan") {
+    await admin
+      .from("artisan_profiles")
+      .update({ latitude, longitude })
+      .eq("user_id", user.id);
   }
 
   revalidatePath("/mon-profil");

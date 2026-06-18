@@ -62,7 +62,7 @@ export function Header({ user, unreadNotifications = 0, currentUserId = null, me
               key={i}
               className="px-20 text-[0.72rem] font-bold tracking-[0.04em] text-white"
             >
-              🚀 Nouveau service · Rejoignez les premiers artisans Bisecco
+              🚀 Nouveau service · Rejoignez les premiers professionnels Bisecco
               <span className="mx-2 text-white/65">·</span>
               Profil vérifié SIREN, 0 % commission, contact direct.
             </span>

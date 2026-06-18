@@ -8,10 +8,10 @@ export const metadata: Metadata = {
 };
 
 const PARTNERS = [
-  { icon: ShieldCheck, title: "Assureurs",         desc: "Redirigez vos sinistrés vers nos artisans vérifiés. Médiation incluse.",         cta: "En savoir plus" },
+  { icon: ShieldCheck, title: "Assureurs",         desc: "Redirigez vos sinistrés vers nos professionnels vérifiés. Médiation incluse.",         cta: "En savoir plus" },
   { icon: Building2,   title: "Syndics de copro",  desc: "Tarifs négociés pour vos copropriétés. Devis comparés automatiquement.",         cta: "Demander une démo" },
-  { icon: Briefcase,   title: "Agences immo",      desc: "Travaux pré-vente et post-acquisition. Artisans validés, devis sous 24h.",     cta: "Devenir partenaire" },
-  { icon: Users,       title: "Entreprises",       desc: "Avantages salariés : services artisans à prix négociés (cuisine, déménagement, etc.).", cta: "Offre entreprises" },
+  { icon: Briefcase,   title: "Agences immo",      desc: "Travaux pré-vente et post-acquisition. Professionnels validés, devis sous 24h.",     cta: "Devenir partenaire" },
+  { icon: Users,       title: "Entreprises",       desc: "Avantages salariés : services professionnels à prix négociés (cuisine, déménagement, etc.).", cta: "Offre entreprises" },
 ];
 
 export default function PartenairesProPage() {
@@ -30,7 +30,7 @@ export default function PartenairesProPage() {
             <span className="text-brand-500">de Bisecco.</span>
           </h1>
           <p className="mt-4 text-white/65 max-w-xl mx-auto leading-relaxed">
-            Assureurs, syndics, agences, entreprises : connectez vos clients à 250+ artisans vérifiés, avec des tarifs négociés.
+            Assureurs, syndics, agences, entreprises : connectez vos clients à 250+ professionnels vérifiés, avec des tarifs négociés.
           </p>
         </div>
       </section>
@@ -58,7 +58,7 @@ export default function PartenairesProPage() {
           <p className="text-sm text-ink-400 mb-7">Données actualisées au 15 mai 2026.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { value: "247",  label: "Artisans actifs"      },
+              { value: "247",  label: "Professionnels actifs"      },
               { value: "12",   label: "Partenaires B2B"      },
               { value: "98%",  label: "Satisfaction client"  },
               { value: "<24h", label: "Délai d'intervention" },

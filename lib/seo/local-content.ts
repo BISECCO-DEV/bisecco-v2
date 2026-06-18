@@ -24,14 +24,14 @@ const CITY_DATA: Record<string, {
     region: "Alpes-Maritimes",
     population: "342 000 habitants",
     neighborhoods: ["Vieux Nice", "Mont Boron", "Cimiez", "Saint-Roch", "Magnan", "Riquier", "Libération"],
-    hook: "Capitale de la Côte d'Azur, Nice présente une forte demande en artisans pour la rénovation d'appartements anciens dans le Vieux Nice et les villas du Mont Boron.",
+    hook: "Capitale de la Côte d'Azur, Nice présente une forte demande en professionnels pour la rénovation d'appartements anciens dans le Vieux Nice et les villas du Mont Boron.",
   },
   paris: {
     name: "Paris",
     region: "Île-de-France",
     population: "2 100 000 habitants",
     neighborhoods: ["Le Marais", "Saint-Germain", "Montmartre", "Bastille", "Champs-Élysées", "Belleville", "Auteuil"],
-    hook: "À Paris, les chantiers de rénovation d'immeubles haussmanniens et d'appartements anciens nécessitent des artisans expérimentés et habitués aux contraintes de la capitale.",
+    hook: "À Paris, les chantiers de rénovation d'immeubles haussmanniens et d'appartements anciens nécessitent des professionnels expérimentés et habitués aux contraintes de la capitale.",
   },
   lyon: {
     name: "Lyon",
@@ -45,7 +45,7 @@ const CITY_DATA: Record<string, {
     region: "Bouches-du-Rhône",
     population: "873 000 habitants",
     neighborhoods: ["Vieux-Port", "Le Panier", "La Joliette", "Castellane", "Endoume", "La Plaine", "Pointe Rouge"],
-    hook: "Marseille présente une diversité de bâtis (du bastide provençal au logement social années 60) demandant des artisans aux compétences variées.",
+    hook: "Marseille présente une diversité de bâtis (du bastide provençal au logement social années 60) demandant des professionnels aux compétences variées.",
   },
   bordeaux: {
     name: "Bordeaux",
@@ -136,21 +136,21 @@ export function generateLocalContent(metierName: string, citySlug: string, artis
         ? `Bisecco référence ${artisansCount} ${metierLower}${artisansCount > 1 ? "s" : ""} vérifié${artisansCount > 1 ? "s" : ""} à ${cityLabel}, prêts à intervenir.`
         : `Bisecco développe son réseau de ${metierLower}s à ${cityLabel} · soyez parmi les premiers à vous inscrire.`}`
     : `Trouvez un ${metierLower} à ${cityLabel} sur Bisecco. ${artisansCount > 0
-        ? `${artisansCount} artisan${artisansCount > 1 ? "s" : ""} vérifié${artisansCount > 1 ? "s" : ""} SIREN référencé${artisansCount > 1 ? "s" : ""} dans la ville.`
-        : "Inscrivez-vous pour être contacté dès qu'un artisan rejoint la zone."}`;
+        ? `${artisansCount} professionnel${artisansCount > 1 ? "s" : ""} vérifié${artisansCount > 1 ? "s" : ""} SIREN référencé${artisansCount > 1 ? "s" : ""} dans la ville.`
+        : "Inscrivez-vous pour être contacté dès qu'un professionnel rejoint la zone."}`;
 
   const whyHere = `À ${cityLabel}${cityData ? ` (${cityData.region}, ${cityData.population})` : ""}, faire appel à un ${metierLower} de confiance est essentiel pour la qualité et la pérennité de vos travaux. Bisecco vérifie systématiquement le numéro SIREN de chaque ${metierLower} référencé via l'API officielle de l'INSEE, garantissant que vous traitez avec une entreprise légalement déclarée et active. Aucun faux profil, aucune publicité trompeuse · juste des professionnels locaux que vous pouvez contacter en direct, sans intermédiaire et sans commission.`;
 
   const neighborhoodsText = cityData
-    ? `Les ${metierLower}s Bisecco interviennent dans tous les quartiers de ${cityLabel}, notamment ${cityData.neighborhoods.slice(0, -1).join(", ")} et ${cityData.neighborhoods[cityData.neighborhoods.length - 1]}. Que vous habitiez en centre-ville ou en périphérie, vous trouvez un artisan disponible.`
+    ? `Les ${metierLower}s Bisecco interviennent dans tous les quartiers de ${cityLabel}, notamment ${cityData.neighborhoods.slice(0, -1).join(", ")} et ${cityData.neighborhoods[cityData.neighborhoods.length - 1]}. Que vous habitiez en centre-ville ou en périphérie, vous trouvez un professionnel disponible.`
     : null;
 
   const faqs: Array<{ question: string; answer: string }> = [
     {
       question: `Combien coûte un ${metierLower} à ${cityLabel} en 2026 ?`,
       answer: tarifs
-        ? `Le tarif moyen d'un ${metierLower} à ${cityLabel} se situe entre ${tarifs.min} et ${tarifs.max} ${tarifs.unit}. ${tarifs.note ?? ""} Les prix peuvent varier selon la complexité du chantier, la disponibilité de l'artisan et la zone géographique précise. Sur Bisecco, vous recevez plusieurs devis gratuits pour comparer en toute transparence.`
-        : `Les tarifs d'un ${metierLower} à ${cityLabel} varient selon la nature et l'ampleur de votre projet. Sur Bisecco, vous obtenez plusieurs devis gratuits sous 24h pour comparer objectivement les prix proposés par les artisans locaux.`,
+        ? `Le tarif moyen d'un ${metierLower} à ${cityLabel} se situe entre ${tarifs.min} et ${tarifs.max} ${tarifs.unit}. ${tarifs.note ?? ""} Les prix peuvent varier selon la complexité du chantier, la disponibilité du professionnel et la zone géographique précise. Sur Bisecco, vous recevez plusieurs devis gratuits pour comparer en toute transparence.`
+        : `Les tarifs d'un ${metierLower} à ${cityLabel} varient selon la nature et l'ampleur de votre projet. Sur Bisecco, vous obtenez plusieurs devis gratuits sous 24h pour comparer objectivement les prix proposés par les professionnels locaux.`,
     },
     {
       question: `Comment vérifier qu'un ${metierLower} à ${cityLabel} est sérieux ?`,
@@ -158,15 +158,15 @@ export function generateLocalContent(metierName: string, citySlug: string, artis
     },
     {
       question: `Sous combien de temps puis-je obtenir un devis d'un ${metierLower} à ${cityLabel} ?`,
-      answer: `La majorité des ${metierLower}s répondent en moins de 24 heures sur Bisecco. Pour un dépannage urgent, certains artisans peuvent répondre en quelques heures. Plus votre description est précise (photos, surface, urgence), plus la réponse est rapide et le devis pertinent.`,
+      answer: `La majorité des ${metierLower}s répondent en moins de 24 heures sur Bisecco. Pour un dépannage urgent, certains professionnels peuvent répondre en quelques heures. Plus votre description est précise (photos, surface, urgence), plus la réponse est rapide et le devis pertinent.`,
     },
     {
       question: `Est-ce que Bisecco prend une commission sur les travaux ?`,
-      answer: `Non, jamais. Bisecco est 100 % gratuit pour les particuliers et pour les artisans. Vous traitez en direct avec le ${metierLower} de votre choix, sans intermédiaire et sans commission prélevée sur vos travaux.`,
+      answer: `Non, jamais. Bisecco est 100 % gratuit pour les particuliers et pour les professionnels. Vous traitez en direct avec le ${metierLower} de votre choix, sans intermédiaire et sans commission prélevée sur vos travaux.`,
     },
     {
       question: `Que faire si je ne suis pas satisfait du ${metierLower} choisi ?`,
-      answer: `Bisecco vous permet de comparer plusieurs devis avant de vous engager. Une fois la mission terminée, vous notez l'artisan publiquement · vos commentaires aident les autres particuliers de ${cityLabel} à choisir en toute confiance. En cas de litige, contactez notre support qui vous accompagnera.`,
+      answer: `Bisecco vous permet de comparer plusieurs devis avant de vous engager. Une fois la mission terminée, vous notez le professionnel publiquement · vos commentaires aident les autres particuliers de ${cityLabel} à choisir en toute confiance. En cas de litige, contactez notre support qui vous accompagnera.`,
     },
   ];
 

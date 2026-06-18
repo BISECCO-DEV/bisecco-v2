@@ -123,7 +123,7 @@ export default async function AdminDashboardPage() {
           todayLabel={capitalize(todayLabel())}
           summary={
             <>
-              Vous avez <strong className="text-white">{tasks.pendingValidations} artisan{tasks.pendingValidations > 1 ? "s" : ""} à valider</strong>
+              Vous avez <strong className="text-white">{tasks.pendingValidations} professionnel{tasks.pendingValidations > 1 ? "s" : ""} à valider</strong>
               {" "}et <strong className="text-white">{activity.totals.signups} nouvelle{activity.totals.signups > 1 ? "s" : ""} inscription{activity.totals.signups > 1 ? "s" : ""}</strong> sur les 7 derniers jours.
               {validationRate >= 80 && " Le taux de validation est excellent."}
             </>
@@ -157,7 +157,7 @@ export default async function AdminDashboardPage() {
           trend={activity.totals.signups > 0
             ? { direction: "up", value: `+${activity.totals.signups}` }
             : { direction: "neutral", value: "stable" }}
-          sub={`${stats.total_artisans} artisans · ${stats.total_particuliers} part.`}
+          sub={`${stats.total_artisans} professionnels · ${stats.total_particuliers} part.`}
           spark={buildSpark("signups")}
         />
         <KpiCard
@@ -196,7 +196,7 @@ export default async function AdminDashboardPage() {
           (auto-incrémenté à chaque nouvelle inscription via stats temps réel). */}
       <div className="grid lg:grid-cols-2 gap-3.5">
         <AdminCard
-          title="Suivi des artisans"
+          title="Suivi des professionnels"
           count={stats.total_artisans}
           link={{ href: "/admin/utilisateurs?role=artisan", label: "Voir tout" }}
         >
@@ -255,9 +255,9 @@ export default async function AdminDashboardPage() {
         <AdminCard
           title="Top catégories"
           count={categories.reduce((sum, c) => sum + c.count, 0)}
-          link={{ href: "/admin/metiers", label: "Gérer" }}
+          link={{ href: "/admin/metiers/covers", label: "Gérer covers" }}
         >
-          <BreakdownList rows={categories} emptyLabel="Aucun artisan approuvé pour l'instant." />
+          <BreakdownList rows={categories} emptyLabel="Aucun professionnel approuvé pour l'instant." />
         </AdminCard>
       </div>
     </div>

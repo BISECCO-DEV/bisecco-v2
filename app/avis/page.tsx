@@ -5,7 +5,7 @@ import { ShieldCheck, Star } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Tous les avis vérifiés",
-  description: "Découvrez les 247 avis clients vérifiés sur Bisecco. Seuls les clients ayant échangé avec un artisan via la plateforme peuvent en laisser.",
+  description: "Découvrez les 247 avis clients vérifiés sur Bisecco. Seuls les clients ayant échangé avec un professionnel via la plateforme peuvent en laisser.",
 };
 
 export default function AvisPage() {
@@ -34,7 +34,7 @@ export default function AvisPage() {
                 <span className="text-white/55 font-medium">de notre communauté.</span>
               </h1>
               <p className="mt-4 text-white/65 max-w-xl leading-relaxed">
-                Seuls les clients ayant réellement échangé avec un artisan via Bisecco peuvent laisser un avis. Aucune note achetée, aucune fraude possible.
+                Seuls les clients ayant réellement échangé avec un professionnel via Bisecco peuvent laisser un avis. Aucune note achetée, aucune fraude possible.
               </p>
             </div>
             <div className="flex items-center gap-6 md:border-l md:border-white/15 md:pl-6">

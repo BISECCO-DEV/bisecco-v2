@@ -7,21 +7,21 @@ import { CtaButton } from "@/components/ui/CtaButton";
 import { JsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Tarifs · 100 % gratuit pour artisans et particuliers",
+  title: "Tarifs · 100 % gratuit pour professionnels et particuliers",
   description:
-    "Bisecco est gratuit à vie pour les particuliers et les artisans. Pas de commission sur vos chantiers, pas d'abonnement obligatoire, pas de frais cachés. Découvrez comment on tient ce modèle.",
+    "Bisecco est gratuit à vie pour les particuliers et les professionnels. Pas de commission sur vos chantiers, pas d'abonnement obligatoire, pas de frais cachés. Découvrez comment on tient ce modèle.",
   alternates: { canonical: "https://bisecco.fr/tarifs" },
   openGraph: {
     title: "Tarifs Bisecco · 100 % gratuit",
     description:
-      "Trouver un artisan ou être trouvé : c'est gratuit, sans commission, à vie. Pas de carte bancaire requise.",
+      "Trouver un professionnel ou être trouvé : c'est gratuit, sans commission, à vie. Pas de carte bancaire requise.",
     url: "https://bisecco.fr/tarifs",
   },
 };
 
 const FAQ_TARIFS = [
   {
-    q: "Bisecco est-il vraiment gratuit pour les artisans ?",
+    q: "Bisecco est-il vraiment gratuit pour les professionnels ?",
     a: "Oui. L'inscription, la création du profil, la réception de demandes de devis, la messagerie avec les particuliers et la collecte d'avis sont 100 % gratuites. Aucun engagement, pas de carte bancaire à fournir.",
   },
   {
@@ -30,11 +30,11 @@ const FAQ_TARIFS = [
   },
   {
     q: "Comment Bisecco se finance alors ?",
-    a: "Par un service premium optionnel pour les artisans qui veulent booster leur visibilité (mise en avant sur les recherches, badge premium, statistiques détaillées). Ce service ne sera disponible qu'en 2027 et restera totalement facultatif.",
+    a: "Par un service premium optionnel pour les professionnels qui veulent booster leur visibilité (mise en avant sur les recherches, badge premium, statistiques détaillées). Ce service ne sera disponible qu'en 2027 et restera totalement facultatif.",
   },
   {
     q: "Les particuliers paient-ils quelque chose ?",
-    a: "Jamais, sous aucune forme. Rechercher un artisan, comparer les profils, demander des devis, échanger via la messagerie et publier des avis est gratuit pour les particuliers à vie.",
+    a: "Jamais, sous aucune forme. Rechercher un professionnel, comparer les profils, demander des devis, échanger via la messagerie et publier des avis est gratuit pour les particuliers à vie.",
   },
 ];
 
@@ -75,7 +75,7 @@ export default function TarifsPage() {
               Créer mon compte gratuit
             </CtaButton>
             <CtaButton href="/rechercher" variant="white" size="md">
-              Trouver un artisan
+              Trouver un professionnel
             </CtaButton>
           </div>
         </div>
@@ -95,16 +95,16 @@ export default function TarifsPage() {
               </div>
               <h2 className="text-2xl font-extrabold text-ink-700">Particuliers</h2>
               <p className="mt-2 text-ink-500 leading-relaxed text-sm">
-                Trouvez un artisan qualifié près de chez vous et demandez des devis sans dépenser un centime.
+                Trouvez un professionnel qualifié près de chez vous et demandez des devis sans dépenser un centime.
               </p>
               <div className="my-6 flex items-baseline gap-1">
                 <span className="text-5xl font-extrabold text-ink-900">0 €</span>
                 <span className="text-ink-400 font-semibold">/ à vie</span>
               </div>
               <ul className="space-y-2.5 text-sm text-ink-600">
-                <Bullet>Recherche illimitée d&apos;artisans vérifiés SIREN</Bullet>
+                <Bullet>Recherche illimitée de professionnels vérifiés SIREN</Bullet>
                 <Bullet>Demandes de devis gratuites et illimitées</Bullet>
-                <Bullet>Messagerie directe avec les artisans</Bullet>
+                <Bullet>Messagerie directe avec les professionnels</Bullet>
                 <Bullet>Publication d&apos;avis après chaque mission</Bullet>
                 <Bullet>Médiation gratuite en cas de litige</Bullet>
                 <Bullet>Aucune carte bancaire requise</Bullet>
@@ -122,7 +122,7 @@ export default function TarifsPage() {
               <div className="w-12 h-12 rounded-2xl bg-brand-100 inline-flex items-center justify-center mb-4">
                 <Hammer size={22} className="text-brand-600" />
               </div>
-              <h2 className="text-2xl font-extrabold text-ink-700">Artisans</h2>
+              <h2 className="text-2xl font-extrabold text-ink-700">Professionnels</h2>
               <p className="mt-2 text-ink-500 leading-relaxed text-sm">
                 Recevez des demandes de devis qualifiées, sans commission, sans engagement.
               </p>
@@ -140,7 +140,7 @@ export default function TarifsPage() {
                 <Bullet>Aucun engagement, résiliable à tout moment</Bullet>
               </ul>
               <CtaButton href="/inscription" variant="primary" size="md" className="mt-6 w-full justify-center">
-                Créer mon profil artisan
+                Créer mon profil professionnel
               </CtaButton>
             </article>
           </div>
@@ -151,7 +151,7 @@ export default function TarifsPage() {
             <div>
               <h3 className="font-extrabold text-emerald-900 text-sm">Engagement écrit dans nos CGV</h3>
               <p className="text-[0.85rem] text-emerald-800 mt-1 leading-relaxed">
-                La gratuité totale pour les particuliers et l&apos;absence de commission pour les artisans sont
+                La gratuité totale pour les particuliers et l&apos;absence de commission pour les professionnels sont
                 garanties contractuellement. Lisez-le noir sur blanc dans nos{" "}
                 <Link href="/cgv" className="font-bold underline hover:no-underline">conditions générales</Link>.
               </p>
@@ -176,14 +176,14 @@ export default function TarifsPage() {
             <p>
               C&apos;est la question légitime. Voici la réponse honnête : aujourd&apos;hui, Bisecco est financé
               sur fonds propres par AGISCO HOLDING SAS, sa société éditrice basée à Cannes. L&apos;objectif des
-              18 premiers mois est d&apos;atteindre une masse critique d&apos;artisans vérifiés et de particuliers
+              18 premiers mois est d&apos;atteindre une masse critique de professionnels vérifiés et de particuliers
               actifs, sans biais commercial.
             </p>
             <p>
-              À horizon 2027, nous proposerons un <strong>service premium optionnel</strong> aux artisans qui le
+              À horizon 2027, nous proposerons un <strong>service premium optionnel</strong> aux professionnels qui le
               souhaitent : mise en avant prioritaire dans les résultats de recherche, badge premium, statistiques
               détaillées sur leurs demandes, intégration calendrier pro. Ce service sera{" "}
-              <strong>strictement facultatif</strong> : aucun artisan ne sera désavantagé s&apos;il reste sur l&apos;offre
+              <strong>strictement facultatif</strong> : aucun professionnel ne sera désavantagé s&apos;il reste sur l&apos;offre
               gratuite. Les particuliers, eux, ne paieront jamais.
             </p>
             <p>

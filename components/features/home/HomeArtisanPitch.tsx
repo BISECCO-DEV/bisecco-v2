@@ -31,7 +31,7 @@ const BENEFITS: Benefit[] = [
     icon: Search,
     title: "Profil SEO optimisé",
     text: "Une page par métier et par ville. Google vous trouve. Vos clients aussi.",
-    highlight: "176 × 200 villes",
+    highlight: "189 × 200 villes",
     color: "from-blue-500 to-blue-600",
   },
   {
@@ -55,10 +55,10 @@ export function HomeArtisanPitch() {
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-[0.7rem] font-bold tracking-[0.14em] uppercase">
             <Hammer size={11} strokeWidth={2.8} className="text-brand-500" />
-            Pour les artisans
+            Pour les professionnels
           </span>
           <h2 className="mt-5 text-[32px] lg:text-[38px] leading-[1.25] font-semibold text-ink-700 tracking-[-0.025em]">
-            Vous êtes artisan&nbsp;?<br />
+            Vous êtes professionnel&nbsp;?<br />
             <span className="relative inline-block">
               <span className="text-brand-500">
                 Voici ce qui change
@@ -130,7 +130,7 @@ export function HomeArtisanPitch() {
                 Inscription gratuite
               </span>
               <h3 className="text-[1.5rem] sm:text-[1.85rem] font-extrabold tracking-tight leading-tight">
-                Rejoignez <span className="underline decoration-2 underline-offset-4">nos artisans</span> Bisecco.
+                Rejoignez <span className="underline decoration-2 underline-offset-4">nos professionnels</span> Bisecco.
               </h3>
               <p className="mt-2 text-white/90 text-[0.94rem] max-w-xl">
                 Profil créé en 5 minutes · Vérification SIREN auto · Première demande reçue sous 48h.

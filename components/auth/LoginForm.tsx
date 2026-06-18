@@ -1,22 +1,54 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
-import { loginAction } from "@/lib/auth/actions";
+import { Mail, Lock, Eye, EyeOff, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { loginAction, resendConfirmationEmailAction } from "@/lib/auth/actions";
 import { CtaButton } from "@/components/ui/CtaButton";
 
 export function LoginForm() {
   const [state, action, pending] = useActionState(loginAction, undefined);
+  const [resendState, resendAction, resendPending] = useActionState(resendConfirmationEmailAction, undefined);
   const [showPwd, setShowPwd] = useState(false);
+  const [emailValue, setEmailValue] = useState("");
+
+  // Le message d'erreur de login mentionne-t-il "email pas encore confirmé" ?
+  // → on affiche le bouton "Renvoyer l'email de confirmation"
+  const showResend = !!state?.error && /pas encore confirmé/i.test(state.error);
 
   return (
     <>
-      {/* Erreurs */}
+      {/* Erreurs login */}
       {state?.error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
-          ⚠ {state.error}
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4 leading-relaxed">
+          <div className="flex items-start gap-2">
+            <span>⚠</span>
+            <div className="flex-1">{state.error}</div>
+          </div>
+          {showResend && (
+            <form action={resendAction} className="mt-3 pt-3 border-t border-red-200">
+              <input type="hidden" name="email" value={emailValue} />
+              <button
+                type="submit"
+                disabled={resendPending || !emailValue}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-red-300 text-red-700 text-xs font-bold hover:bg-red-100 transition disabled:opacity-50"
+              >
+                {resendPending ? (
+                  <><Loader2 size={12} className="animate-spin" /> Envoi…</>
+                ) : (
+                  <><Send size={12} /> Renvoyer l&apos;email de confirmation</>
+                )}
+              </button>
+            </form>
+          )}
+        </div>
+      )}
+
+      {/* Succès du renvoi d'email */}
+      {resendState?.success && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl px-4 py-3 mb-4 flex items-start gap-2">
+          <CheckCircle2 size={16} className="text-emerald-500 flex-shrink-0 mt-0.5" />
+          <div>{resendState.success}</div>
         </div>
       )}
 
@@ -29,6 +61,8 @@ export function LoginForm() {
               type="email"
               name="email"
               required
+              value={emailValue}
+              onChange={(e) => setEmailValue(e.target.value)}
               placeholder="vous@exemple.fr"
               className="flex-1 bg-transparent py-3 outline-none text-sm text-ink-700"
             />

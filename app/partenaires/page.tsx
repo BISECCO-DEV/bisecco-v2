@@ -12,10 +12,10 @@ import { getCurrentUser } from "@/lib/db/current-user";
 export const metadata: Metadata = {
   title: "Devenir Partenaire · Bisecco Pro",
   description:
-    "Rejoignez le 1er réseau social d'artisans français vérifiés SIREN. 100% gratuit, 0% commission, contact direct avec les clients. Inscription en 2 minutes.",
+    "Rejoignez le 1er réseau social de professionnels français vérifiés SIREN. 100% gratuit, 0% commission, contact direct avec les clients. Inscription en 2 minutes.",
   openGraph: {
     title: "Devenez partenaire Bisecco · 0% commission",
-    description: "Réseau d'artisans vérifiés SIREN. Inscription gratuite, contact direct.",
+    description: "Réseau de professionnels vérifiés SIREN. Inscription gratuite, contact direct.",
   },
 };
 
@@ -128,7 +128,7 @@ async function fetchFeaturedArtisans() {
     name: r.artisan_profiles[0]?.company_name ?? r.name,
     person: r.name,
     city: r.city?.replace(/^\d+\s*/, "") ?? "France",
-    metier: r.artisan_profiles[0]?.metiers?.name ?? "Artisan",
+    metier: r.artisan_profiles[0]?.metiers?.name ?? "Professionnel",
     icon: r.artisan_profiles[0]?.metiers?.icon ?? "🛠️",
     profilePhoto: r.profile_photo
       ? r.profile_photo.startsWith("http")
@@ -186,7 +186,7 @@ export default async function PartenairesPage() {
               </h1>
 
               <p className="mt-6 text-[1rem] sm:text-[1.1rem] text-white/75 leading-[1.6] max-w-xl">
-                Rejoignez les artisans français qui privilégient le{" "}
+                Rejoignez les professionnels français qui privilégient le{" "}
                 <strong className="text-white">contact direct</strong> avec leurs clients.
                 <strong className="text-white"> 0 € à l&apos;inscription</strong>,{" "}
                 <strong className="text-white">aucun frais caché</strong>, SIREN vérifié par l&apos;État.
@@ -247,7 +247,7 @@ export default async function PartenairesPage() {
             {/* Stats card */}
             <div className="grid grid-cols-2 gap-3 lg:gap-4">
               {[
-                { value: stats.artisans, label: "Artisans vérifiés", icon: ShieldCheck, color: "from-brand-500 to-brand-600" },
+                { value: stats.artisans, label: "Professionnels vérifiés", icon: ShieldCheck, color: "from-brand-500 to-brand-600" },
                 { value: stats.metiers, label: "Métiers couverts", icon: Briefcase, color: "from-blue-500 to-blue-600" },
                 { value: stats.cities, label: "Villes actives", icon: MapPin, color: "from-emerald-500 to-emerald-600" },
                 { value: "0 %", label: "Commission prélevée", icon: Award, color: "from-purple-500 to-pink-500", isString: true },
@@ -285,7 +285,7 @@ export default async function PartenairesPage() {
             </h2>
             <p className="mt-4 text-ink-500 leading-relaxed">
               Là où d&apos;autres plateformes prennent une commission de 5 à 25 %, Bisecco reste
-              <strong className="text-ink-700"> 100 % gratuit pour les artisans</strong>.
+              <strong className="text-ink-700"> 100 % gratuit pour les professionnels</strong>.
             </p>
           </div>
 
@@ -366,7 +366,7 @@ export default async function PartenairesPage() {
               Comparatif
             </span>
             <h2 className="mt-4 text-[28px] sm:text-[40px] font-extrabold text-ink-700 tracking-[-0.025em]">
-              Pourquoi <span className="text-brand-500">les artisans changent</span>
+              Pourquoi <span className="text-brand-500">les professionnels changent</span>
             </h2>
             <p className="mt-4 text-ink-500">
               Comparaison directe avec les plateformes traditionnelles.
@@ -479,14 +479,14 @@ export default async function PartenairesPage() {
                   Ils nous font confiance
                 </span>
                 <h2 className="mt-4 text-[28px] sm:text-[36px] font-extrabold text-ink-700 tracking-[-0.025em]">
-                  {stats.artisans} artisans déjà sur Bisecco
+                  {stats.artisans} professionnels déjà sur Bisecco
                 </h2>
               </div>
               <Link
                 href="/rechercher"
                 className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-600 hover:underline"
               >
-                Voir tous les artisans <ArrowRight size={13} />
+                Voir tous les professionnels <ArrowRight size={13} />
               </Link>
             </div>
 
@@ -551,7 +551,7 @@ export default async function PartenairesPage() {
                   {stats.particuliers} particulier{stats.particuliers > 1 ? "s" : ""} dans la communauté
                 </h2>
                 <p className="text-ink-500 mt-2 max-w-xl">
-                  Des clients vérifiés à la recherche d&apos;artisans qualifiés. Tous validés manuellement par notre équipe.
+                  Des clients vérifiés à la recherche de professionnels qualifiés. Tous validés manuellement par notre équipe.
                 </p>
               </div>
             </div>
@@ -613,7 +613,7 @@ export default async function PartenairesPage() {
             {[
               {
                 q: "C'est vraiment gratuit ?",
-                a: "Oui. 100 % gratuit pour les artisans : aucun frais d'inscription, aucune commission sur les chantiers, aucun abonnement obligatoire. Nous nous finançons via des services premium optionnels (mise en avant, pack visibilité).",
+                a: "Oui. 100 % gratuit pour les professionnels : aucun frais d'inscription, aucune commission sur les chantiers, aucun abonnement obligatoire. Nous nous finançons via des services premium optionnels (mise en avant, pack visibilité).",
               },
               {
                 q: "Comment êtes-vous différents de Habitatpresto ou Allopro ?",
@@ -721,7 +721,7 @@ function GatedPartenaires({ user }: { user: CurrentUser | null }) {
             <h1 className="mt-6 text-[32px] sm:text-[44px] lg:text-[52px] leading-[1.05] font-extrabold tracking-[-0.025em]">
               Réservé aux{" "}
               <span className="text-brand-500">
-                artisans vérifiés
+                professionnels vérifiés
               </span>
             </h1>
 
@@ -730,13 +730,13 @@ function GatedPartenaires({ user }: { user: CurrentUser | null }) {
                 <>
                   Cette zone est dédiée aux{" "}
                   <strong className="text-white">professionnels Bisecco</strong>. Vous êtes un{" "}
-                  <strong className="text-white">artisan ?</strong> Inscrivez-vous gratuitement pour
+                  <strong className="text-white">professionnel ?</strong> Inscrivez-vous gratuitement pour
                   accéder au réseau, à la messagerie pro et aux outils de visibilité.
                 </>
               ) : (
                 <>
                   Le <strong className="text-white">réseau partenaires</strong> est réservé aux
-                  artisans français vérifiés SIREN.
+                  professionnels français vérifiés SIREN.
                   <strong className="text-white"> 100 % gratuit</strong>,{" "}
                   <strong className="text-white">0 % de commission</strong>,{" "}
                   <strong className="text-white">contact direct</strong> avec vos futurs clients.
@@ -806,13 +806,13 @@ function GatedPartenaires({ user }: { user: CurrentUser | null }) {
         <section className="py-14 bg-white border-t border-ink-100">
           <div className="container-default max-w-3xl text-center">
             <p className="text-ink-500 text-sm">
-              Vous cherchez un artisan pour vos travaux ?
+              Vous cherchez un professionnel pour vos travaux ?
             </p>
             <Link
               href="/rechercher"
               className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-ink-900 text-white font-bold text-sm hover:bg-ink-800 transition"
             >
-              Trouver un artisan près de chez moi <ArrowRight size={14} />
+              Trouver un professionnel près de chez moi <ArrowRight size={14} />
             </Link>
           </div>
         </section>

@@ -3,12 +3,7 @@ import type { Artisan, ParticulierPin } from "@/components/features/LocalSearchM
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { getMetierOptions } from "@/lib/db/metier-options";
-
-function hashCity(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
+import { coordsForCity } from "@/lib/geo/city-coords";
 
 /**
  * Server component qui fetch les artisans réels depuis Supabase
@@ -23,6 +18,8 @@ export async function HomeLocalSearch() {
     client_number: string | null;
     name: string;
     city: string | null;
+    latitude: number | null;
+    longitude: number | null;
     profile_photo: string | null;
     cover_photo: string | null;
     artisan_profiles: Array<{
@@ -30,26 +27,54 @@ export async function HomeLocalSearch() {
       company_name: string | null;
       latitude: number | null;
       longitude: number | null;
-      metiers: { name: string } | null;
+      metiers: { name: string; cover_url?: string | null } | null;
       reviews: Array<{ rating: number }>;
     }>;
   };
 
-  const { data, error } = await supabase
-    .from("users")
-    .select(`
-      id, client_number, name, city, profile_photo, cover_photo,
-      artisan_profiles!inner (
-        id, company_name, latitude, longitude,
-        metiers (name),
-        reviews (rating)
-      )
-    `)
-    .eq("role", "artisan")
-    .eq("validation_status", "approved")
-    .is("deleted_at", null)
-    .eq("artisan_profiles.is_active", true)
-    .limit(24);
+  // SELECT défensif : si la migration 024 (lat/lng/street_address) n'a pas tourné,
+  // on retombe sur le SELECT historique pour ne pas crasher la home.
+  let data: Row[] | null = null;
+  let error: { message: string } | null = null;
+  {
+    const r = await supabase
+      .from("users")
+      .select(`
+        id, client_number, name, city, latitude, longitude, profile_photo, cover_photo,
+        artisan_profiles!inner (
+          id, company_name, latitude, longitude,
+          metiers (name, cover_url),
+          reviews (rating)
+        )
+      `)
+      .eq("role", "artisan")
+      .eq("validation_status", "approved")
+      .is("deleted_at", null)
+      .eq("artisan_profiles.is_active", true)
+      .limit(60);
+    if (r.error) {
+      // Fallback sans lat/lng users + sans cover_url metiers
+      const r2 = await supabase
+        .from("users")
+        .select(`
+          id, client_number, name, city, profile_photo, cover_photo,
+          artisan_profiles!inner (
+            id, company_name, latitude, longitude,
+            metiers (name),
+            reviews (rating)
+          )
+        `)
+        .eq("role", "artisan")
+        .eq("validation_status", "approved")
+        .is("deleted_at", null)
+        .eq("artisan_profiles.is_active", true)
+        .limit(60);
+      data = r2.data as unknown as Row[] | null;
+      error = r2.error;
+    } else {
+      data = r.data as unknown as Row[];
+    }
+  }
 
   // Helper : construit l'URL d'une image stockée côté V1 Laravel sur bisecco.fr
   const imgUrl = (path: string | null): string | undefined => {
@@ -62,7 +87,7 @@ export async function HomeLocalSearch() {
   let artisans: Artisan[] = [];
 
   if (!error && data) {
-    artisans = (data as unknown as Row[])
+    artisans = data
       .map((u): Artisan | null => {
         const profile = u.artisan_profiles[0];
         if (!profile) return null;
@@ -72,23 +97,32 @@ export async function HomeLocalSearch() {
           ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
           : 4.8; // valeur par défaut esthétique pour les nouveaux
 
-        // Coordonnées par défaut autour de l'Île-de-France si non renseignées
-        const lat = profile.latitude ?? (48.85 + (Math.random() - 0.5) * 0.6);
-        const lng = profile.longitude ?? (2.55 + (Math.random() - 0.5) * 1.0);
+        // Cascade de priorité pour les coordonnées :
+        // 1. users.latitude/longitude (geocodage exact via API Adresse data.gouv.fr)
+        // 2. artisan_profiles.latitude/longitude (legacy / set par admin)
+        // 3. Lookup ville dans CITY_COORDS (fallback ~10km de précision)
+        // 4. Sinon : skip l'artisan
+        const cityCoords = coordsForCity(u.city);
+        const lat = u.latitude ?? profile.latitude ?? cityCoords?.[0] ?? null;
+        const lng = u.longitude ?? profile.longitude ?? cityCoords?.[1] ?? null;
+        if (lat == null || lng == null) return null;
 
+        // Cover : 1. photo perso uploadée 2. cover du métier principal (Pixabay)
+        const personalCover = imgUrl(u.cover_photo);
+        const metierCover = profile.metiers?.cover_url ?? undefined;
         return {
           id: u.client_number ?? String(u.id),
           user_id: u.id,
           name: u.name.split(" - ")[0] ?? u.name,
           company: profile.company_name ?? u.name,
-          metier: profile.metiers?.name ?? "Artisan",
+          metier: profile.metiers?.name ?? "Professionnel",
           city: u.city?.replace(/^\d+\s*/, "") ?? "France",
           rating: Number(avgRating.toFixed(1)),
           reviews: reviews.length,
           lat,
           lng,
           avatar: imgUrl(u.profile_photo),
-          cover: imgUrl(u.cover_photo),
+          cover: personalCover ?? metierCover,
         };
       })
       .filter((a): a is Artisan => a !== null);
@@ -99,34 +133,66 @@ export async function HomeLocalSearch() {
     getMetierOptions(),
   ]);
 
-  // Fetch particuliers pour pins map (visible uniquement quand connecté pour RGPD)
-  let particuliers: ParticulierPin[] = [];
-  if (me) {
-    const { data: partData } = await supabase
+  // Particuliers : pin bleu géolocalisé par ville, mais on n'expose
+  // sur la map QUE le prénom (jamais nom de famille ni ville).
+  type PartRow = {
+    id: number;
+    client_number: string | null;
+    name: string;
+    city: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    profile_photo: string | null;
+  };
+  // SELECT défensif aussi pour les particuliers
+  let partData: PartRow[] | null = null;
+  {
+    const r = await supabase
       .from("users")
-      .select("id, client_number, name, city, profile_photo")
+      .select("id, client_number, name, city, latitude, longitude, profile_photo")
       .eq("role", "particulier")
       .eq("validation_status", "approved")
       .is("deleted_at", null)
-      .order("created_at", { ascending: false })
       .limit(60);
-
-    particuliers = (partData ?? [])
-      .filter((p) => p.city)
-      .map((p) => {
-        const seed = hashCity(p.city ?? p.name);
-        const lat = 48.85 + ((seed % 100) / 100 - 0.5) * 0.6;
-        const lng = 2.55 + (((seed >> 8) % 100) / 100 - 0.5) * 1.0;
-        return {
-          id: p.client_number ?? String(p.id),
-          name: p.name,
-          city: p.city?.replace(/^\d+\s*/, "") ?? "France",
-          lat,
-          lng,
-          avatar: imgUrl(p.profile_photo),
-        };
-      });
+    if (r.error) {
+      const r2 = await supabase
+        .from("users")
+        .select("id, client_number, name, city, profile_photo")
+        .eq("role", "particulier")
+        .eq("validation_status", "approved")
+        .is("deleted_at", null)
+        .limit(60);
+      partData = (r2.data ?? []).map((p): PartRow => ({
+        id: p.id,
+        client_number: p.client_number,
+        name: p.name,
+        city: p.city,
+        latitude: null,
+        longitude: null,
+        profile_photo: p.profile_photo,
+      }));
+    } else {
+      partData = r.data as PartRow[] | null;
+    }
   }
+
+  const particuliers: ParticulierPin[] = (partData as PartRow[] | null ?? [])
+    .map((p): ParticulierPin | null => {
+      // Priorité : coords exactes API Adresse, sinon fallback ville
+      const cityCoords = coordsForCity(p.city);
+      const lat = p.latitude ?? cityCoords?.[0] ?? null;
+      const lng = p.longitude ?? cityCoords?.[1] ?? null;
+      if (lat == null || lng == null) return null;
+      const prenom = (p.name?.split(/\s+/)[0] ?? p.name ?? "Membre").trim();
+      return {
+        id: p.client_number ?? String(p.id),
+        prenom,
+        lat,
+        lng,
+        avatar: imgUrl(p.profile_photo),
+      };
+    })
+    .filter((p): p is ParticulierPin => p !== null);
 
   return (
     <LocalSearch

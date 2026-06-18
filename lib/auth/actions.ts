@@ -9,6 +9,8 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { verifySiren } from "@/lib/siren";
 import { sendMail } from "@/lib/mail/mailer";
 import { resetPasswordEmail, verifyEmailTemplate, newSignupAdminEmail } from "@/lib/mail/templates";
+import { rateLimit, rateLimitByIp } from "@/lib/security/rate-limit";
+import { checkPasswordStrength } from "@/lib/security/password-policy";
 
 // Adresse(s) admin qui reçoivent les notifications d'inscription
 const ADMIN_NOTIFY_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "contact@bisecco.fr";
@@ -198,7 +200,9 @@ async function checkAccountAccess(email: string): Promise<{ ok: true } | { ok: f
   if (authUser && !authUser.email_confirmed_at) {
     return {
       ok: false,
-      reason: "Votre email n'est pas encore confirmé. Vérifiez votre boîte mail (et vos spams) pour cliquer sur le lien de confirmation.",
+      reason:
+        "Ton email n'est pas encore confirmé. Vérifie ta boîte mail (et tes spams). " +
+        "Si tu ne l'as pas reçu, utilise le bouton « Renvoyer l'email de confirmation » ci-dessous.",
     };
   }
 
@@ -236,6 +240,29 @@ export async function loginAction(
   const password = formData.get("password")?.toString();
 
   if (!email || !password) return { error: "Email et mot de passe requis." };
+
+  // Rate limit 2 niveaux :
+  //   1) Par compte EMAIL : 15 tentatives / 15 min (généreux, permet à un user
+  //      d'essayer ses variantes de mot de passe sans bloquer tout le foyer).
+  //   2) Par IP : 60 tentatives / 15 min (anti-brute force IP, mais assez large
+  //      pour ne pas bloquer plusieurs users derrière la même box).
+  const rlAccount = await rateLimit({
+    key: `login-account:${email}`,
+    limit: 15,
+    windowMs: 15 * 60 * 1000,
+  });
+  if (rlAccount.limited) {
+    return {
+      error:
+        "Trop de tentatives sur ce compte. Patiente 15 min ou clique sur « Mot de passe oublié ? » pour le réinitialiser.",
+    };
+  }
+  const rlIp = await rateLimitByIp("login", { limit: 60, windowMs: 15 * 60 * 1000 });
+  if (rlIp.limited) {
+    return {
+      error: "Trop de tentatives depuis ton réseau. Réessaie dans quelques minutes.",
+    };
+  }
 
   const supabase = await createClient();
 
@@ -319,7 +346,22 @@ export async function signupAction(
   const phoneRaw = formData.get("phone")?.toString().trim() || "";
 
   if (!email || !password) return { error: "Email et mot de passe requis." };
-  if (password.length < 8) return { error: "Le mot de passe doit faire 8 caractères minimum." };
+
+  // Rate limit : 5 inscriptions par IP / 1h (anti-spam)
+  const rl = await rateLimitByIp("signup", { limit: 5, windowMs: 60 * 60 * 1000 });
+  if (rl.limited) {
+    return { error: "Trop d'inscriptions depuis cette adresse. Réessayez plus tard." };
+  }
+
+  // Politique mot de passe : 8 caractères minimum (aucune contrainte de composition)
+  const fullNameForCheck = formData.get("full_name")?.toString().trim();
+  const pwdCheck = checkPasswordStrength(password, {
+    name: fullNameForCheck ?? undefined,
+    email,
+  });
+  if (!pwdCheck.ok) {
+    return { error: pwdCheck.error };
+  }
 
   // Téléphone obligatoire pour tous (artisans + particuliers)
   const phoneDigits = phoneRaw.replace(/[^0-9]/g, "");
@@ -660,6 +702,62 @@ async function sendVerificationEmail(
       });
     } catch {/* best effort */}
   }
+}
+
+/**
+ * Renvoie l'email de confirmation pour un compte non encore confirmé.
+ * Best effort : on ne révèle PAS si le compte existe (sécurité).
+ */
+export async function resendConfirmationEmailAction(
+  _prev: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const email = formData.get("email")?.toString().trim().toLowerCase();
+  if (!email) return { error: "Email requis." };
+
+  // Rate limit : 3 renvois max / heure par compte (anti-spam)
+  const rl = await rateLimit({
+    key: `resend-confirm:${email}`,
+    limit: 3,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (rl.limited) {
+    return { error: "Trop de demandes. Réessaie dans 1 heure." };
+  }
+
+  const admin = createSupabaseAdminClient();
+
+  // Trouve le user dans auth.users
+  const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  const authUser = list.users.find((u) => u.email?.toLowerCase() === email);
+
+  // Si pas trouvé ou déjà confirmé → on renvoie le même message (anti-énumération)
+  const genericSuccess: AuthState = {
+    success: "Si un compte existe et n'est pas confirmé, un nouvel email vient d'être envoyé.",
+  };
+  if (!authUser || authUser.email_confirmed_at) {
+    return genericSuccess;
+  }
+
+  // Récupère le nom et rôle depuis public.users
+  const { data: profile } = await admin
+    .from("users")
+    .select("name, role")
+    .ilike("email", email)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  const fullName = (profile?.name as string | undefined) ?? email.split("@")[0]!;
+  const role = ((profile?.role as string | undefined) ?? "particulier") as "particulier" | "artisan";
+
+  try {
+    await sendVerificationEmail(email, fullName, role);
+  } catch (e) {
+    console.error("[resendConfirmationEmail]", e);
+    // On reste sur le message générique pour éviter de fuiter l'existence du compte
+  }
+
+  return genericSuccess;
 }
 
 /**

@@ -1,10 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, MapPin, Filter, Star, Loader2 } from "lucide-react";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
+import { CityCombobox } from "@/components/ui/CityCombobox";
 import type { MetierOption } from "@/lib/metiers";
 import { artisanProfilePath } from "@/lib/utils";
 
@@ -37,8 +38,7 @@ export type ArtisanCard = {
 
 export type ParticulierPin = {
   id: string;
-  name: string;
-  city: string;
+  prenom: string;
   lat: number;
   lng: number;
   avatar?: string;
@@ -62,6 +62,39 @@ export function SearchClient({
   const [sortBy, setSortBy] = useState<SortBy>("rating");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [focusTarget, setFocusTarget] = useState<[number, number] | null>(null);
+  const [userPos, setUserPos] = useState<[number, number] | null>(null);
+
+  // Auto-géoloc au premier montage (silencieux si permission déjà accordée,
+  // sinon demande après 800ms façon Google Maps)
+  useEffect(() => {
+    if (typeof window === "undefined" || !navigator.geolocation) return;
+    const ask = () => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+          setUserPos(coords);
+          setFocusTarget(coords);
+        },
+        () => {/* silencieux */},
+        { enableHighAccuracy: true, timeout: 10000 },
+      );
+    };
+
+    if (navigator.permissions) {
+      navigator.permissions
+        .query({ name: "geolocation" as PermissionName })
+        .then((p) => {
+          if (p.state === "granted") {
+            ask();
+          } else if (p.state === "prompt") {
+            setTimeout(ask, 800);
+          }
+        })
+        .catch(() => setTimeout(ask, 800));
+    } else {
+      setTimeout(ask, 800);
+    }
+  }, []);
 
   const filtered = useMemo(() => {
     const m = metier.trim().toLowerCase();
@@ -96,20 +129,15 @@ export function SearchClient({
           />
         </div>
 
-        <div className="flex-1 flex items-center gap-2 px-4 rounded-xl border-2 border-ink-200 bg-ink-50 focus-within:border-brand-500 focus-within:bg-white transition">
-          <MapPin size={18} className="text-ink-300 flex-shrink-0" />
-          <div className="flex-1 min-w-0 py-1">
-            <label className="text-[0.65rem] text-ink-400 font-bold tracking-wider uppercase block">
-              Ville
-            </label>
-            <input
-              type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="Dans quelle ville ?"
-              className="w-full bg-transparent outline-none text-sm text-ink-700 placeholder:text-ink-300"
-            />
-          </div>
+        <div className="flex-1 min-w-0">
+          <CityCombobox
+            value={city}
+            onChange={setCity}
+            onSelect={(c) => setFocusTarget([c.latitude, c.longitude])}
+            label="VILLE"
+            placeholder="Dans quelle ville ?"
+            variant="light"
+          />
         </div>
 
         <button type="button" className="btn-primary px-7">
@@ -155,7 +183,8 @@ export function SearchClient({
             }))}
             particuliers={particuliers}
             hoveredId={hoveredId}
-            userPos={null}
+            userPos={userPos}
+            onUserPos={(coords) => { setUserPos(coords); setFocusTarget(coords); }}
             focusTarget={focusTarget}
           />
         </div>
@@ -165,7 +194,7 @@ export function SearchClient({
             <div className="flex items-center gap-2">
               <Filter size={18} className="text-brand-500" />
               <span className="font-bold text-ink-700 text-sm">
-                {filtered.length} artisan{filtered.length > 1 ? "s" : ""} trouvé{filtered.length > 1 ? "s" : ""}
+                {filtered.length} professionnel{filtered.length > 1 ? "s" : ""} trouvé{filtered.length > 1 ? "s" : ""}
               </span>
             </div>
             <select
@@ -182,8 +211,8 @@ export function SearchClient({
           {filtered.length === 0 ? (
             <div className="bg-white rounded-2xl border border-ink-100 p-10 text-center text-ink-400 text-sm shadow-card">
               {artisans.length === 0
-                ? "Aucun artisan validé pour le moment. Soyez le premier à vous inscrire !"
-                : "Aucun artisan ne correspond à votre recherche."}
+                ? "Aucun professionnel validé pour le moment. Soyez le premier à vous inscrire !"
+                : "Aucun professionnel ne correspond à votre recherche."}
               {artisans.length > 0 && (
                 <button
                   onClick={() => { setMetier(""); setCity(""); }}

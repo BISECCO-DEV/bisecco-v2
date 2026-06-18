@@ -17,7 +17,9 @@
     "cap:android": "npx cap sync android && npx cap open android",
     "cap:ios": "npx cap sync ios && npx cap open ios",
     "cap:android:build": "npx cap sync android && cd android && gradlew assembleRelease",
-    "cap:android:bundle": "npx cap sync android && cd android && gradlew bundleRelease"
+    "cap:android:bundle": "npx cap sync android && cd android && gradlew bundleRelease",
+    "generate:covers": "node scripts/generate-metier-covers.mjs",
+    "generate:covers:force": "node scripts/generate-metier-covers.mjs --force"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.4",
@@ -32,6 +34,7 @@
     "@serwist/next": "^9.5.11",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
+    "@types/web-push": "^3.6.4",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "emoji-picker-react": "^4.19.1",
@@ -44,6 +47,7 @@
     "react-leaflet": "^5.0.0",
     "serwist": "^9.5.11",
     "tailwind-merge": "^3.6.0",
+    "web-push": "^3.6.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {

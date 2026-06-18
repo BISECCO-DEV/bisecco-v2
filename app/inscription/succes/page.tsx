@@ -48,7 +48,7 @@ export default async function InscriptionSuccesPage({
           </h1>
 
           <p className="mt-5 text-ink-500 text-[1rem] leading-relaxed max-w-lg mx-auto">
-            Votre {isArtisan ? "compte artisan" : "compte particulier"} a bien été créé.
+            Votre {isArtisan ? "compte professionnel" : "compte particulier"} a bien été créé.
             {isArtisan
               ? " Connexion immédiate · aucune attente de validation."
               : " Pour finaliser votre inscription, vous devez activer votre adresse email."}
@@ -143,7 +143,7 @@ export default async function InscriptionSuccesPage({
                       Connectez-vous et explorez
                     </div>
                     <p className="text-[0.84rem] text-ink-600 mt-1 leading-relaxed">
-                      Dès votre email confirmé, vous pourrez vous connecter et trouver des artisans
+                      Dès votre email confirmé, vous pourrez vous connecter et trouver des professionnels
                       vérifiés près de chez vous.
                     </p>
                   </div>

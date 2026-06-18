@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Star, MapPin, Clock, Award, CheckCircle2, X, MessageCircle, Plus } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Comparer des artisans",
-  description: "Comparez jusqu'à 3 artisans côte à côte : note, services, tarifs, distance et avis.",
+  title: "Comparer des professionnels",
+  description: "Comparez jusqu'à 3 professionnels côte à côte : note, services, tarifs, distance et avis.",
 };
 
 const COMPARE = [
@@ -57,8 +57,8 @@ export default function ComparateurPage() {
         </Link>
 
         <div className="mt-4 mb-8">
-          <h1 className="text-3xl font-bold text-ink-700 tracking-tight">Comparer les artisans</h1>
-          <p className="text-ink-400 mt-1">Comparez jusqu&apos;à 3 artisans côte à côte pour faire le meilleur choix.</p>
+          <h1 className="text-3xl font-bold text-ink-700 tracking-tight">Comparer les professionnels</h1>
+          <p className="text-ink-400 mt-1">Comparez jusqu&apos;à 3 professionnels côte à côte pour faire le meilleur choix.</p>
         </div>
 
         {/* Header artisans */}
@@ -127,7 +127,7 @@ export default function ComparateurPage() {
         {/* Ajouter un artisan */}
         <div className="mt-6 text-center">
           <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-dashed border-ink-200 hover:border-brand-500 hover:bg-brand-50/30 text-ink-500 hover:text-brand-500 text-sm font-bold transition">
-            <Plus size={14} /> Ajouter un 4ᵉ artisan à comparer
+            <Plus size={14} /> Ajouter un 4ᵉ professionnel à comparer
           </button>
         </div>
       </div>

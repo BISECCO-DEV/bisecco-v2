@@ -20,6 +20,9 @@ import {
 import { playNotificationSound } from "@/lib/notifications/sound";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { artisanProfilePath } from "@/lib/utils";
+import { BlockUserButton } from "@/components/features/BlockUserButton";
+import { QuickReplyPicker } from "./QuickReplyPicker";
+import type { QuickReply } from "@/lib/quick-replies/actions";
 
 type Thread = {
   id: number;
@@ -71,7 +74,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 // ─── Component ────────────────────────────────────────────────────────────
-export function MessagerieClient({ currentUserId, initialThreadId }: { currentUserId: number; initialThreadId?: number }) {
+export function MessagerieClient({ currentUserId, initialThreadId, quickReplies = [] }: { currentUserId: number; initialThreadId?: number; quickReplies?: QuickReply[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -299,7 +302,7 @@ export function MessagerieClient({ currentUserId, initialThreadId }: { currentUs
                     <div className="flex items-center gap-1.5">
                       <h2 className="font-display font-semibold text-[0.96rem] text-ink-900 truncate">{selected.other_user.name}</h2>
                       <span className="text-[0.66rem] text-ink-400 font-medium">·</span>
-                      <span className="text-[0.7rem] text-ink-500 capitalize">{selected.other_user.role}</span>
+                      <span className="text-[0.7rem] text-ink-500 capitalize">{selected.other_user.role === "artisan" ? "Professionnel" : selected.other_user.role}</span>
                     </div>
                     <p className="text-[0.7rem] text-ink-400 mt-0.5 inline-flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden /> En ligne
@@ -430,6 +433,12 @@ export function MessagerieClient({ currentUserId, initialThreadId }: { currentUs
                         <Italic size={14} />
                       </button>
                       <span className="w-px h-4 bg-sand-200 mx-1" aria-hidden />
+                      {quickReplies !== undefined && (
+                        <QuickReplyPicker
+                          replies={quickReplies}
+                          onPick={(body) => setInput((prev) => (prev ? `${prev}\n\n${body}` : body))}
+                        />
+                      )}
                       <button
                         type="button"
                         title="Emoji (bientôt)"
@@ -492,7 +501,7 @@ export function MessagerieClient({ currentUserId, initialThreadId }: { currentUs
                   </div>
                   <h3 className="font-display font-semibold text-[1rem] text-ink-900 leading-tight">{panel.name}</h3>
                   <div className="text-[0.74rem] text-ink-500 mt-0.5 capitalize">
-                    {panel.role}
+                    {panel.role === "artisan" ? "Professionnel" : panel.role}
                     {panel.role === "artisan" && panel.validation_status === "approved" && (
                       <span className="inline-flex items-center gap-1 ml-2 text-emerald-600 font-medium">
                         <ShieldCheck size={11} /> Vérifié
@@ -576,6 +585,10 @@ export function MessagerieClient({ currentUserId, initialThreadId }: { currentUs
                         Signaler ce contact
                       </span>
                     </Link>
+                    <BlockUserButton
+                      blockedUserId={panel.id}
+                      blockedUserName={panel.name}
+                    />
                   </div>
                 </div>
               </>

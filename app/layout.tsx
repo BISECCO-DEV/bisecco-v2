@@ -29,26 +29,26 @@ const instrumentSans = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL("https://bisecco.fr"),
   title: {
-    default: "Bisecco · Le réseau social des artisans français",
+    default: "Bisecco · Le réseau social des professionnels français",
     template: "%s | Bisecco",
   },
   description:
-    "Trouvez un artisan qualifié et vérifié près de chez vous. SIREN vérifié, avis clients réels, devis gratuit. Plombier, électricien, maçon, menuisier, développeur informatique et bien plus.",
-  keywords: ["artisan", "artisan vérifié", "plombier", "électricien", "maçon", "développeur informatique", "devis gratuit", "Meaux", "Île-de-France"],
+    "Trouvez un professionnel qualifié et vérifié près de chez vous. SIREN vérifié, avis clients réels, devis gratuit. Plombier, électricien, maçon, menuisier, développeur informatique et bien plus.",
+  keywords: ["professionnel", "professionnel vérifié", "plombier", "électricien", "maçon", "développeur informatique", "devis gratuit", "Meaux", "Île-de-France"],
   authors: [{ name: "Bisecco" }],
   openGraph: {
     type: "website",
     locale: "fr_FR",
     url: "https://bisecco.fr",
     siteName: "Bisecco",
-    title: "Bisecco · Le réseau social des artisans français",
-    description: "Trouvez un artisan qualifié et vérifié près de chez vous.",
+    title: "Bisecco · Le réseau social des professionnels français",
+    description: "Trouvez un professionnel qualifié et vérifié près de chez vous.",
     images: [{ url: "/og-image.jpg?v=3", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Bisecco",
-    description: "Le réseau social des artisans français",
+    description: "Le réseau social des professionnels français",
     images: ["/og-image.jpg?v=3"],
   },
   robots: {
@@ -113,7 +113,7 @@ const organizationJsonLd = {
     width: 400,
     height: 400,
   },
-  description: "Le 1er réseau social des artisans français vérifiés. SIREN contrôlé, avis authentiques, devis gratuit.",
+  description: "Le 1er réseau social des professionnels français vérifiés. SIREN contrôlé, avis authentiques, devis gratuit.",
   foundingDate: "2026",
   address: {
     "@type": "PostalAddress",

@@ -81,7 +81,7 @@ export function FeedPostCard({ post, liked, canInteract, currentUserId, isAdmin 
             />
             {isPro && (
               <span
-                title="Artisan vérifié SIREN"
+                title="Professionnel vérifié SIREN"
                 className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center"
               >
                 <ShieldCheck size={10} className="text-white" strokeWidth={3} />
@@ -104,7 +104,7 @@ export function FeedPostCard({ post, liked, canInteract, currentUserId, isAdmin 
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-[0.78rem] text-ink-400 mt-0.5 flex-wrap">
-            <span>{isPro ? "Artisan" : "Particulier"}</span>
+            <span>{isPro ? "Professionnel" : "Particulier"}</span>
             {post.metier && (
               <>
                 <span className="text-ink-300">·</span>

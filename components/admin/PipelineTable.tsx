@@ -56,7 +56,7 @@ export function PipelineTable({ rows }: Props) {
       <thead>
         <tr>
           <th className="text-left px-5 py-2.5 text-[0.66rem] uppercase tracking-[0.08em] font-semibold text-ink-400 bg-sand-100 border-b border-sand-200">
-            Artisan
+            Professionnel
           </th>
           <th className="text-left px-5 py-2.5 text-[0.66rem] uppercase tracking-[0.08em] font-semibold text-ink-400 bg-sand-100 border-b border-sand-200">
             Métier

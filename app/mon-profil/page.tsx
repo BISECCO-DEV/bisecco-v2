@@ -39,7 +39,7 @@ export default async function MonProfilPage() {
   const avatarUrl =
     user.profile_photo ??
     `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name)}`;
-  const roleLabel = user.role === "artisan" ? "Artisan" : user.role === "admin" ? "Admin" : "Particulier";
+  const roleLabel = user.role === "artisan" ? "Professionnel" : user.role === "admin" ? "Admin" : "Particulier";
   // Complétion du profil · heuristique simple sur les champs remplis
   const fields = [user.name, user.email, user.phone, user.city, user.description, user.profile_photo];
   const completion = Math.round(
@@ -220,7 +220,7 @@ export default async function MonProfilPage() {
                   Aucune activité pour l&apos;instant.
                   {isArtisan
                     ? " Complétez votre profil pour attirer vos premiers clients."
-                    : " Trouvez votre premier artisan pour démarrer."}
+                    : " Trouvez votre premier professionnel pour démarrer."}
                 </p>
               </div>
             ) : (
@@ -276,6 +276,18 @@ export default async function MonProfilPage() {
               <h3 className="font-bold text-ink-700 text-sm mb-3">Accès rapides</h3>
               <div className="space-y-1">
                 {[
+                  ...(isArtisan ? [{
+                    href: "/pro",
+                    icon: TrendingUp,
+                    label: "Tableau de bord pro",
+                    badge: "NEW",
+                  }] : []),
+                  ...(isArtisan ? [{
+                    href: "/mon-profil/stats",
+                    icon: TrendingUp,
+                    label: "Mes statistiques",
+                    badge: null,
+                  }] : []),
                   {
                     href: "/messagerie",
                     icon: MessageCircle,

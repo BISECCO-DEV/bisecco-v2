@@ -4,6 +4,8 @@ import { JOB_OFFERS } from "@/lib/emploi";
 import { BLOG_POSTS } from "@/lib/blog";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { artisanProfilePath } from "@/lib/utils";
+import { getAllMetierPrioritaireSlugs } from "@/lib/seo/metiers-prioritaires";
+import { getAllVilleSlugs } from "@/lib/seo/villes-prioritaires";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600; // 1h
@@ -89,16 +91,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // ─── Pages locales métier × ville (~80 × 50 = 4000 pages) ──────────────
+  // ─── Pages locales métier × ville (SEO programmatique prioritaire) ─────
+  // 10 métiers les plus recherchés × 30 villes Côte d'Azur = 300 pages haute
+  // priorité, contenu unique (FAQ, tarifs, schémas Service + LocalBusiness).
+  const PRIORITY_METIERS = getAllMetierPrioritaireSlugs();
+  const PRIORITY_VILLES = getAllVilleSlugs();
   const localPages: MetadataRoute.Sitemap = [];
-  for (const m of METIER_OPTIONS) {
-    const metierSlug = slugify(m.name);
-    for (const city of CITIES) {
+  for (const metierSlug of PRIORITY_METIERS) {
+    for (const villeSlug of PRIORITY_VILLES) {
       localPages.push({
-        url: `${BASE}/artisans/${metierSlug}/${city}`,
+        url: `${BASE}/metiers/${metierSlug}/${villeSlug}`,
         lastModified: now,
         changeFrequency: "weekly" as const,
-        priority: 0.6,
+        priority: 0.75, // priorité forte : ces pages sont les vraies cibles SEO
       });
     }
   }

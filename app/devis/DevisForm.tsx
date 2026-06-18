@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   MapPin, Mail, Phone, User, FileText,
   Upload, X, ArrowRight, ArrowLeft, CheckCircle2, Camera,
@@ -9,6 +9,7 @@ import {
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
 import type { MetierOption } from "@/lib/metiers";
 import { submitPublicQuoteAction } from "@/lib/quotes/public-actions";
+import { budgetsForMetier } from "@/lib/quotes/budget-by-metier";
 
 const URGENCY = [
   { id: "asap",  label: "Urgent",        sub: "Dans les 48h" },
@@ -17,19 +18,16 @@ const URGENCY = [
   { id: "flex",  label: "Pas pressé",    sub: "Je prends le temps" },
 ];
 
-const BUDGET = [
-  { id: "low",     label: "< 500€",      sub: "Petits travaux" },
-  { id: "mid",     label: "500€ – 2K€",  sub: "Travaux moyens" },
-  { id: "high",    label: "2K€ – 10K€",  sub: "Gros chantier" },
-  { id: "xl",      label: "+ 10K€",      sub: "Très gros projet" },
-  { id: "unknown", label: "Je ne sais pas", sub: "Aidez-moi à estimer" },
-];
 
 export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } = {}) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // ?artisan=BS-2026-001 (client_number) ou ?artisan=42 (id) si présent → demande ciblée
+  const targetArtisanParam = searchParams.get("artisan");
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [targetArtisanName, setTargetArtisanName] = useState<string | null>(null);
   const [data, setData] = useState({
     metier: "",
     title: "",
@@ -43,6 +41,28 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
     email: "",
     phone: "",
   });
+
+  // Résoudre le nom du pro ciblé (pour l'afficher dans le bandeau)
+  useEffect(() => {
+    if (!targetArtisanParam) return;
+    fetch(`/api/artisan-info?ref=${encodeURIComponent(targetArtisanParam)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.name) setTargetArtisanName(d.name);
+      })
+      .catch(() => null);
+  }, [targetArtisanParam]);
+
+  /** Tranches de budget adaptées au métier sélectionné */
+  const budgetOptions = useMemo(() => budgetsForMetier(data.metier), [data.metier]);
+
+  // Si la tranche sélectionnée n'existe plus dans la nouvelle liste, on reset
+  useEffect(() => {
+    if (data.budget && !budgetOptions.some((b) => b.id === data.budget)) {
+      setData((d) => ({ ...d, budget: "" }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [budgetOptions]);
 
   const update = <K extends keyof typeof data>(key: K, value: (typeof data)[K]) => {
     setData((d) => ({ ...d, [key]: value }));
@@ -62,13 +82,33 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
   };
 
   const canNext = () => {
-    if (step === 1) return data.metier && data.title && data.description.length >= 20;
-    if (step === 2) return data.urgency && data.budget;
+    if (step === 1) return Boolean(data.metier && data.title && data.description.length >= 20);
+    if (step === 2) return Boolean(data.urgency && data.budget);
     // step 3 = Photos (optionnelles) → toujours possible de continuer
     if (step === 3) return true;
     // step 4 = Contact + adresse → requis pour envoyer
     if (step === 4) return Boolean(data.fullName && data.email && data.city && data.postalCode);
     return true;
+  };
+
+  /** Liste des champs manquants pour expliquer pourquoi "Continuer" est désactivé. */
+  const missingFields = (): string[] => {
+    const m: string[] = [];
+    if (step === 1) {
+      if (!data.metier) m.push("le métier");
+      if (!data.title) m.push("le titre du projet");
+      if (data.description.length < 20)
+        m.push(`la description (${data.description.length}/20 caractères minimum)`);
+    } else if (step === 2) {
+      if (!data.urgency) m.push("l'urgence");
+      if (!data.budget) m.push("le budget estimé");
+    } else if (step === 4) {
+      if (!data.fullName) m.push("votre nom");
+      if (!data.email) m.push("votre email");
+      if (!data.city) m.push("la ville");
+      if (!data.postalCode) m.push("le code postal");
+    }
+    return m;
   };
 
   const submit = async () => {
@@ -86,6 +126,7 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
       fullName: data.fullName,
       email: data.email,
       phone: data.phone,
+      targetArtisan: targetArtisanParam ?? null,
     });
 
     if (res?.error) {
@@ -100,6 +141,20 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
 
   return (
     <div className="bg-white rounded-3xl shadow-card border border-ink-100 overflow-hidden">
+      {/* Bandeau "demande ciblée" si on vient depuis un profil pro */}
+      {targetArtisanParam && (
+        <div className="bg-brand-50 border-b border-brand-200 px-6 py-3 flex items-center gap-2 text-sm">
+          <span className="w-5 h-5 rounded-full bg-brand-500 text-white text-[0.7rem] grid place-items-center font-bold">→</span>
+          <span className="text-ink-700">
+            Cette demande sera envoyée <strong>directement</strong> à{" "}
+            <strong className="text-brand-700">
+              {targetArtisanName ?? "ce professionnel"}
+            </strong>
+            .
+          </span>
+        </div>
+      )}
+
       {/* Stepper */}
       <div className="bg-ink-50/60 border-b border-ink-100 px-8 py-5">
         <div className="flex items-center justify-between max-w-md mx-auto">
@@ -138,7 +193,9 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-ink-600 mb-2">Quel métier ?</label>
+              <label className="block text-sm font-bold text-ink-600 mb-2">
+                Quel métier&nbsp;? <span className="text-red-500">*</span>
+              </label>
               <MetierCombobox
                 value={data.metier}
                 onChange={(v) => update("metier", v)}
@@ -150,7 +207,9 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-ink-600 mb-2">Titre de votre projet</label>
+              <label className="block text-sm font-bold text-ink-600 mb-2">
+                Titre de votre projet <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 value={data.title}
@@ -162,7 +221,8 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
 
             <div>
               <label className="block text-sm font-bold text-ink-600 mb-2">
-                Description détaillée <span className="text-ink-300 font-normal">(min. 20 caractères)</span>
+                Description détaillée <span className="text-red-500">*</span>{" "}
+                <span className="text-ink-300 font-normal">(min. 20 caractères)</span>
               </label>
               <textarea
                 value={data.description}
@@ -183,11 +243,13 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-bold text-ink-700">Quand & combien ?</h2>
-              <p className="text-sm text-ink-400 mt-1">Ces infos aident l&apos;artisan à mieux vous répondre.</p>
+              <p className="text-sm text-ink-400 mt-1">Ces infos aident le professionnel à mieux vous répondre.</p>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-ink-600 mb-3">Quelle urgence ?</label>
+              <label className="block text-sm font-bold text-ink-600 mb-3">
+                Quelle urgence&nbsp;? <span className="text-red-500">*</span>
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 {URGENCY.map((u) => (
                   <button
@@ -208,9 +270,16 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-ink-600 mb-3">Budget estimé ?</label>
+              <label className="block text-sm font-bold text-ink-600 mb-3">
+                Budget estimé&nbsp;? <span className="text-red-500">*</span>
+                {data.metier && (
+                  <span className="block text-xs font-normal text-ink-400 mt-0.5">
+                    Tranches adaptées au métier « {data.metier} »
+                  </span>
+                )}
+              </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {BUDGET.map((b) => (
+                {budgetOptions.map((b) => (
                   <button
                     key={b.id}
                     type="button"
@@ -236,7 +305,7 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
             <div>
               <h2 className="text-xl font-bold text-ink-700">Photos du projet</h2>
               <p className="text-sm text-ink-400 mt-1">
-                Ajoutez jusqu&apos;à 5 photos pour aider l&apos;artisan à mieux comprendre votre besoin.
+                Ajoutez jusqu&apos;à 5 photos pour aider le professionnel à mieux comprendre votre besoin.
               </p>
             </div>
 
@@ -275,7 +344,7 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3">
               <Camera size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
               <div className="text-xs text-blue-700">
-                <strong>Astuce</strong> : prenez plusieurs angles, ajoutez une photo d&apos;ensemble + détails. Les artisans répondent 3x plus vite avec des photos.
+                <strong>Astuce</strong> : prenez plusieurs angles, ajoutez une photo d&apos;ensemble + détails. Les professionnels répondent 3x plus vite avec des photos.
               </div>
             </div>
           </div>
@@ -310,7 +379,7 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
                 <Row label="Métier"  value={data.metier || "·"} />
                 <Row label="Projet"  value={data.title || "·"} />
                 <Row label="Urgence" value={URGENCY.find((u) => u.id === data.urgency)?.label || "·"} />
-                <Row label="Budget"  value={BUDGET.find((b) => b.id === data.budget)?.label || "·"} />
+                <Row label="Budget"  value={budgetOptions.find((b) => b.id === data.budget)?.label || "·"} />
                 <Row label="Photos"  value={`${data.photos.length} ajoutée${data.photos.length > 1 ? "s" : ""}`} />
               </dl>
             </div>
@@ -331,6 +400,17 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
           </div>
         )}
 
+        {/* Indicateur de ce qui manque (si le bouton est désactivé) */}
+        {!canNext() && missingFields().length > 0 && (
+          <div className="mt-6 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-2.5">
+            <span className="text-amber-500 mt-0.5">ⓘ</span>
+            <div>
+              <strong>Pour continuer, renseigne&nbsp;: </strong>
+              {missingFields().join(", ")}.
+            </div>
+          </div>
+        )}
+
         {/* Navigation */}
         <div className="flex items-center justify-between mt-8 pt-6 border-t border-ink-100">
           <button
@@ -348,6 +428,7 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
               onClick={() => setStep((s) => s + 1)}
               disabled={!canNext()}
               className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              title={!canNext() ? `Remplis : ${missingFields().join(", ")}` : ""}
             >
               Continuer <ArrowRight size={16} />
             </button>
@@ -357,6 +438,7 @@ export function DevisForm({ metierOptions }: { metierOptions?: MetierOption[] } 
               onClick={submit}
               disabled={submitting || !canNext()}
               className="btn-primary disabled:opacity-50"
+              title={!canNext() ? `Remplis : ${missingFields().join(", ")}` : ""}
             >
               {submitting ? "Envoi…" : "Envoyer mon devis"}
               <ArrowRight size={16} />

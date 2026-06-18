@@ -8,7 +8,7 @@ import {
 export const metadata: Metadata = {
   title: "Emploi artisanat · Bientôt disponible",
   description:
-    "Le job board Bisecco arrive bientôt. Réservé aux entreprises abonnées Pro pour publier leurs offres, gratuit pour les candidats dès l'ouverture. En attendant, échangez en direct avec les artisans vérifiés SIREN.",
+    "Le job board Bisecco arrive bientôt. Réservé aux entreprises abonnées Pro pour publier leurs offres, gratuit pour les candidats dès l'ouverture. En attendant, échangez en direct avec les professionnels vérifiés SIREN.",
 };
 
 export default function EmploiPage() {
@@ -24,7 +24,7 @@ export default function EmploiPage() {
             <Sparkles size={11} /> Bientôt disponible
           </span>
           <h1 className="text-3xl md:text-[2.8rem] font-bold mt-4 tracking-[-0.02em] leading-[1.05]">
-            Le job board des artisans<br />
+            Le job board des professionnels<br />
             <span className="text-brand-500">arrive bientôt sur Bisecco.</span>
           </h1>
           <p className="mt-5 text-white/65 max-w-2xl leading-relaxed">
@@ -58,7 +58,7 @@ export default function EmploiPage() {
             <div>
               <h2 className="text-xl font-bold text-ink-700 tracking-tight">En attendant l&apos;ouverture du job board</h2>
               <p className="text-sm text-ink-500 mt-1">
-                Vous pouvez déjà entrer en relation directe avec les artisans Bisecco · pour un stage, un apprentissage, ou simplement leur proposer vos services.
+                Vous pouvez déjà entrer en relation directe avec les professionnels Bisecco · pour un stage, un apprentissage, ou simplement leur proposer vos services.
               </p>
             </div>
           </div>
@@ -72,7 +72,7 @@ export default function EmploiPage() {
                 <div className="w-10 h-10 rounded-xl bg-white border border-ink-100 flex items-center justify-center">
                   <Search size={18} className="text-brand-500" />
                 </div>
-                <h3 className="font-extrabold text-ink-700 text-sm">Trouver un artisan</h3>
+                <h3 className="font-extrabold text-ink-700 text-sm">Trouver un professionnel</h3>
               </div>
               <p className="text-xs text-ink-500 leading-relaxed">
                 Parcourez les profils par métier et ville. Tous vérifiés SIREN.
@@ -93,7 +93,7 @@ export default function EmploiPage() {
                 <h3 className="font-extrabold text-ink-700 text-sm">Contacter en direct</h3>
               </div>
               <p className="text-xs text-ink-500 leading-relaxed">
-                Envoyez un message à l&apos;artisan de votre choix depuis sa fiche : stage, apprentissage, candidature spontanée.
+                Envoyez un message au professionnel de votre choix depuis sa fiche : stage, apprentissage, candidature spontanée.
               </p>
               <span className="mt-3 inline-flex items-center gap-1 text-[0.72rem] font-bold text-brand-600">
                 Ouvrir la messagerie <ArrowRight size={11} />

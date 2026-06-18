@@ -75,7 +75,7 @@ export function FeedComposerPreview({
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-[0.78rem] text-ink-400 mt-0.5 flex-wrap">
-              <span>{isPro ? "Artisan" : "Particulier"}</span>
+              <span>{isPro ? "Professionnel" : "Particulier"}</span>
               {metierName && (
                 <>
                   <span className="text-ink-300">·</span>

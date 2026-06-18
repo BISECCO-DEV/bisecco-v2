@@ -11,13 +11,13 @@ export default function PolitiqueRemboursementPage() {
   return (
     <LegalLayout
       title="Politique de remboursement & litiges"
-      subtitle="Bisecco étant une plateforme gratuite pour les artisans comme pour les particuliers, cette page précise les rares cas où un remboursement peut survenir et la procédure de résolution des litiges."
+      subtitle="Bisecco étant une plateforme gratuite pour les professionnels comme pour les particuliers, cette page précise les rares cas où un remboursement peut survenir et la procédure de résolution des litiges."
       updatedAt="2026-05-28"
     >
       <h2>1. Service gratuit pour tous</h2>
       <p>
         La Plateforme Bisecco est <strong>100 % gratuite</strong>, sans abonnement ni
-        commission, tant pour les artisans que pour les particuliers. Aucun moyen de paiement
+        commission, tant pour les professionnels que pour les particuliers. Aucun moyen de paiement
         n&apos;est demandé à l&apos;inscription.
       </p>
       <p>
@@ -57,10 +57,10 @@ export default function PolitiqueRemboursementPage() {
         l&apos;achat, sauf accord exprès pour un autre moyen.
       </p>
 
-      <h2>3. Litiges entre particuliers et artisans</h2>
+      <h2>3. Litiges entre particuliers et professionnels</h2>
       <p>
         Bisecco est un service de mise en relation. AGISCO HOLDING SAS{" "}
-        <strong>n&apos;est partie à aucun contrat conclu</strong> entre artisans et
+        <strong>n&apos;est partie à aucun contrat conclu</strong> entre professionnels et
         particuliers utilisant la Plateforme. Nous ne sommes donc ni responsables des
         prestations, ni des paiements, ni des éventuels litiges commerciaux.
       </p>
@@ -75,7 +75,7 @@ export default function PolitiqueRemboursementPage() {
       <h3>3.2 Signalement à Bisecco</h3>
       <p>
         Si un comportement vous paraît contraire à nos{" "}
-        <a href="/cgv">conditions générales</a> (artisan injoignable, faux profil,
+        <a href="/cgv">conditions générales</a> (professionnel injoignable, faux profil,
         prestation non conforme), vous pouvez signaler le problème via&nbsp;:
       </p>
       <ul>
@@ -107,7 +107,7 @@ export default function PolitiqueRemboursementPage() {
 
       <h2>5. Garanties légales applicables aux prestations</h2>
       <p>
-        Les prestations réalisées par les artisans sont soumises aux garanties légales du Code
+        Les prestations réalisées par les professionnels sont soumises aux garanties légales du Code
         civil et du Code de la construction&nbsp;:
       </p>
       <ul>
@@ -116,7 +116,7 @@ export default function PolitiqueRemboursementPage() {
         <li><strong>Garantie décennale</strong> pour les travaux de construction (10 ans, art. 1792 C. civ.)</li>
       </ul>
       <p>
-        Ces garanties s&apos;appliquent directement entre le client et l&apos;artisan,
+        Ces garanties s&apos;appliquent directement entre le client et le professionnel,
         indépendamment de Bisecco.
       </p>
 

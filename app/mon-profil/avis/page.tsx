@@ -91,7 +91,7 @@ export default async function MesAvisPage() {
 
         {!profile && (
           <div className="mt-6 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl px-4 py-3 text-sm">
-            Cette section est destinée aux artisans. Votre compte n&apos;a pas (encore) de profil artisan rattaché.
+            Cette section est destinée aux professionnels. Votre compte n&apos;a pas (encore) de profil professionnel rattaché.
           </div>
         )}
 

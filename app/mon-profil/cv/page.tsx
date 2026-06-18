@@ -8,7 +8,7 @@ import { CVEditor } from "./CVEditor";
 
 export const metadata: Metadata = {
   title: "Mon CV · Mon profil",
-  description: "Créez ou modifiez votre CV Bisecco pour le déposer directement chez les artisans qui vous intéressent.",
+  description: "Créez ou modifiez votre CV Bisecco pour le déposer directement chez les professionnels qui vous intéressent.",
   robots: { index: false, follow: false },
 };
 
@@ -48,7 +48,7 @@ export default async function MonCVPage({ searchParams }: { searchParams: Search
             Mon <span className="text-brand-500">CV</span>
           </h1>
           <p className="text-ink-400 mt-2 max-w-2xl">
-            Créez votre CV professionnel et déposez-le directement chez les artisans
+            Créez votre CV professionnel et déposez-le directement chez les professionnels
             qui vous intéressent depuis leur fiche.
           </p>
         </div>

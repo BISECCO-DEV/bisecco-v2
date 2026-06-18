@@ -57,7 +57,7 @@ export function UserMenu({ user, unreadCvs = 0 }: UserMenuProps) {
     user.profile_photo ??
     `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user.name)}`;
   const roleLabel =
-    user.role === "admin" ? "Admin" : user.role === "artisan" ? "Artisan" : "Particulier";
+    user.role === "admin" ? "Admin" : user.role === "artisan" ? "Professionnel" : "Particulier";
   const roleColor =
     user.role === "admin"
       ? "from-purple-500 to-pink-500"

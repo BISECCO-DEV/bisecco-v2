@@ -20,11 +20,20 @@ export type CurrentUser = {
   role: "admin" | "artisan" | "particulier";
   phone: string | null;
   city: string | null;
+  street_address: string | null;
+  latitude: number | null;
+  longitude: number | null;
   description: string | null;
   profile_photo: string | null;
   cover_photo: string | null;
   siren: string | null;
   validation_status: "pending" | "approved" | "rejected" | null;
+  /** Pros : accepte d'être contacté par email (défaut true). */
+  contact_via_email: boolean;
+  /** Pros : accepte d'être contacté par téléphone (défaut false, requiert un numéro). */
+  contact_via_phone: boolean;
+  /** Pros : email PUBLIC affiché sur le profil (si différent de l'email du compte). */
+  public_contact_email: string | null;
 };
 
 /**
@@ -44,48 +53,77 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   // car RLS bloque la lecture des admins/particuliers depuis le client anon.
   // C'est safe : c'est le user authentifié qui lit SON propre profil.
   const admin = createSupabaseAdminClient();
-  const { data: profile } = await admin
-    .from("users")
-    .select(
-      "id, client_number, referral_code, name, role, phone, city, description, profile_photo, cover_photo, siren, validation_status",
-    )
-    .ilike("email", authUser.email!)
-    .is("deleted_at", null)
-    .maybeSingle();
+
+  // SELECT défensif : on tente avec les nouvelles colonnes (latitude, longitude,
+  // street_address). Si la migration 024 n'a pas tourné → fallback sur SELECT
+  // historique. Évite le crash 500 du site entier en cas d'oubli de migration.
+  let profile: Record<string, unknown> | null = null;
+  {
+    const { data, error } = await admin
+      .from("users")
+      .select(
+        "id, client_number, referral_code, name, role, phone, city, street_address, latitude, longitude, description, profile_photo, cover_photo, siren, validation_status, contact_via_email, contact_via_phone, public_contact_email",
+      )
+      .ilike("email", authUser.email!)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (!error) {
+      profile = data as Record<string, unknown> | null;
+    } else {
+      // Colonnes lat/lng/street_address manquantes → on retombe sur l'ancien SELECT
+      const { data: legacy } = await admin
+        .from("users")
+        .select(
+          "id, client_number, referral_code, name, role, phone, city, description, profile_photo, cover_photo, siren, validation_status",
+        )
+        .ilike("email", authUser.email!)
+        .is("deleted_at", null)
+        .maybeSingle();
+      profile = legacy as Record<string, unknown> | null;
+    }
+  }
 
   // Si artisan → on récupère le nom commercial dans artisan_profiles
   let company_name: string | null = null;
-  if (profile?.id && profile.role === "artisan") {
+  const profileId = profile?.id as number | undefined;
+  const profileRole = profile?.role as string | undefined;
+  if (profileId && profileRole === "artisan") {
     const { data: artisan } = await admin
       .from("artisan_profiles")
       .select("company_name")
-      .eq("user_id", profile.id)
+      .eq("user_id", profileId)
       .maybeSingle();
     company_name = (artisan?.company_name as string | null)?.trim() || null;
   }
 
-  const name = profile?.name ?? (authUser.user_metadata?.full_name as string) ?? authUser.email ?? "Utilisateur";
-  const role = (profile?.role as CurrentUser["role"]) ?? (authUser.user_metadata?.role as CurrentUser["role"]) ?? "particulier";
+  const name = (profile?.name as string | undefined) ?? (authUser.user_metadata?.full_name as string) ?? authUser.email ?? "Utilisateur";
+  const role = ((profile?.role as CurrentUser["role"]) ?? (authUser.user_metadata?.role as CurrentUser["role"]) ?? "particulier") as CurrentUser["role"];
   const display_name = role === "artisan" && company_name ? company_name : name;
 
   return {
     auth_id: authUser.id,
     email: authUser.email ?? "",
     email_verified: Boolean(authUser.email_confirmed_at),
-    id: profile?.id ?? null,
-    client_number: profile?.client_number ?? null,
-    referral_code: profile?.referral_code ?? null,
+    id: profileId ?? null,
+    client_number: (profile?.client_number as string | null) ?? null,
+    referral_code: (profile?.referral_code as string | null) ?? null,
     name,
     display_name,
     company_name,
     role,
-    phone: profile?.phone ?? null,
-    city: profile?.city ?? null,
-    description: profile?.description ?? null,
-    profile_photo: profile?.profile_photo ?? null,
-    cover_photo: profile?.cover_photo ?? null,
-    siren: profile?.siren ?? null,
-    validation_status: profile?.validation_status ?? null,
+    phone: (profile?.phone as string | null) ?? null,
+    city: (profile?.city as string | null) ?? null,
+    street_address: (profile?.street_address as string | null) ?? null,
+    latitude: (profile?.latitude as number | null) ?? null,
+    longitude: (profile?.longitude as number | null) ?? null,
+    description: (profile?.description as string | null) ?? null,
+    profile_photo: (profile?.profile_photo as string | null) ?? null,
+    cover_photo: (profile?.cover_photo as string | null) ?? null,
+    siren: (profile?.siren as string | null) ?? null,
+    validation_status: (profile?.validation_status as CurrentUser["validation_status"]) ?? null,
+    contact_via_email: profile?.contact_via_email === false ? false : true,
+    contact_via_phone: profile?.contact_via_phone === true,
+    public_contact_email: (profile?.public_contact_email as string | null) ?? null,
   };
 }
 

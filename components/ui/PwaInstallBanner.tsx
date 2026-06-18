@@ -123,7 +123,7 @@ export function PwaInstallBanner() {
             <p className="text-[0.78rem] text-ink-500 mt-1 leading-relaxed">
               {platform === "ios"
                 ? "Ajoutez Bisecco à votre écran d'accueil pour un accès direct."
-                : "Accédez aux artisans, messages et devis en un clic depuis votre écran d'accueil."}
+                : "Accédez aux professionnels, messages et devis en un clic depuis votre écran d'accueil."}
             </p>
 
             {platform === "android" ? (

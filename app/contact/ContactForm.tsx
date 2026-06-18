@@ -12,7 +12,7 @@ const MAX_MESSAGE = 2000;
 
 const USER_TYPES = [
   "Particulier",
-  "Artisan",
+  "Professionnel",
   "Autre",
 ];
 

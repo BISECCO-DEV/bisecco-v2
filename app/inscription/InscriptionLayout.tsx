@@ -43,7 +43,7 @@ const PARTICULIER_STEPS = [
     num: "01",
     icon: Search,
     title: "Recherchez par métier et ville",
-    text: "176 métiers couverts (du plombier au développeur web), filtrage par localisation et spécialité.",
+    text: "189 métiers couverts (du plombier au développeur web), filtrage par localisation et spécialité.",
   },
   {
     num: "02",
@@ -55,7 +55,7 @@ const PARTICULIER_STEPS = [
     num: "03",
     icon: MessageSquare,
     title: "Échangez en direct",
-    text: "Messagerie intégrée avec l'artisan, sans intermédiaire payant.",
+    text: "Messagerie intégrée avec le professionnel, sans intermédiaire payant.",
   },
 ];
 
@@ -64,13 +64,13 @@ export function InscriptionLayout() {
   const isArtisan = role === "artisan";
 
   const steps = isArtisan ? ARTISAN_STEPS : PARTICULIER_STEPS;
-  const badge = isArtisan ? "Réseau d'artisans français" : "Trouvez le bon artisan";
+  const badge = isArtisan ? "Réseau de professionnels français" : "Trouvez le bon professionnel";
   const title = isArtisan
-    ? { l1: "Le réseau qui", highlight: "change tout", l3: "pour les artisans." }
-    : { l1: "Trouvez l'artisan", highlight: "qu'il vous faut", l3: "près de chez vous." };
+    ? { l1: "Le réseau qui", highlight: "change tout", l3: "pour les professionnels." }
+    : { l1: "Trouvez le professionnel", highlight: "qu'il vous faut", l3: "près de chez vous." };
   const subtitle = isArtisan
     ? "Profil vérifié SIREN, messagerie directe avec vos clients,"
-    : "Artisans vérifiés SIREN, comparez les profils,";
+    : "Professionnels vérifiés SIREN, comparez les profils,";
   const subtitleStrong = isArtisan ? "zéro commission" : "zéro frais cachés";
   const subtitleEnd = isArtisan ? ". Votre activité, en mieux." : ". Sans intermédiaire.";
 
@@ -163,7 +163,7 @@ export function InscriptionLayout() {
               <span className="inline-flex items-center gap-1.5">
                 <ShieldCheck size={13} strokeWidth={2.4} className="text-emerald-400" />
                 <span className="font-semibold text-white/85">
-                  {isArtisan ? "SIREN INSEE" : "Artisans vérifiés"}
+                  {isArtisan ? "SIREN INSEE" : "Professionnels vérifiés"}
                 </span>
               </span>
               <span className="inline-flex items-center gap-1.5">

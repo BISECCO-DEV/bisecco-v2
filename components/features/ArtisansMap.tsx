@@ -50,8 +50,12 @@ export function ArtisansMap({ markers = DEMO_MARKERS }: { markers?: ArtisanMarke
   return (
     <div className="rounded-2xl overflow-hidden border border-ink-100 shadow-card h-[500px]">
       <MapContainer
-        center={[48.961, 2.879]}
+        center={[46.7, 2.4]}
         zoom={6}
+        minZoom={5}
+        maxZoom={18}
+        maxBounds={[[35, -15], [55, 20]]}
+        maxBoundsViscosity={0.7}
         scrollWheelZoom={false}
         className="w-full h-full"
       >

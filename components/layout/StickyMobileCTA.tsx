@@ -59,7 +59,7 @@ export function StickyMobileCTA() {
       >
         <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/15 to-transparent" aria-hidden />
         <Search size={16} strokeWidth={2.4} className="relative" />
-        <span className="relative">Trouver mon artisan</span>
+        <span className="relative">Trouver mon professionnel</span>
         <ArrowRight size={14} strokeWidth={2.6} className="relative" />
       </Link>
     </div>

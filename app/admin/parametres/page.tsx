@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Settings, ShieldCheck, Bell, Wrench, Eye } from "lucide-react";
+import { ArrowLeft, Settings, ShieldCheck, Bell, Wrench, Eye, MapPin } from "lucide-react";
+import { GeocodeAllButton } from "@/components/features/admin/GeocodeAllButton";
 
 export const metadata: Metadata = {
   title: "Admin · Paramètres",
@@ -79,6 +80,21 @@ export default function AdminParametresPage() {
             </div>
           </section>
 
+          {/* Géolocalisation · rattrapage des profils existants */}
+          <section className="bg-white rounded-2xl border border-ink-100 p-6">
+            <header className="flex items-center gap-3 mb-4">
+              <MapPin size={18} className="text-brand-500" />
+              <div>
+                <h2 className="font-bold text-ink-700">Géolocalisation</h2>
+                <p className="text-xs text-ink-400">
+                  Géocode tous les profils existants via l&apos;API Adresse data.gouv.fr.
+                  Précision ~5m sur les adresses complètes, ~50m sur les villes.
+                </p>
+              </div>
+            </header>
+            <GeocodeAllButton />
+          </section>
+
           {/* Notifications */}
           <section className="bg-white rounded-2xl border border-ink-100 p-6">
             <header className="flex items-center gap-3 mb-4">
@@ -90,7 +106,7 @@ export default function AdminParametresPage() {
             </header>
             <div className="space-y-2">
               {[
-                "Nouvel artisan en attente de validation",
+                "Nouveau professionnel en attente de validation",
                 "Avis signalé par un utilisateur",
                 "Conversation signalée",
                 "Pic de trafic anormal",

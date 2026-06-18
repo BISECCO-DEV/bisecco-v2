@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FileText, ArrowRight, ShieldCheck, Star, CheckCircle2, Briefcase } from "lucide-react";
 import { SearchClient, type ArtisanCard, type ParticulierPin } from "./SearchClient";
+import { coordsForCity } from "@/lib/geo/city-coords";
 import { getMetierOptions } from "@/lib/db/metier-options";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { MetiersDirectory, type MetierWithCount } from "@/app/metiers/MetiersDirectory";
@@ -10,10 +11,23 @@ import { ParticuliersSection, type ParticulierCard } from "./ParticuliersSection
 
 async function fetchMetiersWithCounts(): Promise<MetierWithCount[]> {
   const supabase = createSupabaseAdminClient();
-  const { data: metiers } = await supabase
-    .from("metiers")
-    .select("id, name, slug, category, icon, description")
-    .order("name", { ascending: true });
+  // SELECT défensif avec cover_url/cover_alt (migration 025) · fallback si pas faite
+  let metiers: Array<{ id: number; name: string; slug: string; category: string; icon: string | null; description: string | null; cover_url?: string | null; cover_alt?: string | null }> | null = null;
+  {
+    const r = await supabase
+      .from("metiers")
+      .select("id, name, slug, category, icon, description, cover_url, cover_alt")
+      .order("name", { ascending: true });
+    if (r.error) {
+      const r2 = await supabase
+        .from("metiers")
+        .select("id, name, slug, category, icon, description")
+        .order("name", { ascending: true });
+      metiers = r2.data;
+    } else {
+      metiers = r.data;
+    }
+  }
   if (!metiers) return [];
 
   const { data: pivots } = await supabase
@@ -25,12 +39,17 @@ async function fetchMetiersWithCounts(): Promise<MetierWithCount[]> {
     counts.set(p.metier_id, (counts.get(p.metier_id) ?? 0) + 1);
   }
 
-  return metiers.map((m) => ({ ...m, artisanCount: counts.get(m.id) ?? 0 }));
+  return metiers.map((m) => ({
+    ...m,
+    cover_url: m.cover_url ?? null,
+    cover_alt: m.cover_alt ?? null,
+    artisanCount: counts.get(m.id) ?? 0,
+  }));
 }
 
 export const metadata: Metadata = {
-  title: "Rechercher un artisan qualifié",
-  description: "Recherchez un artisan qualifié près de chez vous par métier et par ville. Profils vérifiés, avis clients réels.",
+  title: "Rechercher un professionnel qualifié",
+  description: "Recherchez un professionnel qualifié près de chez vous par métier et par ville. Profils vérifiés, avis clients réels.",
 };
 
 export const dynamic = "force-dynamic";
@@ -42,6 +61,8 @@ type Row = {
   client_number: string | null;
   name: string;
   city: string | null;
+  latitude: number | null;
+  longitude: number | null;
   profile_photo: string | null;
   cover_photo: string | null;
   artisan_profiles: Array<{
@@ -49,37 +70,55 @@ type Row = {
     company_name: string | null;
     latitude: number | null;
     longitude: number | null;
-    metiers: { name: string } | null;
+    metiers: { name: string; cover_url?: string | null } | null;
     reviews: Array<{ rating: number }>;
   }>;
 };
 
-// Petit déterministe (hash léger) pour scatter les artisans sans coordonnées
-function hashCity(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
-
 async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
   const supabase = createSupabaseAdminClient();
-  const { data, error } = await supabase
-    .from("users")
-    .select(`
-      id, client_number, name, city, profile_photo, cover_photo,
-      artisan_profiles!inner (
-        id, company_name, latitude, longitude,
-        metiers (name),
-        reviews (rating)
-      )
-    `)
-    .eq("role", "artisan")
-    .eq("validation_status", "approved")
-    .is("deleted_at", null)
-    .eq("artisan_profiles.is_active", true)
-    .order("name");
 
-  if (error || !data) return [];
+  // SELECT défensif : retombe sur l'ancien si migration 024 pas faite
+  let data: Row[] | null = null;
+  {
+    const r = await supabase
+      .from("users")
+      .select(`
+        id, client_number, name, city, latitude, longitude, profile_photo, cover_photo,
+        artisan_profiles!inner (
+          id, company_name, latitude, longitude,
+          metiers (name, cover_url),
+          reviews (rating)
+        )
+      `)
+      .eq("role", "artisan")
+      .eq("validation_status", "approved")
+      .is("deleted_at", null)
+      .eq("artisan_profiles.is_active", true)
+      .order("name");
+    if (r.error) {
+      const r2 = await supabase
+        .from("users")
+        .select(`
+          id, client_number, name, city, profile_photo, cover_photo,
+          artisan_profiles!inner (
+            id, company_name, latitude, longitude,
+            metiers (name),
+            reviews (rating)
+          )
+        `)
+        .eq("role", "artisan")
+        .eq("validation_status", "approved")
+        .is("deleted_at", null)
+        .eq("artisan_profiles.is_active", true)
+        .order("name");
+      data = r2.data as unknown as Row[] | null;
+    } else {
+      data = r.data as unknown as Row[];
+    }
+  }
+
+  if (!data) return [];
 
   const imgUrl = (path: string | null): string | undefined => {
     if (!path) return undefined;
@@ -87,7 +126,7 @@ async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
     return `https://bisecco.fr/storage/${path.replace(/^\//, "")}`;
   };
 
-  return (data as unknown as Row[])
+  return data
     .map((u): ArtisanCard | null => {
       const profile = u.artisan_profiles[0];
       if (!profile) return null;
@@ -96,10 +135,15 @@ async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
         ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
         : 0;
 
-      // Coordonnées : DB d'abord, sinon scatter déterministe autour de l'IDF
-      const seed = hashCity(u.city ?? u.name);
-      const lat = profile.latitude ?? (48.85 + ((seed % 100) / 100 - 0.5) * 0.6);
-      const lng = profile.longitude ?? (2.55 + (((seed >> 8) % 100) / 100 - 0.5) * 1.0);
+      // Cascade de priorité pour les coordonnées :
+      // 1. users.latitude/longitude (geocodage exact API Adresse data.gouv.fr)
+      // 2. artisan_profiles.latitude/longitude (legacy)
+      // 3. Lookup ville dans CITY_COORDS (fallback)
+      // 4. Sinon : skip
+      const cityCoords = coordsForCity(u.city);
+      const lat = u.latitude ?? profile.latitude ?? cityCoords?.[0] ?? null;
+      const lng = u.longitude ?? profile.longitude ?? cityCoords?.[1] ?? null;
+      if (lat == null || lng == null) return null;
 
       // Affichage public : on privilégie le nom commercial (entreprise) sur le nom du gérant.
       const commercialName = profile.company_name?.trim() || u.name;
@@ -107,7 +151,7 @@ async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
         id: u.client_number ?? String(u.id),
         name: commercialName.split(" - ")[0] ?? commercialName,
         company: profile.company_name ?? null,
-        metier: profile.metiers?.name ?? "Artisan",
+        metier: profile.metiers?.name ?? "Professionnel",
         city: u.city?.replace(/^\d+\s*/, "") ?? "France",
         rating: Number(avgRating.toFixed(1)),
         reviews: reviews.length,
@@ -119,43 +163,73 @@ async function fetchAllApprovedArtisans(): Promise<ArtisanCard[]> {
     .filter((a): a is ArtisanCard => a !== null);
 }
 
-async function fetchApprovedParticuliers(limit = 60): Promise<ParticulierCard[]> {
+async function fetchApprovedParticuliers(limit = 60): Promise<(ParticulierCard & { latitude: number | null; longitude: number | null })[]> {
   const supabase = createSupabaseAdminClient();
-  const { data } = await supabase
+
+  // SELECT défensif : retombe sur SELECT sans lat/lng si migration pas faite
+  const tryWithCoords = await supabase
     .from("users")
-    .select("id, client_number, name, city, profile_photo, created_at")
+    .select("id, client_number, name, city, latitude, longitude, profile_photo, created_at")
     .eq("role", "particulier")
     .eq("validation_status", "approved")
     .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  return (data ?? []).map((u) => ({
+  if (tryWithCoords.error) {
+    const fallback = await supabase
+      .from("users")
+      .select("id, client_number, name, city, profile_photo, created_at")
+      .eq("role", "particulier")
+      .eq("validation_status", "approved")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    return (fallback.data ?? []).map((u) => ({
+      id: u.client_number ?? String(u.id),
+      name: u.name,
+      city: u.city,
+      avatar: u.profile_photo,
+      latitude: null,
+      longitude: null,
+    }));
+  }
+
+  return (tryWithCoords.data ?? []).map((u: { id: number; client_number: string | null; name: string; city: string | null; latitude: number | null; longitude: number | null; profile_photo: string | null }) => ({
     id: u.client_number ?? String(u.id),
     name: u.name,
     city: u.city,
     avatar: u.profile_photo,
+    latitude: u.latitude,
+    longitude: u.longitude,
   }));
 }
 
-/** Construit les pins map des particuliers (lat/lng dérivés du hash de la ville). */
-function buildParticulierPins(particuliers: ParticulierCard[]): ParticulierPin[] {
+/**
+ * Construit les pins map des particuliers.
+ * Priorité : coords exactes (API Adresse) > fallback ville dans CITY_COORDS.
+ * - La position est utilisée pour le pin sur la map
+ * - Sur la map on n'expose que le PRÉNOM (jamais le nom complet ni la ville)
+ */
+function buildParticulierPins(
+  particuliers: (ParticulierCard & { latitude: number | null; longitude: number | null })[],
+): ParticulierPin[] {
   return particuliers
-    .filter((p) => p.city)
-    .map((p) => {
-      const seed = hashCity(p.city ?? p.name);
-      // Scatter autour de l'IDF · même heuristique que les artisans sans coords
-      const lat = 48.85 + ((seed % 100) / 100 - 0.5) * 0.6;
-      const lng = 2.55 + (((seed >> 8) % 100) / 100 - 0.5) * 1.0;
+    .map((p): ParticulierPin | null => {
+      const cityCoords = coordsForCity(p.city);
+      const lat = p.latitude ?? cityCoords?.[0] ?? null;
+      const lng = p.longitude ?? cityCoords?.[1] ?? null;
+      if (lat == null || lng == null) return null;
+      const prenom = (p.name?.split(/\s+/)[0] ?? p.name ?? "Membre").trim();
       return {
         id: p.id,
-        name: p.name,
-        city: p.city ?? "France",
+        prenom,
         lat,
         lng,
         avatar: p.avatar ?? undefined,
       };
-    });
+    })
+    .filter((p): p is ParticulierPin => p !== null);
 }
 
 export default async function RechercherPage({ searchParams }: { searchParams: SearchParams }) {
@@ -183,18 +257,18 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
                   <FileText size={22} strokeWidth={2.2} />
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-lg sm:text-xl font-extrabold tracking-tight">Déposer votre CV chez un artisan</h2>
+                  <h2 className="text-lg sm:text-xl font-extrabold tracking-tight">Déposer votre CV chez un professionnel</h2>
                   <p className="text-white/85 text-sm mt-1 leading-snug">
-                    Trouvez l&apos;artisan que vous voulez contacter ci-dessous, puis cliquez sur <strong>« Postuler / Déposer son CV »</strong> directement depuis son profil.
+                    Trouvez le professionnel que vous voulez contacter ci-dessous, puis cliquez sur <strong>« Postuler / Déposer son CV »</strong> directement depuis son profil.
                   </p>
                   <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold bg-white/15 backdrop-blur px-3 py-1.5 rounded-full">
-                    <ArrowRight size={12} /> Filtrez par métier et ville pour trouver le bon artisan
+                    <ArrowRight size={12} /> Filtrez par métier et ville pour trouver le bon professionnel
                   </div>
                 </div>
               </div>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-ink-700">
-              Chez quel artisan souhaitez-vous postuler&nbsp;?
+              Chez quel professionnel souhaitez-vous postuler&nbsp;?
             </h1>
             <p className="text-ink-400 mt-2">
               Cliquez sur un profil pour envoyer votre CV directement.
@@ -203,7 +277,7 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
         ) : (
           <>
             <h1 className="text-3xl md:text-4xl font-bold text-ink-700">
-              Trouvez l&apos;artisan parfait
+              Trouvez le professionnel parfait
             </h1>
             <p className="text-ink-400 mt-2">
               {artisans.length > 0
@@ -230,7 +304,7 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
         {/* Trust signals */}
         <section className="grid md:grid-cols-3 gap-4 mt-14">
           {[
-            { icon: ShieldCheck, title: "SIREN vérifié",     text: "Chaque artisan est contrôlé via l'API officielle gouv.fr.",     color: "text-emerald-500", bg: "bg-emerald-50", border: "border-emerald-200" },
+            { icon: ShieldCheck, title: "SIREN vérifié",     text: "Chaque professionnel est contrôlé via l'API officielle gouv.fr.",     color: "text-emerald-500", bg: "bg-emerald-50", border: "border-emerald-200" },
             { icon: Star,        title: "Avis authentiques", text: "Seuls les clients réels peuvent laisser un avis après mission.", color: "text-amber-500",   bg: "bg-amber-50",   border: "border-amber-200" },
             { icon: CheckCircle2,title: "Devis gratuit",     text: "Recevez plusieurs propositions en 24h, sans engagement.",         color: "text-brand-500",   bg: "bg-brand-50",   border: "border-brand-200" },
           ].map((c) => (
@@ -247,16 +321,16 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
         {/* Comment ça marche */}
         <section className="mt-14">
           <h2 className="text-2xl md:text-3xl font-bold text-ink-700 tracking-tight mb-2">
-            Comment <span className="text-brand-500">trouver le bon artisan</span> ?
+            Comment <span className="text-brand-500">trouver le bon professionnel</span> ?
           </h2>
           <p className="text-ink-500 mb-8 max-w-2xl">
-            En 3 étapes, identifiez l&apos;artisan vérifié SIREN le plus proche de chez vous.
+            En 3 étapes, identifiez le professionnel vérifié SIREN le plus proche de chez vous.
           </p>
           <div className="grid md:grid-cols-3 gap-4">
             {[
               { num: "1", title: "Filtrez par métier", text: "Plombier, électricien, maçon… Choisissez le métier dont vous avez besoin." },
-              { num: "2", title: "Affinez par ville",  text: "Localisez les artisans dans votre commune ou les communes voisines." },
-              { num: "3", title: "Contactez en direct", text: "Sans intermédiaire, sans commission. Vous traitez directement avec l'artisan." },
+              { num: "2", title: "Affinez par ville",  text: "Localisez les professionnels dans votre commune ou les communes voisines." },
+              { num: "3", title: "Contactez en direct", text: "Sans intermédiaire, sans commission. Vous traitez directement avec le professionnel." },
             ].map((s) => (
               <div key={s.num} className="bg-white rounded-2xl p-6 border border-ink-100">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center font-display font-extrabold text-lg shadow-[0_4px_12px_-4px_rgba(240,122,47,0.4)]">
@@ -277,10 +351,10 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
               Annuaire des métiers
             </span>
             <h2 className="mt-4 text-2xl md:text-3xl font-bold text-ink-700 tracking-tight">
-              <span className="text-brand-500">{metiersWithCounts.length}</span> métiers artisanaux à portée de clic
+              <span className="text-brand-500">{metiersWithCounts.length}</span> métiers à portée de clic
             </h2>
             <p className="text-ink-500 mt-2">
-              Cherchez parmi tous les métiers Bisecco, filtrez par catégorie, ouvrez la page dédiée pour découvrir les artisans.
+              Cherchez parmi tous les métiers Bisecco, filtrez par catégorie, ouvrez la page dédiée pour découvrir les professionnels.
             </p>
           </div>
           {/* MetiersDirectory utilise -mt-20 sur sa stats banner pour chevaucher
@@ -294,7 +368,7 @@ export default async function RechercherPage({ searchParams }: { searchParams: S
             <Briefcase size={24} className="text-brand-500" />
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-ink-700 tracking-tight">
-            Vous êtes <span className="text-brand-500">artisan</span> ?
+            Vous êtes <span className="text-brand-500">professionnel</span> ?
           </h2>
           <p className="text-ink-500 mt-2 max-w-md mx-auto">
             Inscrivez-vous gratuitement et recevez des demandes qualifiées dès cette semaine.

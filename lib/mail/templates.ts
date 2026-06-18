@@ -36,7 +36,7 @@ function wrap(content: string, preheader: string = ""): string {
                       BISECCO
                     </div>
                     <div style="font-size:10px;color:${COLORS.brand};font-weight:700;letter-spacing:0.18em;margin-top:5px;text-transform:uppercase;">
-                      Réseau d'artisans français vérifiés
+                      Réseau de professionnels français vérifiés
                     </div>
                   </td>
                 </tr>
@@ -51,7 +51,7 @@ function wrap(content: string, preheader: string = ""): string {
           <tr>
             <td style="padding:24px 32px;border-top:1px solid #ececec;text-align:center;font-size:12px;color:${COLORS.ink400};line-height:1.6;">
               <p style="margin:0 0 8px;">
-                <strong style="color:${COLORS.ink600};">Bisecco</strong> · L'annuaire des artisans français vérifiés
+                <strong style="color:${COLORS.ink600};">Bisecco</strong> · L'annuaire des professionnels français vérifiés
               </p>
               <p style="margin:0;">
                 <a href="https://bisecco.fr" style="color:${COLORS.brand};text-decoration:none;">bisecco.fr</a>
@@ -129,7 +129,7 @@ https://bisecco.fr`;
 
 export function verifyEmailTemplate(opts: { verifyUrl: string; name?: string | null; role: "particulier" | "artisan" }): { subject: string; html: string; text: string } {
   const greeting = opts.name ? `Bonjour ${opts.name},` : "Bonjour,";
-  const roleLabel = opts.role === "artisan" ? "artisan" : "particulier";
+  const roleLabel = opts.role === "artisan" ? "professionnel" : "particulier";
 
   const html = wrap(
     `
@@ -182,7 +182,7 @@ export function accountApprovedEmail(opts: { name: string; role: "particulier" |
     `
     <h1 style="font-size:24px;font-weight:800;color:${COLORS.ink};margin:0 0 16px;">Votre compte est validé ✓</h1>
     <p style="font-size:15px;line-height:1.6;color:${COLORS.ink600};margin:0 0 20px;">
-      Bonjour ${opts.name}, votre compte ${isArtisan ? "artisan" : "particulier"} sur Bisecco est maintenant activé. Vous pouvez vous connecter et profiter de toutes les fonctionnalités.
+      Bonjour ${opts.name}, votre compte ${isArtisan ? "professionnel" : "particulier"} sur Bisecco est maintenant activé. Vous pouvez vous connecter et profiter de toutes les fonctionnalités.
     </p>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 28px;">
       <tr>
@@ -222,7 +222,7 @@ export function contactConfirmationEmail(opts: { name: string }): { subject: str
     </p>
     <div style="background:${COLORS.bg};border-radius:8px;padding:16px 18px;margin:0 0 24px;">
       <p style="font-size:13px;line-height:1.5;color:${COLORS.ink600};margin:0;">
-        <strong>En attendant :</strong> vous pouvez parcourir les artisans disponibles près de chez vous, ou consulter notre FAQ.
+        <strong>En attendant :</strong> vous pouvez parcourir les professionnels disponibles près de chez vous, ou consulter notre FAQ.
       </p>
     </div>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
@@ -405,6 +405,86 @@ export function newReviewEmail(opts: { profileName: string; rating: number; comm
   return { subject: `Nouvel avis ${opts.rating}★ sur votre profil Bisecco`, html, text };
 }
 
+/** Email envoyé à l'admin (équipe modération) à chaque nouvel avis */
+export function newReviewToModerateEmail(opts: {
+  reviewerName: string;
+  artisanName: string;
+  rating: number;
+  comment: string | null;
+  moderationUrl: string;
+}): { subject: string; html: string; text: string } {
+  const stars = "★".repeat(opts.rating) + "☆".repeat(5 - opts.rating);
+  const html = wrap(
+    `
+    <h1 style="font-size:22px;font-weight:800;color:${COLORS.ink};margin:0 0 16px;">Nouvel avis à modérer 🛡️</h1>
+    <p style="font-size:15px;line-height:1.6;color:${COLORS.ink600};margin:0 0 20px;">
+      <strong>${opts.reviewerName}</strong> vient de publier un avis sur <strong>${opts.artisanName}</strong>.
+    </p>
+    <div style="background:${COLORS.bg};border-radius:8px;padding:20px;margin:0 0 24px;">
+      <p style="font-size:24px;color:#f59e0b;margin:0 0 6px;letter-spacing:0.08em;">${stars}</p>
+      <p style="font-size:13px;font-weight:700;color:${COLORS.ink};margin:0 0 12px;">${opts.rating}/5</p>
+      ${opts.comment ? `<p style="font-size:14px;line-height:1.6;color:${COLORS.ink600};margin:0;font-style:italic;">« ${opts.comment.slice(0, 500)}${opts.comment.length > 500 ? "…" : ""} »</p>` : `<p style="font-size:13px;color:${COLORS.ink400};margin:0;">(Pas de commentaire)</p>`}
+    </div>
+    <p style="font-size:14px;line-height:1.6;color:${COLORS.ink600};margin:0 0 18px;">
+      L'avis n'est PAS encore visible sur la fiche du pro. Approuve-le ou rejette-le depuis le panneau admin :
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+      <tr>
+        <td style="background:${COLORS.brand};border-radius:12px 12px 12px 0;">
+          <a href="${opts.moderationUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:${COLORS.white};text-decoration:none;">
+            Modérer cet avis →
+          </a>
+        </td>
+      </tr>
+    </table>
+    `,
+    "Avis à modérer",
+  );
+  const text = `Nouvel avis a moderer\n\nReviewer: ${opts.reviewerName}\nPro: ${opts.artisanName}\nNote: ${opts.rating}/5\n${opts.comment ? `"${opts.comment}"\n` : ""}\nModerer: ${opts.moderationUrl}`;
+  return {
+    subject: `[Bisecco] Avis ${opts.rating}★ à modérer · ${opts.artisanName}`,
+    html,
+    text,
+  };
+}
+
+/** Email envoyé au client quand son avis a été publié */
+export function reviewApprovedEmail(opts: {
+  clientName: string;
+  artisanName: string;
+  profileUrl: string;
+}): { subject: string; html: string; text: string } {
+  const html = wrap(
+    `
+    <h1 style="font-size:22px;font-weight:800;color:${COLORS.ink};margin:0 0 16px;">Ton avis est en ligne ✅</h1>
+    <p style="font-size:15px;line-height:1.6;color:${COLORS.ink600};margin:0 0 20px;">Bonjour ${opts.clientName},</p>
+    <p style="font-size:15px;line-height:1.6;color:${COLORS.ink600};margin:0 0 20px;">
+      Bonne nouvelle : ton avis sur <strong>${opts.artisanName}</strong> vient d'être validé par notre équipe.
+      Il est désormais visible publiquement sur sa fiche Bisecco.
+    </p>
+    <p style="font-size:14px;line-height:1.6;color:${COLORS.ink400};margin:0 0 20px;">
+      Merci de contribuer à un annuaire de confiance pour les particuliers comme toi.
+    </p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+      <tr>
+        <td style="background:${COLORS.brand};border-radius:12px 12px 12px 0;">
+          <a href="${opts.profileUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:700;color:${COLORS.white};text-decoration:none;">
+            Voir le profil →
+          </a>
+        </td>
+      </tr>
+    </table>
+    `,
+    "Avis publié",
+  );
+  const text = `Ton avis sur ${opts.artisanName} est en ligne.\n\nVoir: ${opts.profileUrl}`;
+  return {
+    subject: `Ton avis sur ${opts.artisanName} est en ligne`,
+    html,
+    text,
+  };
+}
+
 /** Email envoyé à l'artisan quand il reçoit un CV */
 export function newCvEmail(opts: { artisanName: string; candidateName: string; candidateEmail: string; cvUrl: string }): { subject: string; html: string; text: string } {
   const html = wrap(
@@ -472,7 +552,7 @@ export function newSignupAdminEmail(opts: {
   userId?: number | null;
 }): { subject: string; html: string; text: string } {
   const isArtisan = opts.role === "artisan";
-  const roleLabel = isArtisan ? "🛠️ Artisan" : "🏠 Particulier";
+  const roleLabel = isArtisan ? "🛠️ Professionnel" : "🏠 Particulier";
   const adminLink = opts.userId ? `https://bisecco.fr/admin/utilisateurs/${opts.userId}` : "https://bisecco.fr/admin/utilisateurs";
 
   const detailRow = (label: string, value: string | null | undefined) => value
@@ -512,7 +592,7 @@ export function newSignupAdminEmail(opts: {
 
     <p style="font-size:12px;color:${COLORS.ink400};margin:18px 0 0;line-height:1.5;">
       ${isArtisan
-        ? "Action requise : valider ou rejeter ce profil artisan dans le dashboard admin."
+        ? "Action requise : valider ou rejeter ce profil professionnel dans le dashboard admin."
         : "Aucune action requise. L'utilisateur confirmera son email en cliquant sur le lien reçu."}
     </p>
     `,
@@ -545,8 +625,8 @@ export function welcomeEmail(opts: { name: string; role: "particulier" | "artisa
     <h1 style="font-size:24px;font-weight:800;color:${COLORS.ink};margin:0 0 16px;">Bienvenue sur Bisecco, ${opts.name} 👋</h1>
     <p style="font-size:15px;line-height:1.6;color:${COLORS.ink600};margin:0 0 20px;">
       ${isArtisan
-        ? "Votre compte artisan est créé. Votre profil sera vérifié sous 24h via votre SIREN."
-        : "Votre compte est créé. Vous pouvez maintenant trouver des artisans vérifiés près de chez vous."}
+        ? "Votre compte professionnel est créé. Votre profil sera vérifié sous 24h via votre SIREN."
+        : "Votre compte est créé. Vous pouvez maintenant trouver des professionnels vérifiés près de chez vous."}
     </p>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 28px;">
       <tr>

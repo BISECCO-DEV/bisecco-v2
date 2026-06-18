@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { MessagerieClient } from "../MessagerieClient";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
+import { listMyQuickReplies } from "@/lib/quick-replies/actions";
 
 export const metadata: Metadata = {
   title: "Messagerie",
@@ -16,5 +17,7 @@ export default async function MessagerieConversationPage({ params }: { params: P
   const me = await getCurrentDbUser();
   if (!me) redirect(`/connexion?redirect=/messagerie/${id}`);
 
-  return <MessagerieClient currentUserId={me.id} initialThreadId={Number.isNaN(threadId) ? undefined : threadId} />;
+  const quickReplies = me.role === "artisan" ? await listMyQuickReplies() : [];
+
+  return <MessagerieClient currentUserId={me.id} initialThreadId={Number.isNaN(threadId) ? undefined : threadId} quickReplies={quickReplies} />;
 }

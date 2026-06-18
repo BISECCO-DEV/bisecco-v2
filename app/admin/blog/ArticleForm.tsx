@@ -4,6 +4,8 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
 import { createArticleAction, updateArticleAction, type BlogState, type BlogArticle } from "@/lib/blog/actions";
+import { BlockEditor } from "./BlockEditor";
+import { CoverImageUpload } from "./CoverImageUpload";
 
 type Props = {
   article?: BlogArticle;
@@ -48,7 +50,7 @@ export function ArticleForm({ article }: Props) {
             name="title"
             required
             defaultValue={article?.title ?? ""}
-            placeholder="Ex : Comment vérifier un artisan en France"
+            placeholder="Ex : Comment vérifier un professionnel en France"
             className="w-full px-4 py-3 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none transition text-base"
           />
         </div>
@@ -84,43 +86,18 @@ export function ArticleForm({ article }: Props) {
 
         <div>
           <label className="block text-sm font-bold text-ink-600 mb-2">
-            Contenu HTML <span className="text-red-500">*</span>
+            Contenu de l&apos;article <span className="text-red-500">*</span>
           </label>
-          <textarea
+          <BlockEditor
             name="content_html"
-            required
-            rows={18}
-            defaultValue={article?.content_html ?? ""}
-            placeholder="<h2>Titre section</h2>&#10;<p>Paragraphe…</p>&#10;<ul><li>Item</li></ul>"
-            className="w-full px-4 py-3 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none transition text-sm font-mono resize-y"
+            initialHtml={article?.content_html ?? ""}
           />
-          <p className="text-xs text-ink-400 mt-1">
-            HTML simple supporté (h2, h3, p, ul, ol, strong, em, a). Pas de balises script ou style.
-          </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold text-ink-600 mb-2">URL image (cover)</label>
-            <input
-              type="url"
-              name="image_url"
-              defaultValue={article?.image_url ?? ""}
-              placeholder="https://…"
-              className="w-full px-4 py-2.5 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none transition text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-ink-600 mb-2">Alt image (SEO)</label>
-            <input
-              type="text"
-              name="image_alt"
-              defaultValue={article?.image_alt ?? ""}
-              placeholder="Description de l'image"
-              className="w-full px-4 py-2.5 rounded-xl bg-ink-50 border-2 border-ink-200 focus:border-brand-500 focus:bg-white outline-none transition text-sm"
-            />
-          </div>
-        </div>
+        <CoverImageUpload
+          initialUrl={article?.image_url ?? ""}
+          initialAlt={article?.image_alt ?? ""}
+        />
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>

@@ -1,11 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { MapPin, Search, Navigation, ArrowRight, Loader2 } from "lucide-react";
 import type { Artisan, ParticulierPin } from "./LocalSearchMap";
 import { MetierCombobox } from "@/components/ui/MetierCombobox";
+import { CityCombobox } from "@/components/ui/CityCombobox";
 import type { MetierOption } from "@/lib/metiers";
 import { artisanProfilePath } from "@/lib/utils";
 
@@ -42,7 +43,7 @@ function distanceKm(a: [number, number], b: [number, number]): number {
 type LocalSearchProps = {
   /** Liste d'artisans à afficher (depuis Supabase). Si vide ou non fourni → fallback démo */
   artisans?: Artisan[];
-  /** Liste de particuliers à afficher sur la carte (pins bleus, optionnel). */
+  /** Particuliers à afficher sur la carte (pins bleus · prénom uniquement). */
   particuliers?: ParticulierPin[];
   /** ID du user courant (pour le bouton Contacter). null = non connecté */
   currentUserId?: number | null;
@@ -83,8 +84,8 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
     );
   }, [filtered, userPos]);
 
-  /** Géolocalisation */
-  const geolocate = () => {
+  /** Géolocalisation (bouton manuel ou auto au montage) */
+  const geolocate = (silent = false) => {
     if (typeof window === "undefined" || !navigator.geolocation) return;
     setGeoLoading(true);
     navigator.geolocation.getCurrentPosition(
@@ -96,11 +97,48 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
       },
       () => {
         setGeoLoading(false);
-        alert("Géolocalisation refusée. Activez-la dans votre navigateur.");
+        if (!silent) {
+          alert("Géolocalisation refusée. Activez-la dans votre navigateur.");
+        }
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
   };
+
+  /** Auto-géoloc au premier montage :
+   *   - Si permission DÉJÀ accordée → on charge direct (zéro popup)
+   *   - Si 'prompt' → on déclenche la demande après 800ms pour laisser
+   *     la page charger d'abord (style Google Maps)
+   *   - Si 'denied' → rien (l'user peut cliquer le bouton dans la map)
+   */
+  useEffect(() => {
+    if (typeof window === "undefined" || !navigator.geolocation) return;
+
+    const requestAuto = () => geolocate(true);
+
+    if (navigator.permissions) {
+      navigator.permissions
+        .query({ name: "geolocation" as PermissionName })
+        .then((p) => {
+          if (p.state === "granted") {
+            requestAuto();
+          } else if (p.state === "prompt") {
+            // Laisse 800ms pour pas être trop agressif au load
+            const t = setTimeout(requestAuto, 800);
+            return () => clearTimeout(t);
+          }
+        })
+        .catch(() => {
+          // Pas d'API permissions (Safari iOS ancien) → on tente direct
+          const t = setTimeout(requestAuto, 800);
+          return () => clearTimeout(t);
+        });
+    } else {
+      const t = setTimeout(requestAuto, 800);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="relative py-20 sm:py-28 bg-[#0a1d44] overflow-hidden">
@@ -125,7 +163,7 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
           </span>
           <h2 className="mt-5 text-[38px] leading-[1.1] font-extrabold text-white tracking-[-0.025em]">
             <span className="block">
-              Trouvez les meilleurs <span className="text-brand-500">artisans</span>
+              Trouvez les meilleurs <span className="text-brand-500">professionnels</span>
             </span>
             <span className="block">
               près de chez vous<span className="text-brand-500">.</span>
@@ -173,7 +211,7 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
                   <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
                 </span>
-                Artisans en ligne
+                Professionnels en ligne
               </div>
               <span className="text-xs text-white/50">
                 <strong className="text-white">{sorted.length}</strong> {sorted.length > 1 ? "résultats" : "résultat"}
@@ -189,33 +227,33 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
                 options={metierOptions}
               />
 
-              <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-ink-900/50 border border-white/10 focus-within:border-brand-500/50 transition">
-                <MapPin size={16} className="text-white/40 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <label className="text-[0.65rem] text-white/40 font-bold tracking-wider uppercase block">Où ?</label>
-                  <input
-                    type="text"
-                    value={query.ville}
-                    onChange={(e) => setQuery((q) => ({ ...q, ville: e.target.value }))}
-                    placeholder="Votre ville"
-                    className="w-full bg-transparent text-white text-sm outline-none placeholder:text-white/30"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={geolocate}
-                  disabled={geoLoading}
-                  className="text-blue-400 hover:text-blue-300 transition"
-                  aria-label="Me géolocaliser"
-                  title="Me géolocaliser"
-                >
-                  {geoLoading ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    <Navigation size={16} className={userPos ? "fill-current" : ""} />
-                  )}
-                </button>
-              </div>
+              <CityCombobox
+                value={query.ville}
+                onChange={(v) => setQuery((q) => ({ ...q, ville: v }))}
+                onSelect={(city) => {
+                  // Quand on choisit une ville dans le dropdown, on focus la map dessus
+                  setFocusTarget([city.latitude, city.longitude]);
+                }}
+                label="OÙ ?"
+                placeholder="Tapez votre ville (ex: Cannes, Meaux, Paris...)"
+                variant="dark"
+                rightSlot={
+                  <button
+                    type="button"
+                    onClick={() => geolocate(false)}
+                    disabled={geoLoading}
+                    className="text-blue-400 hover:text-blue-300 transition flex-shrink-0"
+                    aria-label="Me géolocaliser"
+                    title="Me géolocaliser"
+                  >
+                    {geoLoading ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Navigation size={16} className={userPos ? "fill-current" : ""} />
+                    )}
+                  </button>
+                }
+              />
 
               <button
                 type="button"
@@ -266,13 +304,14 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
               particuliers={particuliers}
               hoveredId={hoveredId}
               userPos={userPos}
+              onUserPos={(coords) => { setUserPos(coords); setFocusTarget(coords); }}
               focusTarget={focusTarget}
             />
 
             {/* Overlay info en haut à gauche de la carte */}
             <div className="absolute top-3 left-3 z-[400] bg-white/95 backdrop-blur-md rounded-xl px-3 py-2 shadow-card text-xs pointer-events-none">
               <div className="font-bold text-ink-700">
-                {sorted.length} artisan{sorted.length > 1 ? "s" : ""} affiché{sorted.length > 1 ? "s" : ""}
+                {sorted.length} professionnel{sorted.length > 1 ? "s" : ""} affiché{sorted.length > 1 ? "s" : ""}
               </div>
               {userPos && (
                 <div className="text-ink-400 text-[10px]">Rayon de recherche 25 km</div>
@@ -285,7 +324,7 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
         <div className="mt-12">
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-xl font-bold text-white">
-              {userPos ? "Artisans près de vous" : "Artisans recommandés"}
+              {userPos ? "Professionnels près de vous" : "Professionnels recommandés"}
             </h3>
             <Link
               href="/rechercher"
@@ -297,7 +336,7 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
 
           {sorted.length === 0 ? (
             <div className="w-full text-center py-12 text-white/50 text-sm">
-              Aucun artisan ne correspond à votre recherche. Essayez d&apos;élargir vos critères.
+              Aucun professionnel ne correspond à votre recherche. Essayez d&apos;élargir vos critères.
             </div>
           ) : (
             <div
@@ -317,7 +356,10 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
                       artisan={a}
                       distance={dist}
                       isHovered={hoveredId === a.id}
-                      onHover={() => setHoveredId(a.id)}
+                      onHover={() => {
+                        setHoveredId(a.id);
+                        setFocusTarget([a.lat, a.lng]);
+                      }}
                       onLeave={() => setHoveredId(null)}
                     />
                   );

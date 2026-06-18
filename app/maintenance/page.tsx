@@ -3,10 +3,10 @@ import Image from "next/image";
 import { Wrench, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Bisecco · Maintenance · Le 1er réseau d'artisans français vérifiés SIREN",
+  title: "Bisecco · Maintenance · Le 1er réseau de professionnels français vérifiés SIREN",
   description:
-    "Bisecco · Annuaire d'artisans français vérifiés SIREN. Plombier, électricien, maçon, menuisier, développeur web. 100% gratuit, 0% commission. Plateforme en mise à jour, retour très prochain.",
-  keywords: ["artisans", "artisans vérifiés", "SIREN", "annuaire artisans", "devis gratuit"],
+    "Bisecco · Annuaire de professionnels français vérifiés SIREN. Plombier, électricien, maçon, menuisier, développeur web. 100% gratuit, 0% commission. Plateforme en mise à jour, retour très prochain.",
+  keywords: ["professionnels", "professionnels vérifiés", "SIREN", "annuaire professionnels", "devis gratuit"],
   alternates: { canonical: "https://bisecco.fr" },
 };
 
@@ -25,7 +25,7 @@ export default function MaintenancePage() {
           <div className="w-11 h-11 rounded-xl overflow-hidden">
             <Image
               src="/logo.jpg"
-              alt="Logo Bisecco · réseau d'artisans français vérifiés"
+              alt="Logo Bisecco · réseau de professionnels français vérifiés"
               width={44}
               height={44}
               priority

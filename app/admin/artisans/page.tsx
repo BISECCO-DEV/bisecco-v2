@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Briefcase, ShieldCheck, MoreVertical, Star, Search } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Admin · Artisans",
+  title: "Admin · Professionnels",
   robots: { index: false, follow: false },
 };
 
@@ -27,7 +27,7 @@ export default function AdminArtisansPage() {
           <div>
             <h1 className="text-3xl font-bold text-ink-700 tracking-tight flex items-center gap-2">
               <Briefcase size={24} className="text-brand-500" />
-              Artisans
+              Professionnels
             </h1>
             <p className="text-ink-400 mt-1">Validation SIREN, abonnements, statistiques.</p>
           </div>
@@ -65,7 +65,7 @@ export default function AdminArtisansPage() {
           <table className="w-full text-sm">
             <thead className="bg-ink-50/60 text-[0.7rem] uppercase tracking-wider text-ink-400 border-b border-ink-100">
               <tr>
-                <th className="text-left py-3 px-5 font-bold">Artisan</th>
+                <th className="text-left py-3 px-5 font-bold">Professionnel</th>
                 <th className="text-left py-3 px-5 font-bold hidden md:table-cell">SIREN</th>
                 <th className="text-left py-3 px-5 font-bold hidden lg:table-cell">Note</th>
                 <th className="text-left py-3 px-5 font-bold">Plan</th>

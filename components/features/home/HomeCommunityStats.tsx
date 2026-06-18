@@ -56,7 +56,7 @@ export async function HomeCommunityStats() {
     {
       icon: Hammer,
       value: artisans,
-      label: artisans > 1 ? "artisans inscrits" : "artisan inscrit",
+      label: artisans > 1 ? "professionnels inscrits" : "professionnel inscrit",
       sub: "Profils vérifiés SIREN",
       gradient: "from-brand-500 to-brand-600",
       ring: "ring-brand-200",
@@ -102,7 +102,7 @@ export async function HomeCommunityStats() {
             )}
           </h2>
           <p className="mt-3 text-[0.94rem] text-ink-500 leading-relaxed">
-            Chiffres mis à jour en temps réel · particuliers et artisans réunis dans un seul réseau.
+            Chiffres mis à jour en temps réel · particuliers et professionnels réunis dans un seul réseau.
           </p>
         </div>
 

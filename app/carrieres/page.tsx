@@ -30,7 +30,7 @@ export default function CarrieresPage() {
             </span>
           </h1>
           <p className="mt-5 text-white/65 max-w-xl mx-auto leading-relaxed">
-            Une équipe de passionné·es, basée à Meaux mais ouverte au full remote. Pas de bullshit, juste du produit qui aide les artisans.
+            Une équipe de passionné·es, basée à Meaux mais ouverte au full remote. Pas de bullshit, juste du produit qui aide les professionnels.
           </p>
         </div>
       </section>

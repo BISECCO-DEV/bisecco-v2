@@ -23,8 +23,18 @@ import { LiveViewersCounter } from "@/components/features/LiveViewersCounter";
 import { FollowButton } from "@/components/features/FollowButton";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
 import { countFollowers, isFollowing } from "@/lib/follows/actions";
+import { listPortfolio } from "@/lib/profile/portfolio";
+import { BeforeAfterSlider } from "@/components/features/BeforeAfterSlider";
+import { listAvailability } from "@/lib/availability/actions";
+import { AvailabilityWidget } from "@/components/features/AvailabilityWidget";
+import { computeProBadges } from "@/lib/badges/compute";
+import { ProBadges } from "@/components/features/ProBadges";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-type Props = { params: Promise<{ id: string }> };
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ review?: string }>;
+};
 
 function formatDate(iso: string): string {
   const date = new Date(iso);
@@ -53,7 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const detail = await fetchArtisanProfileDetail(clientNumber);
   if (!detail) return { title: "Profil introuvable" };
   const a = detail.artisan;
-  const metierLabel = a.metiers[0]?.name ?? "Artisan";
+  const metierLabel = a.metiers[0]?.name ?? "Professionnel";
   return {
     title: `${a.company_name ?? a.name} · ${metierLabel} à ${a.city ?? "France"}`,
     description: a.description ?? `${metierLabel} vérifié sur Bisecco. Devis gratuit, contact direct.`,
@@ -65,8 +75,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProfilPage({ params }: Props) {
+export default async function ProfilPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { review: reviewParam } = await searchParams;
+  const showReviewSubmittedBanner = reviewParam === "submitted";
   const clientNumber = extractClientNumber(id) ?? id;
   const [detail, currentUser, dbUser] = await Promise.all([
     fetchArtisanProfileDetail(clientNumber),
@@ -82,16 +94,40 @@ export default async function ProfilPage({ params }: Props) {
   const canReview = !!dbUser && dbUser.role !== "artisan" && dbUser.id !== artisanIdResolved;
 
   // ─── Abonnements (suivre / abonné) ───
-  const [followerCount, alreadyFollowing] = await Promise.all([
+  const [followerCount, alreadyFollowing, portfolio, availability, badges, contactPrefs] = await Promise.all([
     countFollowers(artisanIdResolved),
     currentUser?.id && currentUser.id !== artisanIdResolved
       ? isFollowing(currentUser.id, artisanIdResolved)
       : Promise.resolve(false),
+    listPortfolio(artisanIdResolved),
+    listAvailability(artisanIdResolved),
+    computeProBadges(artisanIdResolved),
+    (async () => {
+      const adminClient = createSupabaseAdminClient();
+      const { data } = await adminClient
+        .from("users")
+        .select("phone, email, contact_via_email, contact_via_phone, public_contact_email")
+        .eq("id", artisanIdResolved)
+        .maybeSingle();
+      return {
+        phone: (data?.phone as string | null) ?? null,
+        email: (data?.email as string | null) ?? null,
+        contact_via_email: data?.contact_via_email === false ? false : true,
+        contact_via_phone: data?.contact_via_phone === true,
+        public_contact_email: (data?.public_contact_email as string | null) ?? null,
+      };
+    })(),
   ]);
+
+  // Détermine l'email à afficher publiquement (public_contact_email > email du compte)
+  const publicEmail = contactPrefs.contact_via_email
+    ? (contactPrefs.public_contact_email?.trim() || contactPrefs.email)
+    : null;
+  const publicPhone = contactPrefs.contact_via_phone ? contactPrefs.phone : null;
   const isOwnProfile = currentUser?.id === artisanIdResolved;
 
   const { artisan: a, services, gallery, reviews } = detail;
-  const metierLabel = a.metiers[0]?.name ?? "Artisan";
+  const metierLabel = a.metiers[0]?.name ?? "Professionnel";
 
   // Extraction intelligente : si company_name est rempli, on l'utilise.
   // Sinon, si le name legacy contient " - " (ex: "Pedro DUPONT - Dupont Maçonnerie"),
@@ -106,8 +142,11 @@ export default async function ProfilPage({ params }: Props) {
 
   const cityLabel = a.city ?? "France";
 
+  // Cascade : 1. photo perso uploadée 2. cover du métier principal 3. Unsplash générique
+  const primaryMetierCover = a.metiers[0]?.cover_url ?? null;
   const coverUrl =
     a.cover_photo ??
+    primaryMetierCover ??
     "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1600&h=400&fit=crop&q=80";
   const avatarUrl =
     a.profile_photo ?? `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(a.name)}`;
@@ -173,7 +212,7 @@ export default async function ProfilPage({ params }: Props) {
 
   const breadcrumbs = breadcrumbSchema([
     { name: "Accueil", url: "/" },
-    { name: "Artisans", url: "/rechercher" },
+    { name: "Professionnels", url: "/rechercher" },
     { name: a.name, url: `/profil/${id}` },
   ]);
 
@@ -181,6 +220,21 @@ export default async function ProfilPage({ params }: Props) {
     <>
       <JsonLd data={[localBusinessSchema, breadcrumbs]} />
       <div className="bg-ink-50 min-h-screen pb-20">
+      {/* Banner de confirmation après publication d'un avis (redirect submitReviewAction) */}
+      {showReviewSubmittedBanner && (
+        <div className="bg-gradient-to-r from-emerald-50 via-emerald-100/60 to-emerald-50 border-b border-emerald-200">
+          <div className="container-default py-3.5">
+            <div className="flex items-start sm:items-center gap-3 text-emerald-800">
+              <CheckCircle2 size={20} className="flex-shrink-0 text-emerald-600 mt-0.5 sm:mt-0" />
+              <div className="text-sm leading-relaxed">
+                <strong className="font-bold">Merci pour ton avis !</strong>{" "}
+                Il sera publié <strong>après modération par notre équipe</strong> (sous 24h en général).
+                Tu recevras un email dès qu&apos;il sera en ligne.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Cover photo · vraie balise <img> pour meilleur contrôle d'affichage */}
       <div className="relative w-full h-[340px] md:h-[420px] lg:h-[460px] bg-ink-200 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -200,7 +254,7 @@ export default async function ProfilPage({ params }: Props) {
           <div className="flex gap-2">
             <ShareButton
               title={`${companyName} sur Bisecco`}
-              text={`Découvrez ${companyName} sur Bisecco · artisan vérifié SIREN`}
+              text={`Découvrez ${companyName} sur Bisecco · professionnel vérifié SIREN`}
             />
             {canFavorite ? (
               <FavoriteButton artisanId={artisanIdResolved} initialFavorited={alreadyFavorited} compact />
@@ -289,6 +343,7 @@ export default async function ProfilPage({ params }: Props) {
                       {rating.toFixed(1)} · {reviewCount} avis
                     </span>
                   )}
+                  {availability.length > 0 && <AvailabilityWidget slots={availability} variant="compact" />}
                   <LiveViewersCounter profileKey={a.client_number ?? String(a.id)} />
                 </div>
               </div>
@@ -410,6 +465,46 @@ export default async function ProfilPage({ params }: Props) {
                 </section>
               )}
 
+              {portfolio.length > 0 && (
+                <section>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-bold text-ink-700 flex items-center gap-2">
+                      <Camera size={18} /> Avant / Après
+                    </h2>
+                    <span className="text-sm text-ink-400">
+                      {portfolio.length} réalisation{portfolio.length > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <p className="text-sm text-ink-500 mb-4">
+                    Glisse le curseur pour comparer le rendu avant / après.
+                  </p>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {portfolio.map((p) => (
+                      <div key={p.id} className="rounded-2xl overflow-hidden border border-ink-100 bg-white">
+                        <BeforeAfterSlider
+                          beforeUrl={p.before_url}
+                          afterUrl={p.after_url}
+                          alt={p.title ?? "Réalisation"}
+                          heightClass="h-72"
+                        />
+                        {(p.title || p.description) && (
+                          <div className="p-4">
+                            {p.title && (
+                              <h3 className="font-bold text-ink-700 text-sm">{p.title}</h3>
+                            )}
+                            {p.description && (
+                              <p className="text-xs text-ink-500 mt-1.5 leading-relaxed">
+                                {p.description}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
               {gallery.length > 0 && (
                 <section>
                   <div className="flex items-center justify-between mb-4">
@@ -446,7 +541,7 @@ export default async function ProfilPage({ params }: Props) {
                   <div className="bg-ink-50/60 rounded-2xl p-6 border border-ink-100 text-center">
                     <Star size={28} className="text-ink-200 mx-auto mb-2" />
                     <p className="text-ink-500 text-sm">
-                      Aucun avis pour l&apos;instant. Soyez le premier à recommander cet artisan après votre projet.
+                      Aucun avis pour l&apos;instant. Soyez le premier à recommander ce professionnel après votre projet.
                     </p>
                   </div>
                 ) : (
@@ -542,6 +637,56 @@ export default async function ProfilPage({ params }: Props) {
                   )}
                 </div>
               </div>
+
+              {availability.length > 0 && (
+                <AvailabilityWidget slots={availability} variant="full" />
+              )}
+
+              {/* Contact direct du pro (si autorisé par lui) */}
+              {(publicEmail || publicPhone) && (
+                <div className="bg-white rounded-2xl p-5 border border-ink-100">
+                  <h3 className="font-bold text-ink-700 text-sm mb-3 flex items-center gap-2">
+                    <ShieldCheck size={14} className="text-emerald-500" />
+                    Contact direct
+                  </h3>
+                  <p className="text-xs text-ink-500 mb-3 leading-relaxed">
+                    Ce professionnel autorise le contact direct par&nbsp;:
+                  </p>
+                  <ul className="space-y-2 text-sm">
+                    {publicEmail && (
+                      <li className="flex items-center gap-2.5">
+                        <span className="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 grid place-items-center flex-shrink-0">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+                        </span>
+                        <a
+                          href={`mailto:${publicEmail}?subject=${encodeURIComponent("Demande de devis via Bisecco")}`}
+                          className="text-ink-700 font-bold hover:text-brand-600 transition truncate"
+                        >
+                          {publicEmail}
+                        </a>
+                      </li>
+                    )}
+                    {publicPhone && (
+                      <li className="flex items-center gap-2.5">
+                        <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 grid place-items-center flex-shrink-0">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        </span>
+                        <a
+                          href={`tel:${publicPhone.replace(/\s/g, "")}`}
+                          className="text-ink-700 font-bold hover:text-brand-600 transition"
+                        >
+                          {publicPhone}
+                        </a>
+                      </li>
+                    )}
+                  </ul>
+                  <p className="text-[0.7rem] text-ink-400 mt-3 italic">
+                    Validé par le professionnel · contact accepté
+                  </p>
+                </div>
+              )}
+
+              {badges.length > 0 && <ProBadges badges={badges} />}
 
               <div className="bg-white rounded-2xl p-5 border border-ink-100">
                 <h3 className="font-bold text-ink-700 text-sm mb-3">Informations vérifiées</h3>

@@ -28,7 +28,7 @@ export default function PolitiqueConfidentialitePage() {
       <h2>2. Données collectées</h2>
       <p>Bisecco collecte les catégories de données suivantes&nbsp;:</p>
 
-      <h3>2.1 Données d&apos;inscription (artisans et particuliers)</h3>
+      <h3>2.1 Données d&apos;inscription (professionnels et particuliers)</h3>
       <ul>
         <li>Nom, prénom</li>
         <li>Adresse email (utilisée comme identifiant de connexion)</li>
@@ -37,7 +37,7 @@ export default function PolitiqueConfidentialitePage() {
         <li>Ville et code postal</li>
       </ul>
 
-      <h3>2.2 Données spécifiques aux artisans</h3>
+      <h3>2.2 Données spécifiques aux professionnels</h3>
       <ul>
         <li>Numéro SIREN/SIRET (vérifié auprès de l&apos;INSEE)</li>
         <li>Nom de la société</li>
@@ -59,8 +59,8 @@ export default function PolitiqueConfidentialitePage() {
       <p>Vos données personnelles sont collectées et traitées pour les finalités suivantes&nbsp;:</p>
       <ul>
         <li><strong>Création et gestion de votre compte</strong> sur la plateforme</li>
-        <li><strong>Vérification d&apos;identité professionnelle</strong> (artisans) via le répertoire SIRENE</li>
-        <li><strong>Mise en relation</strong> entre artisans et particuliers</li>
+        <li><strong>Vérification d&apos;identité professionnelle</strong> (professionnels) via le répertoire SIRENE</li>
+        <li><strong>Mise en relation</strong> entre professionnels et particuliers</li>
         <li><strong>Envoi de notifications</strong> (nouveaux messages, devis, avis reçus)</li>
         <li><strong>Modération</strong> des contenus et lutte contre la fraude</li>
         <li><strong>Amélioration du service</strong> (statistiques anonymisées)</li>

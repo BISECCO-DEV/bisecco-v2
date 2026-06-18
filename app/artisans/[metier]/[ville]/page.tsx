@@ -24,11 +24,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const villeLabel = unslug(ville);
   return {
     title: `${m.name} à ${villeLabel} · Devis gratuit, profils vérifiés`,
-    description: `Trouvez un ${m.name.toLowerCase()} à ${villeLabel} parmi notre sélection d'artisans vérifiés. SIREN contrôlé, avis clients, devis gratuit en 2 minutes.`,
+    description: `Trouvez un ${m.name.toLowerCase()} à ${villeLabel} parmi notre sélection de professionnels vérifiés. SIREN contrôlé, avis clients, devis gratuit en 2 minutes.`,
     alternates: { canonical: `/artisans/${metier}/${ville}` },
     openGraph: {
       title: `${m.name} à ${villeLabel} | Bisecco`,
-      description: `Artisans ${m.name.toLowerCase()} vérifiés à ${villeLabel}.`,
+      description: `Professionnels ${m.name.toLowerCase()} vérifiés à ${villeLabel}.`,
     },
   };
 }
@@ -46,7 +46,7 @@ export default async function SeoLocalePage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: `${m.name} à ${villeLabel}`,
-    description: `Liste des artisans ${m.name.toLowerCase()} vérifiés à ${villeLabel}`,
+    description: `Liste des professionnels ${m.name.toLowerCase()} vérifiés à ${villeLabel}`,
     numberOfItems: artisans.length,
     itemListElement: artisans.map((a, i) => ({
       "@type": "LocalBusiness",
@@ -103,13 +103,13 @@ export default async function SeoLocalePage({ params }: Props) {
               <br />
               <span className="text-white/55 font-medium text-2xl md:text-3xl">
                 {artisans.length > 0
-                  ? `${artisans.length} artisan${artisans.length > 1 ? "s" : ""} vérifié${artisans.length > 1 ? "s" : ""}`
-                  : "Aucun artisan pour l'instant"}
+                  ? `${artisans.length} professionnel${artisans.length > 1 ? "s" : ""} vérifié${artisans.length > 1 ? "s" : ""}`
+                  : "Aucun professionnel pour l'instant"}
               </span>
             </h1>
             <p className="mt-4 text-white/65 max-w-2xl leading-relaxed">
               {m.description ??
-                `Trouvez un ${m.name.toLowerCase()} à ${villeLabel} parmi notre sélection d'artisans avec SIREN vérifié, avis clients réels et devis gratuit sous 24h.`}
+                `Trouvez un ${m.name.toLowerCase()} à ${villeLabel} parmi notre sélection de professionnels avec SIREN vérifié, avis clients réels et devis gratuit sous 24h.`}
             </p>
           </div>
         </section>
@@ -136,7 +136,7 @@ export default async function SeoLocalePage({ params }: Props) {
                   href="/inscription"
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white border-2 border-ink-100 text-ink-700 font-bold hover:border-brand-300 transition"
                 >
-                  Je suis artisan, m&apos;inscrire
+                  Je suis professionnel, m&apos;inscrire
                 </Link>
               </div>
             </section>

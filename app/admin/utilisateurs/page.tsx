@@ -15,7 +15,7 @@ type SearchParams = Promise<{
 
 const ROLE_OPTIONS = [
   { value: "all", label: "Tous rôles" },
-  { value: "artisan", label: "Artisans" },
+  { value: "artisan", label: "Professionnels" },
   { value: "particulier", label: "Particuliers" },
   { value: "admin", label: "Admins" },
 ];
@@ -73,7 +73,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
           <span className="ml-2 text-base font-bold text-ink-400">({total})</span>
         </h1>
         <p className="text-ink-500 text-sm mt-1">
-          Gérer artisans, particuliers et validations SIREN.
+          Gérer professionnels, particuliers et validations SIREN.
         </p>
       </div>
 

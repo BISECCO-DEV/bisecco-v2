@@ -9,7 +9,7 @@ import { breadcrumbSchema } from "@/lib/seo/schemas";
 
 export const metadata: Metadata = {
   title: "Qui sommes-nous · Histoire, mission, équipe Bisecco",
-  description: "Découvrez l'histoire de Bisecco, fondé en 2026 par Laurent Nero (AGISCO HOLDING SAS). Notre mission : connecter artisans français vérifiés et particuliers, sans commission, avec transparence totale.",
+  description: "Découvrez l'histoire de Bisecco, fondé en 2026 par Laurent Nero (AGISCO HOLDING SAS). Notre mission : connecter professionnels français vérifiés et particuliers, sans commission, avec transparence totale.",
   alternates: { canonical: "/qui-sommes-nous" },
 };
 
@@ -17,22 +17,22 @@ const TIMELINE = [
   {
     date: "Été 2025",
     title: "L'idée",
-    text: "Constat de Laurent Nero : la difficulté pour les particuliers de trouver un artisan fiable rapidement, et la rente abusive des plateformes traditionnelles sur les artisans (5-25 % de commission).",
+    text: "Constat de Laurent Nero : la difficulté pour les particuliers de trouver un professionnel fiable rapidement, et la rente abusive des plateformes traditionnelles sur les professionnels (5-25 % de commission).",
   },
   {
     date: "Hiver 2025",
     title: "Conception",
-    text: "Phase de R&D : design produit, choix technologique (Next.js + Supabase), vérification SIREN automatisée via l'API INSEE, première version privée testée auprès d'artisans pilotes.",
+    text: "Phase de R&D : design produit, choix technologique (Next.js + Supabase), vérification SIREN automatisée via l'API INSEE, première version privée testée auprès de professionnels pilotes.",
   },
   {
     date: "Janvier 2026",
     title: "Création AGISCO HOLDING",
-    text: "Création officielle de la SAS éditrice (RCS Cannes 750 463 317) basée à Cannes. Recrutement des premiers artisans certifiés, ouverture des inscriptions.",
+    text: "Création officielle de la SAS éditrice (RCS Cannes 750 463 317) basée à Cannes. Recrutement des premiers professionnels certifiés, ouverture des inscriptions.",
   },
   {
     date: "Mai 2026",
     title: "Lancement public",
-    text: "Ouverture du réseau social Bisecco au grand public sur bisecco.fr. 100 % gratuit pour particuliers et artisans, 0 commission, contact direct.",
+    text: "Ouverture du réseau social Bisecco au grand public sur bisecco.fr. 100 % gratuit pour particuliers et professionnels, 0 commission, contact direct.",
   },
 ];
 
@@ -40,17 +40,17 @@ const VALUES = [
   {
     icon: ShieldCheck,
     title: "Vérification radicale",
-    text: "Chaque artisan est contrôlé via l'API officielle INSEE (recherche-entreprises.api.gouv.fr). Aucun profil sans SIREN actif. Aucune exception.",
+    text: "Chaque professionnel est contrôlé via l'API officielle INSEE (recherche-entreprises.api.gouv.fr). Aucun profil sans SIREN actif. Aucune exception.",
   },
   {
     icon: Sparkles,
     title: "Zéro commission",
-    text: "Bisecco ne prélève rien sur les transactions entre artisans et clients. Le réseau est gratuit pour tous · les artisans gardent 100 % de leurs revenus.",
+    text: "Bisecco ne prélève rien sur les transactions entre professionnels et clients. Le réseau est gratuit pour tous · les professionnels gardent 100 % de leurs revenus.",
   },
   {
     icon: MessageCircle,
     title: "Contact direct",
-    text: "Pas de paywall pour récupérer les coordonnées. Particuliers et artisans échangent sans intermédiaire via notre messagerie sécurisée.",
+    text: "Pas de paywall pour récupérer les coordonnées. Particuliers et professionnels échangent sans intermédiaire via notre messagerie sécurisée.",
   },
   {
     icon: Globe2,
@@ -129,11 +129,11 @@ export default function QuiSommesNousPage() {
           </span>
           <h1 className="font-display font-semibold text-[42px] sm:text-[58px] lg:text-[68px] leading-[1.05] tracking-[-0.025em] mt-6">
             Construisons la <span className="text-brand-500">confiance</span><br />
-            entre artisans et particuliers.
+            entre professionnels et particuliers.
           </h1>
           <p className="mt-7 text-white/70 text-[1.05rem] leading-relaxed max-w-2xl mx-auto">
-            Bisecco est née d&apos;un constat simple : trouver un artisan de confiance en France
-            ne devrait pas être un parcours du combattant. Et un artisan compétent ne devrait pas
+            Bisecco est née d&apos;un constat simple : trouver un professionnel de confiance en France
+            ne devrait pas être un parcours du combattant. Et un professionnel compétent ne devrait pas
             verser une commission abusive pour accéder à sa propre clientèle.
           </p>
         </div>
@@ -148,24 +148,24 @@ export default function QuiSommesNousPage() {
                 <Target size={11} className="text-brand-500" /> Notre mission
               </span>
               <h2 className="font-display font-semibold text-[32px] lg:text-[42px] leading-[1.1] tracking-[-0.025em] text-ink-900 mt-5">
-                Redonner aux artisans le <span className="text-brand-500">pouvoir</span> sur leur visibilité.
+                Redonner aux professionnels le <span className="text-brand-500">pouvoir</span> sur leur visibilité.
               </h2>
             </div>
 
             <div className="space-y-5 text-ink-600 text-[1rem] leading-relaxed">
               <p>
-                En France, près d&apos;<strong className="text-ink-900">1 million d&apos;artisans</strong> dépendent
+                En France, près d&apos;<strong className="text-ink-900">1 million de professionnels</strong> dépendent
                 de plateformes traditionnelles qui prélèvent 5 à 25 % de commission sur chaque chantier
                 signé, ou font payer l&apos;accès aux coordonnées clients.
               </p>
               <p>
                 <strong className="text-ink-900">Bisecco renverse ce modèle.</strong> Le réseau est gratuit
-                pour tout le monde · particuliers comme professionnels. Les artisans gardent 100 % de leurs
+                pour tout le monde · particuliers comme professionnels. Les professionnels gardent 100 % de leurs
                 revenus. Les particuliers contactent qui ils veulent, sans paywall, sans formulaire intrusif.
               </p>
               <p>
                 Notre seule source de revenus : des <strong className="text-ink-900">services premium optionnels</strong>{" "}
-                pour les artisans qui souhaitent booster leur visibilité (pack mise en avant, statistiques
+                pour les professionnels qui souhaitent booster leur visibilité (pack mise en avant, statistiques
                 avancées). Aucune commission sur leur activité, jamais.
               </p>
             </div>
@@ -305,7 +305,7 @@ export default function QuiSommesNousPage() {
 
               <div className="mt-6 pt-5 border-t border-sand-200 text-[0.82rem] text-ink-500 leading-relaxed">
                 Société éditrice de la plateforme bisecco.fr. Aucune sous-traitance, aucune
-                délégation de gestion. L&apos;équipe traite directement avec les artisans et particuliers.
+                délégation de gestion. L&apos;équipe traite directement avec les professionnels et particuliers.
               </div>
             </div>
           </div>
@@ -346,7 +346,7 @@ export default function QuiSommesNousPage() {
             Rejoignez la <span className="text-brand-500">communauté</span> Bisecco.
           </h2>
           <p className="text-ink-500 mt-4 max-w-xl mx-auto leading-relaxed">
-            Particulier, artisan ou simple curieux · créez votre compte gratuit et participez
+            Particulier, professionnel ou simple curieux · créez votre compte gratuit et participez
             au mouvement de l&apos;artisanat français.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">

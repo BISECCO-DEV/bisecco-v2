@@ -6,7 +6,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { CtaButton } from "@/components/ui/CtaButton";
 
 export const metadata: Metadata = {
-  title: "Contact · Réseau des artisans français",
+  title: "Contact · Réseau des professionnels français",
   description: "Contactez l'équipe Bisecco. Réponse sous 24h ouvrées. Email, chat en ligne, support 7j/7.",
   alternates: { canonical: "/contact" },
 };

@@ -1,13 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Bell, Lock, Globe, Eye, Mail, Trash2, Download } from "lucide-react";
+import { ArrowLeft, Bell, Lock, Globe, Eye, Mail, Trash2, Smartphone, Ban, Zap } from "lucide-react";
+import { ExportDataButton, DeleteAccountButton } from "./GdprActions";
+import { EnableNotificationsButton } from "@/components/features/EnableNotificationsButton";
+import { BlockedUsersSection } from "./BlockedUsersSection";
+import { QuickRepliesSection } from "./QuickRepliesSection";
+import { listBlockedUsers } from "@/lib/blocks/actions";
+import { listMyQuickReplies } from "@/lib/quick-replies/actions";
+import { getCurrentUser } from "@/lib/db/current-user";
 
 export const metadata: Metadata = {
   title: "Paramètres",
   robots: { index: false, follow: false },
 };
 
-export default function ParametresPage() {
+export default async function ParametresPage() {
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_KEY;
+  const me = await getCurrentUser();
+  const isArtisan = me?.role === "artisan";
+  const [blocked, quickReplies] = await Promise.all([
+    listBlockedUsers(),
+    isArtisan ? listMyQuickReplies() : Promise.resolve([]),
+  ]);
+
   return (
     <div className="bg-ink-50 min-h-screen">
       <div className="container-default py-10">
@@ -18,8 +33,18 @@ export default function ParametresPage() {
         <p className="text-ink-400 mt-1">Gérez votre compte, sécurité, notifications et confidentialité.</p>
 
         <div className="mt-8 space-y-6">
-          {/* Notifications */}
-          <Section icon={Bell} title="Notifications" sub="Choisissez les emails et alertes que vous recevez">
+          {/* Notifications push */}
+          <Section icon={Smartphone} title="Notifications push" sub="Reçois une alerte sur ton téléphone même quand l'app n'est pas ouverte">
+            <div className="px-1 py-2">
+              <p className="text-sm text-ink-600 mb-3">
+                Active les notifications pour recevoir une alerte instantanée à chaque nouveau message, devis ou avis.
+              </p>
+              <EnableNotificationsButton vapidPublicKey={vapidPublicKey} />
+            </div>
+          </Section>
+
+          {/* Notifications emails */}
+          <Section icon={Bell} title="Notifications email" sub="Choisissez les emails et alertes que vous recevez">
             {[
               { label: "Nouveau message reçu",     defaultOn: true  },
               { label: "Nouvelle demande de devis", defaultOn: true  },
@@ -44,6 +69,18 @@ export default function ParametresPage() {
             </Row>
           </Section>
 
+          {/* Réponses pré-enregistrées (pros uniquement) */}
+          {isArtisan && (
+            <Section icon={Zap} title="Réponses pré-enregistrées" sub="Réponds à tes clients en 1 clic depuis la messagerie">
+              <QuickRepliesSection initial={quickReplies} />
+            </Section>
+          )}
+
+          {/* Utilisateurs bloqués */}
+          <Section icon={Ban} title="Utilisateurs bloqués" sub={`${blocked.length} personne${blocked.length > 1 ? "s" : ""} bloquée${blocked.length > 1 ? "s" : ""} · plus aucun message ne passe`}>
+            <BlockedUsersSection initial={blocked} />
+          </Section>
+
           {/* Confidentialité */}
           <Section icon={Eye} title="Confidentialité" sub="Contrôlez ce qui est visible publiquement">
             <Toggle label="Mon profil est public" defaultChecked />
@@ -65,21 +102,23 @@ export default function ParametresPage() {
             </Row>
           </Section>
 
-          {/* Données */}
+          {/* Données · RGPD Article 20 */}
           <Section icon={Mail} title="Mes données">
-            <Row label="Exporter mes données" sub="Téléchargez l'ensemble de vos données au format JSON (RGPD)">
-              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 text-sm font-bold hover:bg-blue-100 transition">
-                <Download size={13} /> Télécharger
-              </button>
+            <Row
+              label="Exporter mes données"
+              sub="Télécharge l'ensemble de tes données au format JSON (RGPD Article 20 - portabilité)"
+            >
+              <ExportDataButton />
             </Row>
           </Section>
 
-          {/* Zone dangereuse */}
+          {/* Zone dangereuse · RGPD Article 17 */}
           <Section icon={Trash2} title="Zone dangereuse" danger>
-            <Row label="Supprimer mon compte" sub="Cette action est irréversible. Toutes vos données seront supprimées sous 30 jours.">
-              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-bold hover:bg-red-100 transition">
-                <Trash2 size={13} /> Supprimer
-              </button>
+            <Row
+              label="Supprimer mon compte"
+              sub="Action irréversible. Tes données personnelles seront anonymisées immédiatement (RGPD Article 17 - droit à l'oubli)."
+            >
+              <DeleteAccountButton />
             </Row>
           </Section>
         </div>

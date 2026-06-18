@@ -16,18 +16,18 @@ type Article = {
 const ARTICLES: Record<string, Article> = {
   "creer-compte": {
     title: "Comment créer mon compte sur Bisecco ?",
-    excerpt: "Étape par étape : inscription en 2 minutes en tant que particulier ou artisan.",
+    excerpt: "Étape par étape : inscription en 2 minutes en tant que particulier ou professionnel.",
     readTime: "2 min",
     updated: "Mis à jour le 15 mai 2026",
     category: { slug: "compte", label: "Mon compte" },
     content: [
       { type: "p",    text: "Créer un compte sur Bisecco est gratuit et prend moins de 2 minutes. Voici les étapes." },
       { type: "h2",   text: "1. Choisir votre profil" },
-      { type: "p",    text: "Sur la page d'inscription, sélectionnez si vous êtes Particulier (recherchez un artisan) ou Professionnel (vous êtes artisan)." },
+      { type: "p",    text: "Sur la page d'inscription, sélectionnez si vous êtes Particulier (recherchez un professionnel) ou Professionnel (vous êtes professionnel)." },
       { type: "h2",   text: "2. Remplir vos informations" },
       { type: "list", text: ["Nom complet", "Adresse email valide", "Mot de passe (8 caractères minimum)", "Code postal et ville"] },
-      { type: "h2",   text: "3. Pour les artisans : numéro SIREN" },
-      { type: "p",    text: "Les artisans doivent fournir leur numéro SIREN (9 chiffres). Nous le vérifions automatiquement via l'API officielle du gouvernement. Si tout est OK, votre profil est validé en moins de 24h." },
+      { type: "h2",   text: "3. Pour les professionnels : numéro SIREN" },
+      { type: "p",    text: "Les professionnels doivent fournir leur numéro SIREN (9 chiffres). Nous le vérifions automatiquement via l'API officielle du gouvernement. Si tout est OK, votre profil est validé en moins de 24h." },
       { type: "note", text: "💡 Astuce : vous pouvez aussi vous connecter via Google pour gagner du temps." },
       { type: "h2",   text: "4. Vérifier votre email" },
       { type: "p",    text: "Un email de confirmation est envoyé à l'adresse fournie. Cliquez sur le lien pour activer votre compte." },

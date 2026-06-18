@@ -4,13 +4,13 @@ import { Sparkles, ShieldCheck, KeyRound, Mail } from "lucide-react";
 import { ComingSoonClient } from "./ComingSoonClient";
 
 export const metadata: Metadata = {
-  title: "Bisecco · Le 1er réseau social d'artisans français vérifiés SIREN",
+  title: "Bisecco · Le 1er réseau social de professionnels français vérifiés SIREN",
   description:
-    "Bisecco · Annuaire d'artisans français vérifiés SIREN. Trouvez un artisan qualifié près de chez vous (plombier, électricien, maçon, menuisier, développeur web…). 100% gratuit, 0% commission. Nouvelle version bientôt disponible.",
-  keywords: ["artisans", "artisans vérifiés", "SIREN", "plombier", "électricien", "annuaire artisans", "devis gratuit"],
+    "Bisecco · Annuaire de professionnels français vérifiés SIREN. Trouvez un professionnel qualifié près de chez vous (plombier, électricien, maçon, menuisier, développeur web…). 100% gratuit, 0% commission. Nouvelle version bientôt disponible.",
+  keywords: ["professionnels", "professionnels vérifiés", "SIREN", "plombier", "électricien", "annuaire professionnels", "devis gratuit"],
   alternates: { canonical: "https://bisecco.fr" },
   openGraph: {
-    title: "Bisecco · Réseau d'artisans français vérifiés",
+    title: "Bisecco · Réseau de professionnels français vérifiés",
     description: "Annuaire 100% gratuit · 0% commission · SIREN vérifié.",
     type: "website",
     locale: "fr_FR",
@@ -67,7 +67,7 @@ export default function ComingSoonPage() {
           <div className="w-12 h-12 rounded-2xl overflow-hidden border border-white/15 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.5)]">
             <Image
               src="/logo.jpg"
-              alt="Logo Bisecco · réseau d'artisans français vérifiés"
+              alt="Logo Bisecco · réseau de professionnels français vérifiés"
               width={48}
               height={48}
               priority
@@ -79,7 +79,7 @@ export default function ComingSoonPage() {
               BISECCO
             </div>
             <div className="text-[0.62rem] text-brand-400 font-bold tracking-[0.18em] uppercase">
-              Réseau d&apos;artisans
+              Réseau de professionnels
             </div>
           </div>
         </div>
@@ -106,7 +106,7 @@ export default function ComingSoonPage() {
             Notre plateforme est actuellement en maintenance afin de déployer une{" "}
             <strong className="text-white">Version 2 plus complète</strong>, avec de nouvelles
             fonctionnalités et services dédiés aux <strong className="text-white">particuliers</strong> et aux{" "}
-            <strong className="text-white">artisans</strong>.
+            <strong className="text-white">professionnels</strong>.
           </p>
 
           {/* Composant client : code + email */}

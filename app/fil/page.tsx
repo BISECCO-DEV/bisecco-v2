@@ -18,7 +18,7 @@ import { getMetierOptions } from "@/lib/db/metier-options";
 export const metadata: Metadata = {
   title: "Le Fil · Bisecco",
   description:
-    "Le fil d'actualité où artisans et particuliers échangent : réalisations de chantiers, questions travaux, conseils pratiques. Tous les comptes sont vérifiés SIREN.",
+    "Le fil d'actualité où professionnels et particuliers échangent : réalisations de chantiers, questions travaux, conseils pratiques. Tous les comptes sont vérifiés SIREN.",
 };
 
 export const revalidate = 10;
@@ -189,7 +189,7 @@ function EmptyFeed({ canPost, hasFilter }: { canPost: boolean; hasFilter: boolea
         </div>
         <h2 className="text-xl font-bold text-ink-700">Le fil démarre tout juste</h2>
         <p className="text-sm text-ink-500 mt-2 max-w-md mx-auto leading-relaxed">
-          Que vous soyez <strong className="text-ink-700">artisan</strong> ou <strong className="text-ink-700">particulier</strong>,
+          Que vous soyez <strong className="text-ink-700">professionnel</strong> ou <strong className="text-ink-700">particulier</strong>,
           soyez parmi les premiers à publier.
         </p>
 

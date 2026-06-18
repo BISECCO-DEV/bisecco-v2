@@ -97,7 +97,15 @@ export async function deleteAllNotificationsAction() {
   revalidatePath("/mon-profil/notifications");
 }
 
-/** Helper interne : push une notif (best-effort) */
+/**
+ * Helper interne : push une notif (best-effort).
+ *
+ * Effectue 2 actions en parallèle :
+ *  1. Insertion dans `app_notifications` (cloche in-app)
+ *  2. Web Push (notif système même quand l'app n'est pas ouverte)
+ *
+ * Les 2 sont best-effort : un échec ne bloque pas l'action principale.
+ */
 export async function pushNotification(
   userId: number,
   type: string,
@@ -106,6 +114,7 @@ export async function pushNotification(
   actionUrl?: string,
   icon?: string,
 ): Promise<void> {
+  // 1) In-app notification
   try {
     const admin = createSupabaseAdminClient();
     await admin.from("app_notifications").insert({
@@ -118,5 +127,17 @@ export async function pushNotification(
     });
   } catch {
     // best-effort
+  }
+
+  // 2) Web Push (browser/mobile)
+  try {
+    const { sendPushToUser } = await import("@/lib/push/server");
+    await sendPushToUser(userId, {
+      title: title.slice(0, 100),
+      body: message?.slice(0, 200),
+      url: actionUrl ?? "/mon-profil/notifications",
+    });
+  } catch {
+    // best-effort — si VAPID non configuré ou web-push non installé, on ignore
   }
 }

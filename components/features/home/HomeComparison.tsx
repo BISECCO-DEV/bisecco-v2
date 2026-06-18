@@ -43,12 +43,12 @@ const ROWS: Row[] = [
     cells: ["yes", "no", "no"],
   },
   {
-    feature: "Messagerie directe client-artisan",
+    feature: "Messagerie directe client-professionnel",
     detail: "Sans paywall ni intermédiaire payant",
     cells: ["yes", "no", "partial"],
   },
   {
-    feature: "Contacts artisans illimités",
+    feature: "Contacts professionnels illimités",
     detail: "Pas d'achat de leads à la pièce",
     cells: ["yes", "yes", "no"],
   },
@@ -58,14 +58,14 @@ const ROWS: Row[] = [
     cells: ["yes", "partial", "partial"],
   },
   {
-    feature: "Inscription artisan gratuite",
+    feature: "Inscription professionnel gratuite",
     detail: "Profil complet sans abonnement obligatoire",
     cells: ["yes", "partial", "yes"],
   },
   {
     feature: "Pages locales métier × ville",
     detail: "Optimisation SEO pour la recherche locale",
-    cells: ["176 × 200", "Annuaire", "Limité"],
+    cells: ["189 × 200", "Annuaire", "Limité"],
   },
   {
     feature: "Hébergement français · RGPD",
@@ -269,7 +269,7 @@ export function HomeComparison() {
                 Aucun engagement, aucune carte bancaire.
               </div>
               <div className="text-[0.8rem] sm:text-[0.86rem] text-white/70 mt-1.5">
-                Créez votre profil ou trouvez votre artisan en 2 minutes.
+                Créez votre profil ou trouvez votre professionnel en 2 minutes.
               </div>
             </div>
 

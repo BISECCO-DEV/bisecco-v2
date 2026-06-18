@@ -23,7 +23,7 @@ export default function NotFound() {
             Accueil
           </CtaButton>
           <CtaButton href="/rechercher" variant="white" size="md" icon={Search}>
-            Trouver un artisan
+            Trouver un professionnel
           </CtaButton>
           <CtaButton href="/contact" variant="white" size="md" icon={MessageCircle}>
             Contact

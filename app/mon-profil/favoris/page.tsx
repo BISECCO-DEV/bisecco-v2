@@ -7,7 +7,7 @@ import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { toggleFavoriteAction } from "@/lib/favorites/actions";
 
 export const metadata: Metadata = {
-  title: "Mes artisans favoris",
+  title: "Mes professionnels favoris",
   robots: { index: false, follow: false },
 };
 
@@ -74,9 +74,9 @@ export default async function FavorisPage() {
           <div>
             <h1 className="text-3xl font-bold text-ink-700 tracking-tight flex items-center gap-2">
               <Heart size={24} fill="#f07a2f" className="text-brand-500" />
-              Mes artisans favoris
+              Mes professionnels favoris
             </h1>
-            <p className="text-ink-400 mt-1">Retrouvez en un clic les artisans que vous avez sauvegardés.</p>
+            <p className="text-ink-400 mt-1">Retrouvez en un clic les professionnels que vous avez sauvegardés.</p>
           </div>
           <span className="px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-sm font-bold">
             {favorites.length} favori{favorites.length > 1 ? "s" : ""}
@@ -88,10 +88,10 @@ export default async function FavorisPage() {
             <Heart size={48} className="mx-auto text-ink-200 mb-4" />
             <h2 className="font-bold text-ink-700">Aucun favori pour le moment</h2>
             <p className="text-sm text-ink-400 mt-2 max-w-sm mx-auto">
-              Quand vous trouverez un artisan intéressant, cliquez sur le cœur pour le sauvegarder ici.
+              Quand vous trouverez un professionnel intéressant, cliquez sur le cœur pour le sauvegarder ici.
             </p>
             <Link href="/rechercher" className="btn-primary mt-6 inline-flex">
-              Trouver un artisan
+              Trouver un professionnel
             </Link>
           </div>
         ) : (
@@ -99,7 +99,7 @@ export default async function FavorisPage() {
             {favorites.map((f) => {
               if (!f.artisan) return null;
               const a = f.artisan;
-              const metierName = a.artisan_profiles?.metier?.name ?? "Artisan";
+              const metierName = a.artisan_profiles?.metier?.name ?? "Professionnel";
               const company = a.artisan_profiles?.company_name?.trim() ?? "";
               // Affichage public : nom commercial en titre, gérant en sous-ligne discrète.
               const displayName = company || a.name || "·";

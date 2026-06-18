@@ -98,6 +98,30 @@ function copyCookies(source: NextResponse, target: NextResponse): NextResponse {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // ── 0. Force HTTPS + domaine canonique bisecco.fr ──
+  // - Redirige http:// → https:// (sécurité critique)
+  // - Redirige bisecco.com/.eu/.it → bisecco.fr (SEO + branding consolidé)
+  // - Skip pour healthchecks et en dev
+  if (process.env.NODE_ENV === "production") {
+    const proto = request.headers.get("x-forwarded-proto");
+    const host = request.headers.get("host") ?? request.nextUrl.host;
+    const hostLower = host.toLowerCase();
+    const isHttp = proto === "http";
+    // Bisecco a plusieurs TLDs (.com .eu .it) qui doivent tous renvoyer sur .fr
+    const isAltDomain =
+      /^(?:www\.)?bisecco\.(com|eu|it)$/.test(hostLower) ||
+      hostLower === "www.bisecco.fr";
+
+    if (isHttp || isAltDomain) {
+      const url = request.nextUrl.clone();
+      url.protocol = "https:";
+      url.host = "bisecco.fr";
+      // Redirect 301 permanent · Google passe le PageRank au domaine canonique
+      return NextResponse.redirect(url, 301);
+    }
+  }
+
   let response = NextResponse.next({ request });
 
   // ── 1. Refresh session Supabase + récupère le user ──

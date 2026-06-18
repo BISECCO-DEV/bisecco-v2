@@ -214,9 +214,9 @@ export default async function BlogArticlePage({ params }: Props) {
             <div className="mt-12 p-7 rounded-2xl bg-gradient-to-br from-ink-800 via-ink-700 to-ink-800 text-white relative overflow-hidden">
               <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-brand-500/30 blur-2xl pointer-events-none" />
               <div className="relative">
-                <h3 className="font-extrabold text-xl tracking-tight">Prêt à trouver votre artisan ?</h3>
+                <h3 className="font-extrabold text-xl tracking-tight">Prêt à trouver votre professionnel ?</h3>
                 <p className="text-white/70 text-[0.94rem] mt-2 leading-relaxed max-w-lg">
-                  Demandez un devis gratuit en 2 minutes. Plusieurs artisans vérifiés SIREN vous répondent
+                  Demandez un devis gratuit en 2 minutes. Plusieurs professionnels vérifiés SIREN vous répondent
                   sous 24h, sans commission ni intermédiaire.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
@@ -230,7 +230,7 @@ export default async function BlogArticlePage({ params }: Props) {
                     href="/rechercher"
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.08] border border-white/[0.14] text-white font-bold text-[0.88rem] hover:bg-white/[0.14] transition"
                   >
-                    Parcourir les artisans
+                    Parcourir les professionnels
                   </Link>
                 </div>
               </div>

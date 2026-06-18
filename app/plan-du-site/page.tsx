@@ -11,10 +11,10 @@ const SECTIONS = [
     title: "Services",
     links: [
       { href: "/",                href_label: "Accueil" },
-      { href: "/rechercher",      href_label: "Rechercher un artisan" },
+      { href: "/rechercher",      href_label: "Rechercher un professionnel" },
       { href: "/metiers",         href_label: "Tous les métiers" },
       { href: "/devis",           href_label: "Demander un devis" },
-      { href: "/comparateur",     href_label: "Comparer des artisans" },
+      { href: "/comparateur",     href_label: "Comparer des professionnels" },
       { href: "/avis",            href_label: "Tous les avis clients" },
     ],
   },

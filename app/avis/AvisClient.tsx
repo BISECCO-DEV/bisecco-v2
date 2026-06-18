@@ -34,27 +34,27 @@ const PROJECT_ARTISAN = "Témoignage artisan";
 
 const TEXTS_PARTICULIER_5 = [
   "Excellent travail, je recommande à 100%. Devis clair, intervention soignée, finitions impeccables.",
-  "Artisan ultra pro, ponctuel, propre et à l'écoute. Le résultat dépasse mes attentes.",
+  "Professionnel ultra pro, ponctuel, propre et à l'écoute. Le résultat dépasse mes attentes.",
   "Je ne pouvais pas espérer mieux. Devis respecté à l'euro près, délais tenus. Bravo !",
   "Du premier contact au dernier coup de pinceau, tout a été parfait. Je referai appel sans hésiter.",
-  "Très satisfaite. L'artisan est venu plusieurs fois pour bien comprendre mon projet avant de commencer.",
+  "Très satisfaite. Le professionnel est venu plusieurs fois pour bien comprendre mon projet avant de commencer.",
   "Communication fluide via la messagerie. Photos avant/après envoyées tous les jours. Top.",
   "Sauvée par Bisecco un dimanche soir pour une fuite. Réponse en 1h, intervention en 2h. Génial.",
   "Trois devis comparés en 48h, j'ai choisi le meilleur rapport qualité-prix. Aucun regret.",
-  "Mes voisins m'ont demandé les coordonnées de l'artisan. C'est dire la qualité du travail !",
+  "Mes voisins m'ont demandé les coordonnées du professionnel. C'est dire la qualité du travail !",
   "Tarifs honnêtes, pas de surprise sur la facture finale. Ça change des autres plateformes.",
   "Un grand merci à toute l'équipe. Travail soigné dans une ambiance sympathique.",
   "Devis détaillé, démarches administratives prises en charge. Service complet, je conseille.",
 ];
 const TEXTS_PARTICULIER_4 = [
   "Bon travail dans l'ensemble. Quelques retards en début de chantier mais le résultat est bien.",
-  "Très bon artisan. Petite déception sur les délais mais la qualité est au rendez-vous.",
+  "Très bon professionnel. Petite déception sur les délais mais la qualité est au rendez-vous.",
   "Travail correct. J'aurais apprécié plus de communication sur l'avancement.",
   "Bonne expérience. Le devis a légèrement débordé mais les finitions sont propres.",
   "Très satisfait du résultat. Un petit accroc sur les délais, mais tout est rentré dans l'ordre.",
 ];
 const TEXTS_PARTICULIER_3 = [
-  "Travail correct sans plus. Quelques détails à reprendre mais l'artisan est revenu rapidement.",
+  "Travail correct sans plus. Quelques détails à reprendre mais le professionnel est revenu rapidement.",
   "Résultat ok. La communication aurait pu être meilleure pendant le chantier.",
 ];
 
@@ -62,9 +62,9 @@ const TEXTS_ARTISAN = [
   "Bisecco a transformé mon activité. Plateforme propre, clients sérieux, zéro commission.",
   "J'ai signé 2 chantiers dès la première semaine. Profil rapide à monter, leads de qualité.",
   "En 3 mois, j'ai triplé mes demandes de devis. Je ne reviendrai jamais sur les pages jaunes.",
-  "Enfin une plateforme qui respecte les artisans. Vérification SIREN, aucun client mal intentionné.",
+  "Enfin une plateforme qui respecte les professionnels. Vérification SIREN, aucun client mal intentionné.",
   "Très satisfait. Les devis arrivent qualifiés avec photos, ça me fait gagner un temps fou.",
-  "Une bouffée d'air pour les artisans. Bisecco me permet de me focus sur le métier.",
+  "Une bouffée d'air pour les professionnels. Bisecco me permet de me focus sur le métier.",
   "Plateforme française, vérifiée, gratuite. Tout y est. Je recommande à mes confrères.",
   "5 chantiers signés en 2 mois grâce à Bisecco. Mon CA a augmenté de 30%.",
   "Excellente interface, très intuitive. La messagerie sécurisée évite les coups de fil parasites.",
@@ -138,7 +138,7 @@ const AVIS: Avis[] = generateAvis(247);
 const FILTERS = [
   { id: "all",        label: "Tous",         count: AVIS.length },
   { id: "particulier", label: "Particuliers", count: AVIS.filter((a) => a.type === "particulier").length },
-  { id: "artisan",     label: "Artisans",     count: AVIS.filter((a) => a.type === "artisan").length },
+  { id: "artisan",     label: "Professionnels",     count: AVIS.filter((a) => a.type === "artisan").length },
 ];
 
 const PAGE_SIZE = 24;
@@ -221,7 +221,7 @@ export function AvisClient() {
         <div className="flex items-center gap-2 text-sm text-ink-500">
           <Filter size={14} className="text-brand-500" />
           <strong className="text-ink-700">{filtered.length}</strong> avis
-          {filter !== "all" && <span>· filtré sur {filter}s</span>}
+          {filter !== "all" && <span>· filtré sur {filter === "artisan" ? "professionnels" : `${filter}s`}</span>}
         </div>
         <select className="text-xs bg-white border border-ink-200 rounded-lg px-3 py-1.5 outline-none">
           <option>Plus récents</option>
@@ -253,7 +253,7 @@ export function AvisClient() {
                     ? "bg-blue-50 border-blue-100 text-blue-700"
                     : "bg-amber-50 border-amber-100 text-amber-700"
                 }`}>
-                  {a.type === "particulier" ? "🏠 Particulier" : "⚒ Artisan"}
+                  {a.type === "particulier" ? "🏠 Particulier" : "⚒ Professionnel"}
                 </span>
                 <span className="text-[0.7rem] text-ink-400 font-medium">{a.date}</span>
               </div>
@@ -323,7 +323,7 @@ export function AvisClient() {
       {/* CTA bas */}
       <div className="mt-12 text-center py-10 bg-white rounded-3xl border border-ink-100">
         <h3 className="text-xl font-bold text-ink-700">Vous avez eu une expérience avec Bisecco ?</h3>
-        <p className="text-sm text-ink-400 mt-2">Partagez votre avis et aidez d&apos;autres clients à choisir le bon artisan.</p>
+        <p className="text-sm text-ink-400 mt-2">Partagez votre avis et aidez d&apos;autres clients à choisir le bon professionnel.</p>
         <Link href="/mon-profil" className="btn-primary mt-5 inline-flex">
           Laisser un avis
         </Link>

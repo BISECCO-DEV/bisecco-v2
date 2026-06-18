@@ -34,7 +34,7 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
   "plombier": {
     slug: "plombier",
     definition:
-      "Le plombier est l'artisan spécialisé dans l'installation, la réparation et la maintenance des systèmes d'eau, de gaz et de sanitaires d'un logement ou d'un bâtiment. Son intervention couvre aussi bien la pose neuve que le dépannage urgent (fuite, débouchage, chauffe-eau en panne).",
+      "Le plombier est le professionnel spécialisé dans l'installation, la réparation et la maintenance des systèmes d'eau, de gaz et de sanitaires d'un logement ou d'un bâtiment. Son intervention couvre aussi bien la pose neuve que le dépannage urgent (fuite, débouchage, chauffe-eau en panne).",
     services: [
       "Dépannage urgent (fuite, débouchage, robinetterie)",
       "Installation et remplacement de chauffe-eau (électrique, thermodynamique, gaz)",
@@ -63,7 +63,7 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
   "electricien": {
     slug: "electricien",
     definition:
-      "L'électricien est l'artisan habilité à concevoir, installer et entretenir les installations électriques d'un logement, d'un local professionnel ou d'un bâtiment. Il intervient sur le tableau électrique, les circuits, l'éclairage, les prises, la domotique et la mise en conformité NF C 15-100.",
+      "L'électricien est le professionnel habilité à concevoir, installer et entretenir les installations électriques d'un logement, d'un local professionnel ou d'un bâtiment. Il intervient sur le tableau électrique, les circuits, l'éclairage, les prises, la domotique et la mise en conformité NF C 15-100.",
     services: [
       "Mise aux normes du tableau électrique (NF C 15-100)",
       "Installation et rénovation complète d'un logement",
@@ -85,14 +85,14 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
       "Méfiez-vous des devis sans détail des fournitures (marque, puissance, garantie).",
     ],
     longContent:
-      "L'électricité est le poste de rénovation qui requiert le plus de rigueur réglementaire. Une installation non conforme peut entraîner refus d'assurance, non-vente du bien, voire incendie. Selon l'Observatoire National de la Sécurité Électrique, près d'un tiers des logements français ont au moins une non-conformité dangereuse. Les électriciens présents sur Bisecco sont vérifiés SIREN et nombre d'entre eux affichent leur qualification Qualifelec ou RGE QualiPV/QualiPAC, condition obligatoire pour vous faire bénéficier de MaPrimeRénov' sur les travaux d'efficacité énergétique (chauffage électrique, pompe à chaleur, borne de recharge). La mise aux normes complète d'un logement de 70 m² mobilise généralement 5 à 10 jours de chantier. Le pro doit ouvrir les saignées, remplacer le tableau, tirer de nouveaux câbles conformes (R'2V), poser un disjoncteur différentiel 30 mA par circuit, et obtenir l'attestation de conformité Consuel avant la mise en service ENEDIS. Sur Bisecco, vous demandez votre devis en 2 minutes, recevez plusieurs propositions sous 24 heures et négociez directement avec l'artisan, sans commission ni intermédiaire financier.",
+      "L'électricité est le poste de rénovation qui requiert le plus de rigueur réglementaire. Une installation non conforme peut entraîner refus d'assurance, non-vente du bien, voire incendie. Selon l'Observatoire National de la Sécurité Électrique, près d'un tiers des logements français ont au moins une non-conformité dangereuse. Les électriciens présents sur Bisecco sont vérifiés SIREN et nombre d'entre eux affichent leur qualification Qualifelec ou RGE QualiPV/QualiPAC, condition obligatoire pour vous faire bénéficier de MaPrimeRénov' sur les travaux d'efficacité énergétique (chauffage électrique, pompe à chaleur, borne de recharge). La mise aux normes complète d'un logement de 70 m² mobilise généralement 5 à 10 jours de chantier. Le pro doit ouvrir les saignées, remplacer le tableau, tirer de nouveaux câbles conformes (R'2V), poser un disjoncteur différentiel 30 mA par circuit, et obtenir l'attestation de conformité Consuel avant la mise en service ENEDIS. Sur Bisecco, vous demandez votre devis en 2 minutes, recevez plusieurs propositions sous 24 heures et négociez directement avec le professionnel, sans commission ni intermédiaire financier.",
   },
 
   // ─────────────────── MAÇON ───────────────────
   "macon": {
     slug: "macon",
     definition:
-      "Le maçon est l'artisan du gros œuvre qui réalise les fondations, murs, dalles, escaliers et structures porteuses d'un bâtiment. Il intervient en construction neuve, en extension, en surélévation, en ouverture de mur porteur et en rénovation lourde de maçonnerie ancienne.",
+      "Le maçon est le professionnel du gros œuvre qui réalise les fondations, murs, dalles, escaliers et structures porteuses d'un bâtiment. Il intervient en construction neuve, en extension, en surélévation, en ouverture de mur porteur et en rénovation lourde de maçonnerie ancienne.",
     services: [
       "Construction de maison individuelle",
       "Extension et surélévation",
@@ -121,7 +121,7 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
   "menuisier": {
     slug: "menuisier",
     definition:
-      "Le menuisier est l'artisan spécialisé dans la fabrication et la pose d'ouvrages en bois ou matériaux dérivés : fenêtres, portes, escaliers, parquets, placards sur mesure, dressing, agencement intérieur. Il travaille aussi l'aluminium et le PVC selon les chantiers.",
+      "Le menuisier est le professionnel spécialisé dans la fabrication et la pose d'ouvrages en bois ou matériaux dérivés : fenêtres, portes, escaliers, parquets, placards sur mesure, dressing, agencement intérieur. Il travaille aussi l'aluminium et le PVC selon les chantiers.",
     services: [
       "Pose de fenêtres bois, alu, PVC et mixte",
       "Pose de portes intérieures et d'entrée",
@@ -150,7 +150,7 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
   "peintre": {
     slug: "peintre",
     definition:
-      "Le peintre en bâtiment est l'artisan qui prépare et applique les revêtements de surface (peinture, enduit, papier peint, tapisserie, lasure) sur les murs, plafonds, façades, boiseries et menuiseries intérieures et extérieures d'un logement.",
+      "Le peintre en bâtiment est le professionnel qui prépare et applique les revêtements de surface (peinture, enduit, papier peint, tapisserie, lasure) sur les murs, plafonds, façades, boiseries et menuiseries intérieures et extérieures d'un logement.",
     services: [
       "Peinture intérieure (murs, plafonds, boiseries)",
       "Pose de papier peint et toile de verre",
@@ -179,7 +179,7 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
   "couvreur": {
     slug: "couvreur",
     definition:
-      "Le couvreur est l'artisan chargé de la pose, de l'entretien et de la réparation des toitures et de leurs accessoires (gouttières, faîtages, cheminées, zinguerie). Il travaille la tuile, l'ardoise, le zinc, le bac acier, le bardeau et garantit l'étanchéité de la toiture.",
+      "Le couvreur est le professionnel chargé de la pose, de l'entretien et de la réparation des toitures et de leurs accessoires (gouttières, faîtages, cheminées, zinguerie). Il travaille la tuile, l'ardoise, le zinc, le bac acier, le bardeau et garantit l'étanchéité de la toiture.",
     services: [
       "Réfection complète de toiture",
       "Remplacement de tuiles cassées ou ardoises",
@@ -208,7 +208,7 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
   "carreleur": {
     slug: "carreleur",
     definition:
-      "Le carreleur est l'artisan spécialisé dans la pose de carrelage, faïence, mosaïque et pierre naturelle sur sols et murs. Il intervient en construction neuve comme en rénovation, en intérieur (salle de bains, cuisine, séjour) comme en extérieur (terrasse, piscine, bord d'allée).",
+      "Le carreleur est le professionnel spécialisé dans la pose de carrelage, faïence, mosaïque et pierre naturelle sur sols et murs. Il intervient en construction neuve comme en rénovation, en intérieur (salle de bains, cuisine, séjour) comme en extérieur (terrasse, piscine, bord d'allée).",
     services: [
       "Pose de carrelage au sol (rectifié, grand format, mosaïque)",
       "Pose de faïence murale (cuisine, salle de bains)",
@@ -230,14 +230,14 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
       "La pose collée double encollage est obligatoire à partir du format 30×30 cm.",
     ],
     longContent:
-      "Le carrelage est l'un des revêtements les plus durables et les plus polyvalents pour un logement : résistant à l'eau, facile d'entretien, durée de vie de 30 à 50 ans selon la qualité. Mais c'est aussi l'un des plus exigeants à poser correctement : un mauvais ragréage du support, une étanchéité bâclée dans une salle de bains, des joints mal calibrés peuvent compromettre durablement la finition et créer des infiltrations coûteuses à réparer. Sur Bisecco, les carreleurs vérifiés SIREN affichent leurs réalisations en photos, ce qui vous permet de juger de la régularité des joints, de l'alignement des carreaux, de la qualité des coupes (notamment autour des sanitaires et des angles). Pour une salle de bains complète avec douche à l'italienne, comptez 8 à 12 jours de chantier (préparation, étanchéité SEL, pose carrelage, joints, séchage). Une faïence murale standard coûte entre 40 et 70 €/m² posée hors fourniture, à doubler pour des matériaux haut de gamme (pierre naturelle, zellige, terrazzo). Demandez systématiquement le coût de la fourniture (faïence + colle + croisillons + joint) séparé du coût de la pose dans le devis : cela vous permet de comparer les artisans à offre équivalente et éventuellement d'acheter vous-même les matériaux pour économiser.",
+      "Le carrelage est l'un des revêtements les plus durables et les plus polyvalents pour un logement : résistant à l'eau, facile d'entretien, durée de vie de 30 à 50 ans selon la qualité. Mais c'est aussi l'un des plus exigeants à poser correctement : un mauvais ragréage du support, une étanchéité bâclée dans une salle de bains, des joints mal calibrés peuvent compromettre durablement la finition et créer des infiltrations coûteuses à réparer. Sur Bisecco, les carreleurs vérifiés SIREN affichent leurs réalisations en photos, ce qui vous permet de juger de la régularité des joints, de l'alignement des carreaux, de la qualité des coupes (notamment autour des sanitaires et des angles). Pour une salle de bains complète avec douche à l'italienne, comptez 8 à 12 jours de chantier (préparation, étanchéité SEL, pose carrelage, joints, séchage). Une faïence murale standard coûte entre 40 et 70 €/m² posée hors fourniture, à doubler pour des matériaux haut de gamme (pierre naturelle, zellige, terrazzo). Demandez systématiquement le coût de la fourniture (faïence + colle + croisillons + joint) séparé du coût de la pose dans le devis : cela vous permet de comparer les professionnels à offre équivalente et éventuellement d'acheter vous-même les matériaux pour économiser.",
   },
 
   // ─────────────────── SERRURIER ───────────────────
   "serrurier": {
     slug: "serrurier",
     definition:
-      "Le serrurier est l'artisan spécialisé dans la pose, la réparation et le dépannage des serrures, verrous, portes blindées et systèmes de fermeture. Il intervient en urgence en cas de perte de clé, claquement de porte ou tentative d'effraction, et en pose neuve pour la sécurisation d'un logement.",
+      "Le serrurier est le professionnel spécialisé dans la pose, la réparation et le dépannage des serrures, verrous, portes blindées et systèmes de fermeture. Il intervient en urgence en cas de perte de clé, claquement de porte ou tentative d'effraction, et en pose neuve pour la sécurisation d'un logement.",
     services: [
       "Ouverture de porte claquée sans destruction",
       "Remplacement de serrure 3, 5 ou 7 points",
@@ -253,20 +253,20 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
       { label: "Pose porte blindée A2P", range: "1 500 à 3 500 €" },
     ],
     tips: [
-      "ATTENTION arnaques : les serruriers d'urgence trouvés sur les pubs Google sont souvent des intermédiaires qui surfacturent (devis à 800-1 500 € pour une ouverture simple). Sur Bisecco, vous accédez à des artisans locaux vérifiés SIREN avec tarifs transparents.",
+      "ATTENTION arnaques : les serruriers d'urgence trouvés sur les pubs Google sont souvent des intermédiaires qui surfacturent (devis à 800-1 500 € pour une ouverture simple). Sur Bisecco, vous accédez à des professionnels locaux vérifiés SIREN avec tarifs transparents.",
       "Exigez un devis écrit AVANT toute intervention, même en urgence : c'est obligatoire au-delà de 100 € (article L113-3 du Code de la consommation).",
       "Pour une porte d'entrée, choisissez une serrure certifiée A2P** (résistance 10 minutes à l'effraction) ou A2P*** (15 minutes).",
       "Après un cambriolage, demandez à votre serrurier une facture détaillée pour le constat d'assurance : c'est remboursable.",
     ],
     longContent:
-      "La serrurerie de dépannage est malheureusement le métier le plus exposé aux arnaques en France, avec des situations d'urgence (porte claquée à 22h, perte de clé un dimanche) qui poussent à accepter n'importe quel tarif. La DGCCRF reçoit chaque année plusieurs milliers de plaintes pour facturation abusive (devis à 1 200 € pour 10 minutes d'intervention, pose forcée de matériel non demandé, remplacement de serrure sans nécessité). Le réflexe Bisecco vous protège : tous les serruriers présents sur la plateforme sont des artisans locaux vérifiés SIREN, dont vous consultez les avis clients authentiques avant de les contacter, et qui s'engagent sur des tarifs transparents. Pour une ouverture de porte claquée, l'intervention dure 10 à 20 minutes et ne nécessite aucune destruction si elle est faite correctement (technique du film de radio, du crochet, de la carte). Un prix juste se situe entre 80 et 150 € en journée, 150 à 250 € en nuit/week-end. Tout devis qui dépasse ces fourchettes pour une simple ouverture est suspect. Pour la sécurisation d'un logement, privilégiez les serrures certifiées A2P (norme française d'assurance) : ce label garantit la résistance à l'effraction selon des tests standardisés. Une porte blindée A2P-BP3 résiste 15 minutes à un cambrioleur outillé, soit largement assez pour le décourager (la plupart abandonnent après 5 minutes).",
+      "La serrurerie de dépannage est malheureusement le métier le plus exposé aux arnaques en France, avec des situations d'urgence (porte claquée à 22h, perte de clé un dimanche) qui poussent à accepter n'importe quel tarif. La DGCCRF reçoit chaque année plusieurs milliers de plaintes pour facturation abusive (devis à 1 200 € pour 10 minutes d'intervention, pose forcée de matériel non demandé, remplacement de serrure sans nécessité). Le réflexe Bisecco vous protège : tous les serruriers présents sur la plateforme sont des professionnels locaux vérifiés SIREN, dont vous consultez les avis clients authentiques avant de les contacter, et qui s'engagent sur des tarifs transparents. Pour une ouverture de porte claquée, l'intervention dure 10 à 20 minutes et ne nécessite aucune destruction si elle est faite correctement (technique du film de radio, du crochet, de la carte). Un prix juste se situe entre 80 et 150 € en journée, 150 à 250 € en nuit/week-end. Tout devis qui dépasse ces fourchettes pour une simple ouverture est suspect. Pour la sécurisation d'un logement, privilégiez les serrures certifiées A2P (norme française d'assurance) : ce label garantit la résistance à l'effraction selon des tests standardisés. Une porte blindée A2P-BP3 résiste 15 minutes à un cambrioleur outillé, soit largement assez pour le décourager (la plupart abandonnent après 5 minutes).",
   },
 
   // ─────────────────── CHAUFFAGISTE ───────────────────
   "chauffagiste": {
     slug: "chauffagiste",
     definition:
-      "Le chauffagiste est l'artisan spécialisé dans l'installation, l'entretien et le dépannage des systèmes de chauffage : chaudières gaz et fioul, pompes à chaleur, planchers chauffants, radiateurs, ballons d'eau chaude. Il assure aussi les contrôles d'étanchéité gaz obligatoires.",
+      "Le chauffagiste est le professionnel spécialisé dans l'installation, l'entretien et le dépannage des systèmes de chauffage : chaudières gaz et fioul, pompes à chaleur, planchers chauffants, radiateurs, ballons d'eau chaude. Il assure aussi les contrôles d'étanchéité gaz obligatoires.",
     services: [
       "Installation chaudière gaz à condensation",
       "Remplacement par pompe à chaleur air/eau",
@@ -295,7 +295,7 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
   "coiffeur": {
     slug: "coiffeur",
     definition:
-      "Le coiffeur est l'artisan diplômé du CAP métiers de la coiffure qui réalise coupes, colorations, mèches, balayages, brushings, soins capillaires et coiffures spéciales (mariée, soirée). Il intervient en salon, à domicile ou en mobile selon son mode d'exercice.",
+      "Le coiffeur est le professionnel diplômé du CAP métiers de la coiffure qui réalise coupes, colorations, mèches, balayages, brushings, soins capillaires et coiffures spéciales (mariée, soirée). Il intervient en salon, à domicile ou en mobile selon son mode d'exercice.",
     services: [
       "Coupe femme et homme",
       "Coloration (mèches, balayage, ombré, tie & dye)",
@@ -317,7 +317,7 @@ export const METIER_CONTENT: Record<string, MetierContent> = {
       "Demandez systématiquement à voir le portfolio (Instagram, book photos) avant un changement majeur.",
     ],
     longContent:
-      "Le coiffeur est l'un des artisans avec lequel la relation de confiance est la plus importante : votre coupe et votre couleur impactent directement votre image au quotidien, et un résultat raté peut prendre des mois à se rattraper. Sur Bisecco, vous accédez aux portfolios des coiffeurs vérifiés SIREN, à leurs avis clients authentiques et à leurs spécialités (coupe femme courte, balayage, coloration végétale, coiffure homme barbier, coiffure de mariée). Cette transparence vous permet de choisir un pro dont l'esthétique correspond à vos attentes plutôt que de tester à l'aveugle. Pour la coloration, le métier a beaucoup évolué ces dernières années avec l'émergence des techniques de balayage californien, ombré hair, tie & dye, et des colorations végétales sans ammoniaque. Un coiffeur formé sur ces techniques facture généralement 20 à 40 % plus cher qu'un salon classique, mais le résultat dure 3 à 6 mois avant retouche au lieu de 6 semaines pour une coloration permanente. Si vous cherchez un coiffeur à domicile (pratique pour mariage, EHPAD, jeune maman, mobilité réduite), Bisecco vous permet de filtrer par mode d'exercice. Comptez 20 à 40 % de supplément par rapport au tarif salon pour le déplacement à domicile, mais aucun temps d'attente ni transport pour vous.",
+      "Le coiffeur est l'un des professionnels avec lequel la relation de confiance est la plus importante : votre coupe et votre couleur impactent directement votre image au quotidien, et un résultat raté peut prendre des mois à se rattraper. Sur Bisecco, vous accédez aux portfolios des coiffeurs vérifiés SIREN, à leurs avis clients authentiques et à leurs spécialités (coupe femme courte, balayage, coloration végétale, coiffure homme barbier, coiffure de mariée). Cette transparence vous permet de choisir un pro dont l'esthétique correspond à vos attentes plutôt que de tester à l'aveugle. Pour la coloration, le métier a beaucoup évolué ces dernières années avec l'émergence des techniques de balayage californien, ombré hair, tie & dye, et des colorations végétales sans ammoniaque. Un coiffeur formé sur ces techniques facture généralement 20 à 40 % plus cher qu'un salon classique, mais le résultat dure 3 à 6 mois avant retouche au lieu de 6 semaines pour une coloration permanente. Si vous cherchez un coiffeur à domicile (pratique pour mariage, EHPAD, jeune maman, mobilité réduite), Bisecco vous permet de filtrer par mode d'exercice. Comptez 20 à 40 % de supplément par rapport au tarif salon pour le déplacement à domicile, mais aucun temps d'attente ni transport pour vous.",
   },
 };
 

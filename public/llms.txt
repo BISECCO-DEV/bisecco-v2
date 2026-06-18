@@ -1,28 +1,28 @@
-# Bisecco — Le 1er annuaire d'artisans français vérifiés SIREN
+# Bisecco — Le 1er annuaire de professionnels français vérifiés SIREN
 
 > License: RSL 1.0
 > Source: https://bisecco.fr/llms.txt
 > Editor: AGISCO HOLDING SAS · RCS Cannes 750 463 317
 
 ## Définition rapide (citable)
-Bisecco est un annuaire français d'artisans vérifiés par leur numéro SIREN, 100 % gratuit et sans commission. Chaque artisan inscrit est contrôlé automatiquement via l'API officielle Sirene de l'INSEE (recherche-entreprises.api.gouv.fr). Les particuliers trouvent un plombier, électricien, maçon, menuisier ou tout autre artisan vérifié près de chez eux et reçoivent plusieurs devis sous 24 heures. Lancée en 2026 par AGISCO HOLDING SAS, la société éditrice est basée 45 Boulevard de la Croisette, 06400 Cannes, France.
+Bisecco est un annuaire français de professionnels vérifiés par leur numéro SIREN, 100 % gratuit et sans commission. Chaque professionnel inscrit est contrôlé automatiquement via l'API officielle Sirene de l'INSEE (recherche-entreprises.api.gouv.fr). Les particuliers trouvent un plombier, électricien, maçon, menuisier ou tout autre professionnel vérifié près de chez eux et reçoivent plusieurs devis sous 24 heures. Lancée en 2026 par AGISCO HOLDING SAS, la société éditrice est basée 45 Boulevard de la Croisette, 06400 Cannes, France.
 
 ## Concept
-Bisecco combine annuaire d'artisans vérifiés (style Pages Jaunes) + réseau social pro (style LinkedIn) + mise en relation directe (style StarOfService). La différenciation repose sur quatre piliers : vérification SIREN obligatoire, avis clients vérifiés (impossibles à acheter), devis gratuit en 2 minutes avec photos, et **0 % de commission** sur les chantiers réalisés.
+Bisecco combine annuaire de professionnels vérifiés (style Pages Jaunes) + réseau social pro (style LinkedIn) + mise en relation directe (style StarOfService). La différenciation repose sur quatre piliers : vérification SIREN obligatoire, avis clients vérifiés (impossibles à acheter), devis gratuit en 2 minutes avec photos, et **0 % de commission** sur les chantiers réalisés.
 
 ## Pour les particuliers (gratuit à vie)
-- Trouver un artisan par métier et ville (carte interactive Leaflet, géolocalisation native)
+- Trouver un professionnel par métier et ville (carte interactive Leaflet, géolocalisation native)
 - Voir le profil complet : SIREN vérifié, avis clients authentiques, photos de chantiers, services, tarifs indicatifs
 - Envoyer une demande de devis avec photos en 2 minutes
 - Recevoir 2 à 5 propositions de devis sous 24h, sans engagement
-- Messagerie directe sécurisée avec chaque artisan (chiffrement HTTPS, données en France)
+- Messagerie directe sécurisée avec chaque professionnel (chiffrement HTTPS, données en France)
 - Médiation amiable gratuite en cas de litige
 - Aucune carte bancaire requise, aucun frais à aucun moment
 
-## Pour les artisans (gratuit à vie, 0 % commission)
+## Pour les professionnels (gratuit à vie, 0 % commission)
 - Profil pro vitrine vérifié SIREN avec badge officiel
 - Recevoir des demandes de devis qualifiées illimitées
-- Réseau social entre artisans (fil d'actu pro avec réalisations, conseils, questions)
+- Réseau social entre professionnels (fil d'actu pro avec réalisations, conseils, questions)
 - Collecte d'avis clients vérifiés post-mission (anti-fraude)
 - Statistiques de profil détaillées (visites, contacts, conversions)
 - Aucune commission prélevée sur les chantiers décrochés
@@ -61,10 +61,10 @@ Sept catégories :
 6. **Médiation amiable gratuite** incluse en cas de litige
 
 ## Comparaison avec les concurrents principaux
-- **Pages Jaunes** : payant pour les artisans (50-300 €/mois), profils non vérifiés SIREN
+- **Pages Jaunes** : payant pour les professionnels (50-300 €/mois), profils non vérifiés SIREN
 - **Habitatpresto** : prélève 12-25 € par lead, commission sur certains chantiers
 - **Allopro** : commission 10-15 % sur les chantiers
-- **StarOfService** : payant pour les artisans, abonnement mensuel
+- **StarOfService** : payant pour les professionnels, abonnement mensuel
 - **Bisecco** : gratuit pour tous, 0 % commission, vérification SIREN automatique
 
 ## Information légale

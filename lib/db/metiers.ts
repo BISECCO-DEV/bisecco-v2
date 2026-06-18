@@ -7,6 +7,8 @@ export type Metier = {
   category: string;
   description: string | null;
   icon: string | null;
+  cover_url?: string | null;
+  cover_alt?: string | null;
 };
 
 export type MetierGrouped = {
@@ -55,20 +57,28 @@ export async function fetchMetiersGroupedByCategory(): Promise<MetierGrouped[]> 
 
 /**
  * Récupère un métier par son slug (pour pages métier).
+ * SELECT défensif : retombe sur l'ancien si migration 025 (cover_url) pas faite.
  */
 export async function fetchMetierBySlug(slug: string): Promise<Metier | null> {
   const admin = createSupabaseAdminClient();
-  const { data, error } = await admin
+  const withCover = await admin
     .from("metiers")
-    .select("id, name, slug, category, description, icon")
+    .select("id, name, slug, category, description, icon, cover_url, cover_alt")
     .eq("slug", slug)
     .maybeSingle();
-
-  if (error) {
-    console.error("[fetchMetierBySlug]", error);
-    return null;
+  if (withCover.error) {
+    const fallback = await admin
+      .from("metiers")
+      .select("id, name, slug, category, description, icon")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (fallback.error) {
+      console.error("[fetchMetierBySlug]", fallback.error);
+      return null;
+    }
+    return fallback.data;
   }
-  return data;
+  return withCover.data;
 }
 
 /**

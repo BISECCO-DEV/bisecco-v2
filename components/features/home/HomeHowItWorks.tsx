@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   Zap, UserPlus, Camera, MessageCircle, Search,
-  ArrowRight, Hammer, Users, Sparkles,
+  Hammer, Users, Sparkles,
 } from "lucide-react";
 import { CtaButton } from "@/components/ui/CtaButton";
 
@@ -21,7 +21,7 @@ const STEPS_PARTICULIER: Step[] = [
   {
     num: "01",
     icon: Search,
-    title: "Recherchez votre artisan",
+    title: "Recherchez votre professionnel",
     text: "Métier, ville, mots-clés. Filtres précis. Pas d'inscription nécessaire.",
     highlight: "2 min",
   },
@@ -29,14 +29,14 @@ const STEPS_PARTICULIER: Step[] = [
     num: "02",
     icon: MessageCircle,
     title: "Contactez en direct",
-    text: "Messagerie intégrée avec chaque artisan vérifié SIREN. Pas d'intermédiaire.",
+    text: "Messagerie intégrée avec chaque professionnel vérifié SIREN. Pas d'intermédiaire.",
     highlight: "Sans frais",
   },
   {
     num: "03",
     icon: Hammer,
     title: "Démarrez vos travaux",
-    text: "Vous traitez en direct avec l'artisan. Bisecco ne prend aucune commission.",
+    text: "Vous traitez en direct avec le professionnel. Bisecco ne prend aucune commission.",
     highlight: "0 % commission",
   },
 ];
@@ -68,13 +68,13 @@ const STEPS_ARTISAN: Step[] = [
 const TAB_CONFIG: Record<Audience, { icon: typeof Users; label: string; sub: string; cta: { href: string; label: string } }> = {
   particulier: {
     icon: Users,
-    label: "Je cherche un artisan",
+    label: "Je cherche un professionnel",
     sub: "3 étapes pour trouver votre pro près de chez vous.",
-    cta: { href: "/rechercher", label: "Trouver mon artisan" },
+    cta: { href: "/rechercher", label: "Trouver mon professionnel" },
   },
   artisan: {
     icon: Hammer,
-    label: "Je suis artisan",
+    label: "Je suis professionnel",
     sub: "3 étapes pour créer votre profil et recevoir vos premiers clients.",
     cta: { href: "/inscription", label: "Créer mon profil" },
   },
@@ -262,17 +262,6 @@ export function HomeHowItWorks() {
                   </div>
 
                   <p className="text-[0.92rem] text-ink-500 mt-3 leading-relaxed relative">{text}</p>
-
-                  <div
-                    className={`mt-5 pt-4 border-t border-dashed flex items-center justify-between text-[0.82rem] font-bold opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ${
-                      isFinal
-                        ? "border-emerald-100 text-emerald-600"
-                        : "border-ink-100 text-brand-500"
-                    }`}
-                  >
-                    <span>{isFinal ? "Mission accomplie" : "Étape suivante"}</span>
-                    <ArrowRight size={14} strokeWidth={2.6} className="group-hover:translate-x-1 transition-transform" />
-                  </div>
                 </div>
               );
             })}
@@ -283,7 +272,7 @@ export function HomeHowItWorks() {
         <div className="mt-14 sm:mt-20 text-center">
           <div className="inline-flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-6 sm:px-8 py-5 sm:py-6 rounded-3xl bg-white border border-ink-100/80 shadow-[0_10px_30px_-10px_rgba(13,30,74,0.12)]">
             <span className="text-[0.92rem] text-ink-600 font-medium">
-              Prêt à <strong className="text-ink-800">{audience === "particulier" ? "trouver votre artisan ?" : "démarrer en 2 minutes ?"}</strong>
+              Prêt à <strong className="text-ink-800">{audience === "particulier" ? "trouver votre professionnel ?" : "démarrer en 2 minutes ?"}</strong>
             </span>
             <CtaButton
               href={config.cta.href}

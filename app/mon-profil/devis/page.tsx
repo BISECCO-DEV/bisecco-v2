@@ -51,22 +51,85 @@ export default async function MesDevisPage() {
   const isArtisan = user.role === "artisan";
 
   const admin = createSupabaseAdminClient();
-  const filterCol = isArtisan ? "artisan_id" : "client_id";
 
-  const { data, error } = await admin
-    .from("quote_requests")
-    .select(`
+  let rows: QuoteRow[] = [];
+
+  if (isArtisan) {
+    // ─── Côté PRO : 2 catégories de demandes ────────────────────────
+    // 1) Demandes CIBLÉES directement sur lui (artisan_id = me)
+    // 2) BROADCASTS sans destinataire (artisan_id IS NULL) dans son métier
+    //    (récupération des metier_id depuis ses artisan_profiles)
+
+    const { data: myProfiles } = await admin
+      .from("artisan_profiles")
+      .select("metier_id")
+      .eq("user_id", user.id ?? 0);
+
+    const myMetierIds = Array.from(
+      new Set(
+        ((myProfiles ?? []) as { metier_id: number | null }[])
+          .map((p) => p.metier_id)
+          .filter((v): v is number => v != null),
+      ),
+    );
+
+    const baseSelect = `
       id, title, city, status, created_at, artisan_id, metier_id,
       artisan:artisan_id ( id, name, client_number, artisan_profiles ( company_name ) ),
       metier:metier_id ( name )
-    `)
-    .eq(filterCol, user.id ?? 0)
-    .order("created_at", { ascending: false })
-    .limit(100);
+    `;
 
-  if (error) console.error("[mes-devis]", error);
+    const [targeted, broadcasts] = await Promise.all([
+      admin
+        .from("quote_requests")
+        .select(baseSelect)
+        .eq("artisan_id", user.id ?? 0)
+        .order("created_at", { ascending: false })
+        .limit(100)
+        .then(({ data, error }) => {
+          if (error) console.error("[mes-devis][targeted]", error);
+          return (data ?? []) as unknown as QuoteRow[];
+        }),
+      myMetierIds.length === 0
+        ? Promise.resolve([] as QuoteRow[])
+        : admin
+            .from("quote_requests")
+            .select(baseSelect)
+            .is("artisan_id", null)
+            .in("metier_id", myMetierIds)
+            .order("created_at", { ascending: false })
+            .limit(100)
+            .then(({ data, error }) => {
+              if (error) console.error("[mes-devis][broadcasts]", error);
+              return (data ?? []) as unknown as QuoteRow[];
+            }),
+    ]);
 
-  const rows = (data ?? []) as unknown as QuoteRow[];
+    // Merge sans doublons, ciblées d'abord (plus prioritaires)
+    const seen = new Set<number>();
+    rows = [];
+    for (const r of [...targeted, ...broadcasts]) {
+      if (seen.has(r.id)) continue;
+      seen.add(r.id);
+      rows.push(r);
+    }
+    rows.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  } else {
+    // ─── Côté CLIENT : ses propres demandes ─────────────────────────
+    const { data, error } = await admin
+      .from("quote_requests")
+      .select(`
+        id, title, city, status, created_at, artisan_id, metier_id,
+        artisan:artisan_id ( id, name, client_number, artisan_profiles ( company_name ) ),
+        metier:metier_id ( name )
+      `)
+      .eq("client_id", user.id ?? 0)
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (error) console.error("[mes-devis][client]", error);
+    rows = (data ?? []) as unknown as QuoteRow[];
+  }
 
   const counts = {
     waiting: rows.filter((r) => r.status === "new").length,
@@ -130,11 +193,11 @@ export default async function MesDevisPage() {
             <p className="text-sm text-ink-500 mt-2 max-w-md mx-auto leading-relaxed">
               {isArtisan
                 ? "Les demandes de devis envoyées par les particuliers apparaîtront ici."
-                : "Trouvez un artisan vérifié près de chez vous et envoyez-lui une demande directement depuis son profil."}
+                : "Trouvez un professionnel vérifié près de chez vous et envoyez-lui une demande directement depuis son profil."}
             </p>
             {!isArtisan && (
               <Link href="/rechercher" className="btn-primary mt-6 inline-flex">
-                <FileText size={16} /> Trouver un artisan
+                <FileText size={16} /> Trouver un professionnel
               </Link>
             )}
           </div>
@@ -156,11 +219,23 @@ export default async function MesDevisPage() {
                 const artisanLabel = company || d.artisan?.name || null;
                 const metierName = d.metier?.name ?? null;
                 const profileHref = d.artisan?.client_number ? `/profil/${d.artisan.client_number}` : null;
+                const isTargeted = isArtisan && d.artisan_id != null;
+                const isBroadcast = isArtisan && d.artisan_id == null;
                 return (
                   <article key={d.id} className="bg-white rounded-2xl border border-ink-100 hover:border-brand-200 hover:-translate-y-0.5 transition p-5">
                     <div className="flex items-start gap-4 flex-wrap">
                       <div className="flex-1 min-w-[200px]">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
+                          {isTargeted && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.65rem] font-bold uppercase tracking-wider bg-brand-50 text-brand-700 border border-brand-200">
+                              ⚡ Direct
+                            </span>
+                          )}
+                          {isBroadcast && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.65rem] font-bold uppercase tracking-wider bg-violet-50 text-violet-700 border border-violet-200">
+                              📢 Opportunité
+                            </span>
+                          )}
                           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.65rem] font-bold uppercase tracking-wider ${status.bg} ${status.color} border ${status.border}`}>
                             <status.icon size={10} /> {status.label}
                           </span>
@@ -180,7 +255,7 @@ export default async function MesDevisPage() {
                             <>
                               <span>·</span>
                               <span>
-                                {isArtisan ? "Client" : "Artisan"} : <strong className="text-ink-700">{artisanLabel}</strong>
+                                {isArtisan ? "Client" : "Professionnel"} : <strong className="text-ink-700">{artisanLabel}</strong>
                               </span>
                             </>
                           )}
@@ -190,7 +265,23 @@ export default async function MesDevisPage() {
                       <div className="flex flex-col gap-2 w-full md:w-auto">
                         {profileHref && !isArtisan && (
                           <Link href={profileHref} className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-brand-500 text-white text-sm font-bold hover:bg-brand-600 transition">
-                            Voir l&apos;artisan <ExternalLink size={13} />
+                            Voir le professionnel <ExternalLink size={13} />
+                          </Link>
+                        )}
+                        {isArtisan && (
+                          <Link
+                            href={`/mon-profil/devis/${d.id}/reponse`}
+                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-brand-500 text-white text-sm font-bold hover:bg-brand-600 transition"
+                          >
+                            <FileText size={13} /> {d.status === "responded" || d.status === "closed" ? "Voir mon devis" : "Répondre"}
+                          </Link>
+                        )}
+                        {!isArtisan && (
+                          <Link
+                            href={`/mon-profil/devis/${d.id}/reponse`}
+                            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-ink-200 text-ink-700 text-sm font-bold hover:border-brand-500 transition"
+                          >
+                            <FileText size={13} /> Voir le devis
                           </Link>
                         )}
                         <Link href="/messagerie" className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-ink-200 text-ink-700 text-sm font-bold hover:border-brand-500 transition">

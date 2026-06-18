@@ -50,7 +50,7 @@ export function HomeMetiers() {
             </span>
           </h2>
           <p className="mt-5 text-[1rem] sm:text-[1.06rem] text-ink-500 leading-relaxed">
-            Plus de <strong className="text-ink-700">176 métiers</strong> couverts, des artisans
+            Plus de <strong className="text-ink-700">189 métiers</strong> couverts, des professionnels
             <strong className="text-ink-700"> vérifiés SIREN</strong> dans toute la France.
           </p>
         </div>
@@ -101,7 +101,7 @@ export function HomeMetiers() {
         {/* Voir tous les métiers */}
         <div className="mt-10 text-center">
           <CtaButton href="/metiers" variant="white" size="md">
-            Voir plus de 176 métiers
+            Voir plus de 189 métiers
           </CtaButton>
         </div>
       </div>

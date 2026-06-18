@@ -14,6 +14,8 @@ export type MetierWithCount = {
   icon: string | null;
   description: string | null;
   artisanCount: number;
+  cover_url?: string | null;
+  cover_alt?: string | null;
 };
 
 type Props = { metiers: MetierWithCount[] };
@@ -100,7 +102,7 @@ export function MetiersDirectory({ metiers }: Props) {
           {[
             { value: metiers.length, label: "Métiers couverts", icon: Briefcase, color: "from-brand-500 to-brand-600" },
             { value: categories.length, label: "Catégories", icon: Filter, color: "from-blue-500 to-blue-700" },
-            { value: metiers.reduce((s, m) => s + m.artisanCount, 0), label: "Artisans inscrits", icon: Users, color: "from-emerald-500 to-emerald-700" },
+            { value: metiers.reduce((s, m) => s + m.artisanCount, 0), label: "Professionnels inscrits", icon: Users, color: "from-emerald-500 to-emerald-700" },
             { value: "Tous les jours", label: "Nouveau métiers", icon: TrendingUp, color: "from-purple-500 to-pink-500", isString: true },
           ].map((s) => (
             <div key={s.label} className="bg-white rounded-2xl p-4 sm:p-5 border border-ink-100 shadow-card">
@@ -130,18 +132,30 @@ export function MetiersDirectory({ metiers }: Props) {
               <Link
                 key={m.id}
                 href={`/metiers/${m.slug}`}
-                className="group bg-white rounded-2xl p-4 border border-ink-100 hover:border-brand-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-10px_rgba(13,30,74,0.18)] transition"
+                className="group relative bg-white rounded-2xl border border-ink-100 hover:border-brand-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-10px_rgba(13,30,74,0.18)] transition overflow-hidden"
               >
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${CATEGORY_COLORS[m.category] ?? "from-ink-500 to-ink-700"} flex items-center justify-center text-2xl shadow-card flex-shrink-0`}>
-                    {m.icon ?? "🛠️"}
-                  </div>
+                {/* Cover image · si dispo, sinon gradient catégorie */}
+                <div className={`relative h-24 overflow-hidden bg-gradient-to-br ${CATEGORY_COLORS[m.category] ?? "from-ink-500 to-ink-700"}`}>
+                  {m.cover_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={m.cover_url}
+                      alt={m.cover_alt ?? m.name}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                  <span className="absolute bottom-1.5 left-2.5 text-xl drop-shadow-md">{m.icon ?? "🛠️"}</span>
+                </div>
+
+                <div className="px-4 py-3 flex items-center gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="font-extrabold text-ink-700 text-sm group-hover:text-brand-600 truncate">
                       {m.name}
                     </div>
                     <div className="text-[0.7rem] text-ink-500 mt-0.5 inline-flex items-center gap-1">
-                      <Users size={9} /> {m.artisanCount} artisan{m.artisanCount > 1 ? "s" : ""}
+                      <Users size={9} /> {m.artisanCount} professionnel{m.artisanCount > 1 ? "s" : ""}
                     </div>
                   </div>
                   <ArrowRight size={14} className="text-ink-300 group-hover:text-brand-500 group-hover:translate-x-0.5 transition flex-shrink-0" />
@@ -259,23 +273,34 @@ export function MetiersDirectory({ metiers }: Props) {
                     <Link
                       key={m.id}
                       href={`/metiers/${m.slug}`}
-                      className="group relative bg-white rounded-2xl p-4 border border-ink-100 hover:border-brand-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-10px_rgba(13,30,74,0.18)] transition overflow-hidden"
+                      className="group relative bg-white rounded-2xl border border-ink-100 hover:border-brand-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_-10px_rgba(13,30,74,0.18)] transition overflow-hidden"
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="text-3xl flex-shrink-0">{m.icon ?? "🛠️"}</div>
-                        <div className="min-w-0 flex-1">
-                          <div className="font-extrabold text-ink-700 text-[0.92rem] leading-tight group-hover:text-brand-600 truncate">
-                            {m.name}
-                          </div>
-                          {m.artisanCount > 0 ? (
-                            <div className="text-[0.66rem] text-emerald-700 font-bold mt-1 inline-flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              {m.artisanCount} pro{m.artisanCount > 1 ? "s" : ""}
-                            </div>
-                          ) : (
-                            <div className="text-[0.66rem] text-ink-400 mt-1">À pourvoir</div>
-                          )}
+                      {/* Mini cover · gradient catégorie si pas d'image */}
+                      <div className={`relative h-20 overflow-hidden bg-gradient-to-br ${CATEGORY_COLORS[m.category] ?? "from-ink-500 to-ink-700"}`}>
+                        {m.cover_url && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={m.cover_url}
+                            alt={m.cover_alt ?? m.name}
+                            loading="lazy"
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                        <span className="absolute bottom-1.5 left-2.5 text-xl drop-shadow-md">{m.icon ?? "🛠️"}</span>
+                      </div>
+                      <div className="p-3">
+                        <div className="font-extrabold text-ink-700 text-[0.92rem] leading-tight group-hover:text-brand-600 truncate">
+                          {m.name}
                         </div>
+                        {m.artisanCount > 0 ? (
+                          <div className="text-[0.66rem] text-emerald-700 font-bold mt-1 inline-flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            {m.artisanCount} pro{m.artisanCount > 1 ? "s" : ""}
+                          </div>
+                        ) : (
+                          <div className="text-[0.66rem] text-ink-400 mt-1">À pourvoir</div>
+                        )}
                       </div>
                       <ArrowRight
                         size={12}

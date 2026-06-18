@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const CATEGORIES = [
   { icon: User,         title: "Mon compte",         desc: "Inscription, profil, paramètres",        count: 12, color: "from-blue-400 to-blue-600",       href: "/aide/compte" },
-  { icon: Briefcase,    title: "Pour les artisans",  desc: "Inscription, validation SIREN, devis",   count: 18, color: "from-emerald-400 to-emerald-600", href: "/aide/artisans" },
+  { icon: Briefcase,    title: "Pour les professionnels",  desc: "Inscription, validation SIREN, devis",   count: 18, color: "from-emerald-400 to-emerald-600", href: "/aide/artisans" },
   { icon: FileText,     title: "Devis & contact",    desc: "Demander, comparer, accepter un devis",  count: 8,  color: "from-brand-400 to-brand-600",     href: "/aide/devis" },
   { icon: MessageCircle, title: "Messagerie",         desc: "Envoyer, signaler, modérer",             count: 6,  color: "from-purple-400 to-purple-600",   href: "/aide/messagerie" },
   { icon: CreditCard,   title: "Abonnements Pro",    desc: "Plans, paiement, facturation",           count: 9,  color: "from-amber-400 to-amber-600",     href: "/aide/abonnements" },
@@ -17,11 +17,11 @@ const CATEGORIES = [
 ];
 
 const POPULAR = [
-  { q: "Comment trouver un artisan ?",                href: "/aide/article/trouver-artisan" },
+  { q: "Comment trouver un professionnel ?",                href: "/aide/article/trouver-artisan" },
   { q: "Bisecco est-il vraiment gratuit ?",            href: "/aide/article/gratuit" },
-  { q: "Comment vérifiez-vous les artisans ?",        href: "/aide/article/verification-siren" },
+  { q: "Comment vérifiez-vous les professionnels ?",        href: "/aide/article/verification-siren" },
   { q: "Comment laisser un avis ?",                    href: "/aide/article/laisser-avis" },
-  { q: "Que faire en cas de litige avec un artisan ?", href: "/aide/article/litige" },
+  { q: "Que faire en cas de litige avec un professionnel ?", href: "/aide/article/litige" },
   { q: "Comment annuler mon abonnement ?",            href: "/aide/article/annuler-abonnement" },
 ];
 

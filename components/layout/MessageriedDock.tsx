@@ -177,7 +177,7 @@ export function MessageriedDock({ currentUserId }: { currentUserId: number | nul
                   </p>
                   {!search && (
                     <p className="text-xs text-ink-400 mt-1 leading-snug">
-                      Contacte un artisan depuis sa fiche pour démarrer.
+                      Contacte un professionnel depuis sa fiche pour démarrer.
                     </p>
                   )}
                 </div>

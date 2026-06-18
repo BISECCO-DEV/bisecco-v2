@@ -167,7 +167,7 @@ function buildDigestEmail(stats: DigestStats): { subject: string; html: string; 
               ? "Votre profil n'est pas encore très visible. Pensez à ajouter 3+ photos de vos réalisations · les profils avec galerie reçoivent <strong>3x plus de demandes</strong>."
               : newQuotes === 0
                 ? `${profileViews} personnes ont vu votre profil sans demander de devis. Vérifiez que votre description est claire, que vos tarifs sont visibles, et que vos coordonnées sont à jour.`
-                : "Excellent travail ! Pour transformer encore plus de demandes en chantiers, répondez aux devis dans les 4 heures · les clients choisissent en général le 1er artisan qui répond."}
+                : "Excellent travail ! Pour transformer encore plus de demandes en chantiers, répondez aux devis dans les 4 heures · les clients choisissent en général le 1er professionnel qui répond."}
           </div>
 
           <div style="font-size:13px;color:${COLORS.ink400};line-height:1.5;margin:28px 0 0;text-align:center;">
@@ -177,7 +177,7 @@ function buildDigestEmail(stats: DigestStats): { subject: string; html: string; 
       </tr>
       <tr>
         <td style="padding:24px 32px;border-top:1px solid #ececec;text-align:center;font-size:12px;color:${COLORS.ink400};line-height:1.6;">
-          <p style="margin:0 0 8px;"><strong style="color:${COLORS.ink600};">Bisecco</strong> · Le réseau social des artisans français vérifiés</p>
+          <p style="margin:0 0 8px;"><strong style="color:${COLORS.ink600};">Bisecco</strong> · Le réseau social des professionnels français vérifiés</p>
           <p style="margin:0;">
             <a href="${APP_URL}" style="color:${COLORS.brand};text-decoration:none;">bisecco.fr</a>
             ·

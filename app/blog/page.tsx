@@ -10,7 +10,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 export const metadata: Metadata = {
   title: "Blog · Conseils, guides et actualités artisanat",
   description:
-    "Le blog Bisecco : guides pratiques travaux, sécurité, vérification SIREN, tendances 2026, métiers d'artisan, législation et conseils pour particuliers comme artisans.",
+    "Le blog Bisecco : guides pratiques travaux, sécurité, vérification SIREN, tendances 2026, métiers de professionnel, législation et conseils pour particuliers comme professionnels.",
   alternates: { canonical: "/blog" },
 };
 
@@ -87,7 +87,7 @@ export default async function BlogPage() {
                 <span className="text-brand-500">&amp; actualités artisanat.</span>
               </h1>
               <p className="mt-6 text-[1.08rem] lg:text-[1.18rem] text-white/75 max-w-2xl mx-auto leading-relaxed">
-                Tout ce qu&apos;il faut savoir pour vos travaux, choisir le bon artisan,
+                Tout ce qu&apos;il faut savoir pour vos travaux, choisir le bon professionnel,
                 vérifier un SIREN, comprendre la rénovation énergétique.
               </p>
 
@@ -233,7 +233,7 @@ function EmptyBlogState() {
       </h2>
       <p className="mt-3 text-ink-500 leading-relaxed">
         Notre équipe rédige actuellement les premiers guides pratiques et conseils
-        pour les artisans et les particuliers. Reviens dans quelques jours, ou
+        pour les professionnels et les particuliers. Reviens dans quelques jours, ou
         inscris-toi à la newsletter pour être prévenu dès qu&apos;un article est publié.
       </p>
       <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
@@ -247,7 +247,7 @@ function EmptyBlogState() {
           href="/rechercher"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-ink-200 text-ink-700 font-bold text-sm hover:bg-ink-50 transition"
         >
-          Trouver un artisan <ArrowRight size={14} />
+          Trouver un professionnel <ArrowRight size={14} />
         </Link>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
   title: "Programme de parrainage Bisecco",
-  description: "Invitez vos proches et vos professionnels à vous rejoindre sur bisecco.fr · le 1er réseau social d'artisans français vérifiés SIREN.",
+  description: "Invitez vos proches et vos professionnels à vous rejoindre sur bisecco.fr · le 1er réseau social de professionnels français vérifiés SIREN.",
 };
 
 export const dynamic = "force-dynamic";
@@ -84,14 +84,14 @@ export default async function ParrainagePage() {
           <div className="relative grid md:grid-cols-[1fr_auto] gap-6 items-center">
             <div>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-500/20 border border-brand-500/40 text-brand-400 text-[0.65rem] font-bold tracking-wider uppercase mb-3">
-                <Sparkles size={10} /> Bonus artisan
+                <Sparkles size={10} /> Bonus professionnel
               </span>
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight">
-                Vous êtes artisan ?<br />
+                Vous êtes professionnel ?<br />
                 <span className="text-brand-400">1 mois Pro offert</span> par parrainage.
               </h2>
               <p className="text-white/65 mt-3 max-w-md">
-                Chaque artisan parrainé qui s&apos;inscrit vous offre <strong className="text-white">1 mois gratuit</strong> sur votre abonnement Pro (19€/mois).
+                Chaque professionnel parrainé qui s&apos;inscrit vous offre <strong className="text-white">1 mois gratuit</strong> sur votre abonnement Pro (19€/mois).
               </p>
             </div>
             <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-ink-700 font-bold hover:bg-brand-500 hover:text-white transition shadow-card flex-shrink-0">

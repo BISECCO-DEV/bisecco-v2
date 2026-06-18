@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/ui/JsonLd";
 export const metadata: Metadata = {
   title: "Tous les métiers artisanaux · Spécialités vérifiées SIREN",
   description:
-    "Plombier, électricien, maçon, menuisier, peintre, couvreur, boulanger, développeur informatique… Découvrez tous les métiers du réseau Bisecco. Trouvez un artisan vérifié SIREN près de chez vous.",
+    "Plombier, électricien, maçon, menuisier, peintre, couvreur, boulanger, développeur informatique… Découvrez tous les métiers du réseau Bisecco. Trouvez un professionnel vérifié SIREN près de chez vous.",
 };
 
 export const dynamic = "force-dynamic";
@@ -15,11 +15,23 @@ export const dynamic = "force-dynamic";
 async function fetchMetiersWithCounts(): Promise<MetierWithCount[]> {
   const supabase = createSupabaseAdminClient();
 
-  // 1. Récupère tous les métiers
-  const { data: metiers } = await supabase
-    .from("metiers")
-    .select("id, name, slug, category, icon, description")
-    .order("name", { ascending: true });
+  // 1. Récupère tous les métiers (avec covers · SELECT défensif si migration 025 pas faite)
+  let metiers: Array<{ id: number; name: string; slug: string; category: string; icon: string | null; description: string | null; cover_url?: string | null; cover_alt?: string | null }> | null = null;
+  {
+    const r = await supabase
+      .from("metiers")
+      .select("id, name, slug, category, icon, description, cover_url, cover_alt")
+      .order("name", { ascending: true });
+    if (r.error) {
+      const r2 = await supabase
+        .from("metiers")
+        .select("id, name, slug, category, icon, description")
+        .order("name", { ascending: true });
+      metiers = r2.data;
+    } else {
+      metiers = r.data;
+    }
+  }
 
   if (!metiers) return [];
 
@@ -35,6 +47,8 @@ async function fetchMetiersWithCounts(): Promise<MetierWithCount[]> {
 
   return metiers.map((m) => ({
     ...m,
+    cover_url: m.cover_url ?? null,
+    cover_alt: m.cover_alt ?? null,
     artisanCount: counts.get(m.id) ?? 0,
   }));
 }

@@ -59,7 +59,7 @@ export default function PressePage() {
           <p className="text-sm text-ink-400 mb-6">Au 15 mai 2026, dernière mise à jour le 1er du mois.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { value: "247",   label: "Artisans vérifiés" },
+              { value: "247",   label: "Professionnels vérifiés" },
               { value: "1 893", label: "Devis traités" },
               { value: "4.8/5", label: "Note moyenne" },
               { value: "288",   label: "Métiers couverts" },

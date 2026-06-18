@@ -20,12 +20,12 @@ export default function CgvPage() {
         relation gratuit entre&nbsp;:
       </p>
       <ul>
-        <li>Des <strong>artisans français</strong> vérifiés via leur numéro SIREN INSEE</li>
+        <li>Des <strong>professionnels français</strong> vérifiés via leur numéro SIREN INSEE</li>
         <li>Des <strong>particuliers</strong> à la recherche de prestations artisanales</li>
       </ul>
       <p>
         La Plateforme ne perçoit <strong>aucune commission</strong> sur les transactions réalisées
-        entre artisans et particuliers, et n&apos;intervient pas dans leur relation contractuelle.
+        entre professionnels et particuliers, et n&apos;intervient pas dans leur relation contractuelle.
       </p>
 
       <h2>Article 2 · Acceptation des conditions</h2>
@@ -42,10 +42,10 @@ export default function CgvPage() {
       <ul>
         <li>Aux personnes physiques majeures (18 ans ou plus)</li>
         <li>Aux personnes morales représentées par un dirigeant habilité</li>
-        <li>Aux artisans disposant d&apos;un numéro SIREN actif</li>
+        <li>Aux professionnels disposant d&apos;un numéro SIREN actif</li>
       </ul>
 
-      <h3>3.2 Vérification SIREN (artisans)</h3>
+      <h3>3.2 Vérification SIREN (professionnels)</h3>
       <p>
         Lors de l&apos;inscription, le numéro SIREN est automatiquement vérifié auprès du
         répertoire SIRENE de l&apos;INSEE. Un numéro invalide, cessé ou non trouvé entraîne
@@ -74,9 +74,9 @@ export default function CgvPage() {
 
       <h2>Article 4 · Gratuité du service</h2>
       <p>
-        Bisecco est <strong>100 % gratuit à vie</strong> pour les artisans comme pour les
+        Bisecco est <strong>100 % gratuit à vie</strong> pour les professionnels comme pour les
         particuliers. Aucune carte bancaire n&apos;est demandée à l&apos;inscription. Aucune
-        commission n&apos;est prélevée sur les missions facturées entre artisans et particuliers.
+        commission n&apos;est prélevée sur les missions facturées entre professionnels et particuliers.
       </p>
       <p>
         AGISCO HOLDING SAS se réserve le droit de proposer ultérieurement des services additionnels
@@ -96,7 +96,7 @@ export default function CgvPage() {
         <li>Ne pas utiliser la Plateforme à des fins de prospection commerciale massive</li>
       </ul>
 
-      <h3>5.2 Engagements spécifiques aux artisans</h3>
+      <h3>5.2 Engagements spécifiques aux professionnels</h3>
       <ul>
         <li>Détenir les qualifications, assurances et autorisations requises pour exercer leur métier</li>
         <li>Respecter les devis émis et les délais convenus</li>
@@ -130,13 +130,13 @@ export default function CgvPage() {
         Les avis publiés sur Bisecco doivent&nbsp;:
       </p>
       <ul>
-        <li>Reposer sur une expérience réelle avec un artisan</li>
+        <li>Reposer sur une expérience réelle avec un professionnel</li>
         <li>Être objectifs, honnêtes et respectueux</li>
         <li>Ne pas contenir d&apos;informations personnelles de tiers</li>
       </ul>
       <p>
         Chaque avis est modéré par notre équipe sous 24h avant publication. Les avis manifestement
-        faux ou contraires aux CGU sont rejetés. L&apos;artisan concerné peut signaler tout avis
+        faux ou contraires aux CGU sont rejetés. Le professionnel concerné peut signaler tout avis
         suspect.
       </p>
 
@@ -145,7 +145,7 @@ export default function CgvPage() {
         Bisecco est uniquement un service de mise en relation. AGISCO HOLDING SAS&nbsp;:
       </p>
       <ul>
-        <li>N&apos;est partie à aucun contrat conclu entre artisans et particuliers</li>
+        <li>N&apos;est partie à aucun contrat conclu entre professionnels et particuliers</li>
         <li>Ne garantit pas la qualité des prestations réalisées</li>
         <li>N&apos;intervient pas dans le règlement des éventuels litiges commerciaux</li>
         <li>Ne saurait être tenue responsable de tout préjudice résultant des prestations</li>

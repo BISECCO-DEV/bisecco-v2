@@ -622,7 +622,7 @@ async function sendVerificationEmail(
   role: "particulier" | "artisan",
 ): Promise<void> {
   const admin = createSupabaseAdminClient();
-  const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+  const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
   console.log(`[sendVerificationEmail] Sending to ${email} (${role})...`);
 
@@ -767,7 +767,7 @@ export async function requestPasswordResetAction(
   if (!email) return { error: "Email requis." };
 
   const admin = createSupabaseAdminClient();
-  const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+  const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
   const successMsg = "Si un compte existe, vous recevrez un email avec un lien de réinitialisation.";
 
   // Rate limit IP : max 3 demandes par heure depuis la même IP
@@ -954,7 +954,7 @@ export async function googleLoginAction() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu"}/auth/callback`,
+      redirectTo: `${process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr"}/auth/callback`,
     },
   });
 

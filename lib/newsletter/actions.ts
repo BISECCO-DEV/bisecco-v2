@@ -5,7 +5,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { sendMail } from "@/lib/mail/mailer";
 import { newsletterOptInEmail } from "@/lib/mail/templates";
 
-const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 export type NewsletterState = { error?: string; success?: string } | undefined;
 

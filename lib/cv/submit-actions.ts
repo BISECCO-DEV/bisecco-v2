@@ -7,7 +7,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { sendMail } from "@/lib/mail/mailer";
 import { newCvEmail } from "@/lib/mail/templates";
 
-const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_MIME = ["application/pdf"];

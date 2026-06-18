@@ -10,7 +10,7 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { sendMail } from "@/lib/mail/mailer";
 
-const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 const COLORS = {
   brand: "#f07a2f",

@@ -9,7 +9,7 @@ import { sendMail } from "@/lib/mail/mailer";
 import { newQuoteEmail } from "@/lib/mail/templates";
 import { URGENCY, BUDGET, type Urgency, type BudgetRange } from "./constants";
 
-const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 export type QuoteState = { error?: string; success?: string; quoteId?: number } | undefined;
 

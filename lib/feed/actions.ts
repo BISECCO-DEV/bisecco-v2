@@ -15,7 +15,7 @@ export type FeedActionState =
   | { ok: false; error: string }
   | undefined;
 
-const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 
 // ─────────────────── CREATE POST ───────────────────
 export async function createFeedPostAction(

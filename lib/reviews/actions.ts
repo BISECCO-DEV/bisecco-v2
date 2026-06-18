@@ -8,7 +8,7 @@ import { pushNotification } from "@/lib/notifications/actions";
 import { sendMail } from "@/lib/mail/mailer";
 import { newReviewEmail, newReviewToModerateEmail, reviewApprovedEmail } from "@/lib/mail/templates";
 
-const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
 const CONTACT_INBOX = process.env.CONTACT_INBOX || "contact@bisecco.fr";
 
 export type ReviewState = { error?: string; success?: string } | undefined;

@@ -29,6 +29,8 @@ import {
   Banknote,
   Star,
   Lock,
+  LifeBuoy,
+  Send,
 } from "lucide-react";
 
 
@@ -186,6 +188,32 @@ export default async function HomePage() {
           </div>
         </div>
         <ScrollIndicator targetId="gratuit" offset={110} label="Découvrir" />
+      </section>
+
+      {/* ═══════════ SIGNALER UN PROBLÈME · invite au feedback utilisateur ═══════════ */}
+      <section className="bg-ink-50 border-b border-ink-100">
+        <div className="container-default py-8 sm:py-10">
+          <div className="mx-auto max-w-4xl flex flex-col sm:flex-row items-center gap-5 sm:gap-7 rounded-2xl bg-white border border-ink-100 shadow-[0_4px_20px_rgba(13,30,74,0.06)] px-6 sm:px-8 py-6 sm:py-7">
+            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-50 border border-brand-100 grid place-items-center">
+              <LifeBuoy size={22} className="text-brand-500" strokeWidth={2.2} />
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="font-bold text-ink-700 text-[1.05rem] sm:text-[1.15rem] tracking-tight">
+                Un problème ou une anomalie sur le site ?
+              </h2>
+              <p className="text-ink-500 text-sm mt-1.5 leading-relaxed max-w-2xl">
+                Bisecco évolue chaque semaine. Si vous repérez un bug, une erreur d&apos;affichage
+                ou un comportement inattendu, signalez-le-nous directement. Notre équipe le prend
+                en charge rapidement.
+              </p>
+            </div>
+            <div className="flex-shrink-0 w-full sm:w-auto">
+              <CtaButton href="/contact" variant="primary" size="md" icon={Send} className="w-full justify-center sm:w-auto">
+                Nous signaler
+              </CtaButton>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ═══════════ STATS COMMUNAUTÉ LIVE · masqué temporairement (demande client 2026-06-14) ═══════════ */}

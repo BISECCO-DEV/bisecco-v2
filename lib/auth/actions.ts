@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { randomBytes, createHash } from "crypto";
 import bcrypt from "bcryptjs";
 import { createClient } from "@/lib/supabase/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseAdminClient, findAuthUserByEmail } from "@/lib/supabase/admin";
 import { verifySiren } from "@/lib/siren";
 import { sendMail } from "@/lib/mail/mailer";
 import { resetPasswordEmail, verifyEmailTemplate, newSignupAdminEmail } from "@/lib/mail/templates";
@@ -27,8 +27,7 @@ const ADMIN_NOTIFY_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "contact@bisecco.fr
 async function cleanupOrphanAuthUser(email: string): Promise<{ kind: "real_duplicate" | "cleaned" | "none" }> {
   const admin = createSupabaseAdminClient();
 
-  const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  const authUser = list.users.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+  const authUser = await findAuthUserByEmail(admin, email);
   if (!authUser) return { kind: "none" };
 
   // Y a-t-il une ligne dans public.users (active ou soft-deleted) qui matche ?
@@ -162,8 +161,7 @@ async function migrateLegacyUser(email: string, password: string): Promise<boole
     // on met à jour son mot de passe pour qu'il corresponde au mdp legacy vérifié.
     if (error?.message?.toLowerCase().includes("already")) {
       try {
-        const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-        const existing = list.users.find((u) => u.email?.toLowerCase() === email);
+        const existing = await findAuthUserByEmail(admin, email);
         if (existing) {
           await admin.auth.admin.updateUserById(existing.id, { password });
           // Nettoyer le hash legacy
@@ -195,8 +193,7 @@ async function checkAccountAccess(email: string): Promise<{ ok: true } | { ok: f
   const admin = createSupabaseAdminClient();
 
   // 1. Vérifie email confirmé dans auth.users
-  const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  const authUser = list.users.find((u) => u.email?.toLowerCase() === email);
+  const authUser = await findAuthUserByEmail(admin, email);
   if (authUser && !authUser.email_confirmed_at) {
     return {
       ok: false,
@@ -287,8 +284,7 @@ export async function loginAction(
 
     // Vérifier s'il s'agit d'un compte Auth existant mais email non confirmé
     // (cas le plus fréquent quand un user vient de s'inscrire et tente le login)
-    const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const authUser = list.users.find((u) => u.email?.toLowerCase() === email);
+    const authUser = await findAuthUserByEmail(admin, email);
 
     if (authUser && !authUser.email_confirmed_at) {
       return {
@@ -626,7 +622,7 @@ async function sendVerificationEmail(
   role: "particulier" | "artisan",
 ): Promise<void> {
   const admin = createSupabaseAdminClient();
-  const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
+  const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
 
   console.log(`[sendVerificationEmail] Sending to ${email} (${role})...`);
 
@@ -656,8 +652,7 @@ async function sendVerificationEmail(
     console.warn("[sendVerificationEmail] Fallback: confirming user directly");
     try {
       // Trouve l'auth user et le confirme manuellement (skip vérif email)
-      const { data: list } = await admin.auth.admin.listUsers();
-      const found = list?.users?.find((u) => u.email === email);
+      const found = await findAuthUserByEmail(admin, email);
       if (found && !found.email_confirmed_at) {
         await admin.auth.admin.updateUserById(found.id, { email_confirm: true });
         console.log(`[sendVerificationEmail] User ${email} confirmed via fallback`);
@@ -728,8 +723,7 @@ export async function resendConfirmationEmailAction(
   const admin = createSupabaseAdminClient();
 
   // Trouve le user dans auth.users
-  const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  const authUser = list.users.find((u) => u.email?.toLowerCase() === email);
+  const authUser = await findAuthUserByEmail(admin, email);
 
   // Si pas trouvé ou déjà confirmé → on renvoie le même message (anti-énumération)
   const genericSuccess: AuthState = {
@@ -773,7 +767,7 @@ export async function requestPasswordResetAction(
   if (!email) return { error: "Email requis." };
 
   const admin = createSupabaseAdminClient();
-  const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
+  const origin = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
   const successMsg = "Si un compte existe, vous recevrez un email avec un lien de réinitialisation.";
 
   // Rate limit IP : max 3 demandes par heure depuis la même IP
@@ -799,8 +793,7 @@ export async function requestPasswordResetAction(
   // 1. Vérifier l'existence du compte (auth.users OU public.users legacy)
   let userName: string | null = null;
 
-  const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  const authUser = list.users.find((u) => u.email?.toLowerCase() === email);
+  const authUser = await findAuthUserByEmail(admin, email);
 
   if (!authUser) {
     // Pas dans auth.users → check legacy public.users
@@ -920,8 +913,7 @@ export async function completePasswordResetAction(
   const admin = createSupabaseAdminClient();
 
   // Récupère le user Auth via email
-  const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  const authUser = list.users.find((u) => u.email?.toLowerCase() === verify.email);
+  const authUser = await findAuthUserByEmail(admin, verify.email);
   if (!authUser) return { ok: false, error: "Utilisateur introuvable." };
 
   // Update password ET confirme l'email automatiquement.
@@ -962,7 +954,7 @@ export async function googleLoginAction() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr"}/auth/callback`,
+      redirectTo: `${process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu"}/auth/callback`,
     },
   });
 

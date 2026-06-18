@@ -334,7 +334,7 @@ export function MessagerieClient({ currentUserId, initialThreadId, quickReplies 
                         router.push("/messagerie");
                         router.refresh();
                       } else {
-                        alert(res.error ?? "Erreur lors de la suppression.");
+                        setError(res.error ?? "Erreur lors de la suppression.");
                       }
                     }}
                     className="w-9 h-9 rounded-md border border-sand-200 grid place-items-center text-red-500 hover:bg-red-50 hover:border-red-300 transition"

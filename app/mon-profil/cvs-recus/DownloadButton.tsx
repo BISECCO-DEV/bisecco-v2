@@ -8,13 +8,15 @@ type Mode = "preview" | "download";
 
 export function DownloadButton({ submissionId, fileName }: { submissionId: number; fileName: string }) {
   const [loading, setLoading] = useState<Mode | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handle = async (mode: Mode) => {
     setLoading(mode);
+    setError(null);
     try {
       const url = await getCvSubmissionDownloadUrl(submissionId);
       if (!url) {
-        alert("Impossible d'ouvrir ce fichier.");
+        setError("Impossible d'ouvrir ce fichier.");
         return;
       }
       if (mode === "preview") {
@@ -37,7 +39,8 @@ export function DownloadButton({ submissionId, fileName }: { submissionId: numbe
   };
 
   return (
-    <div className="inline-flex gap-2">
+    <div className="inline-flex flex-col gap-1.5">
+      <div className="inline-flex gap-2">
       <button
         type="button"
         onClick={() => handle("preview")}
@@ -58,6 +61,8 @@ export function DownloadButton({ submissionId, fileName }: { submissionId: numbe
         {loading === "download" ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />}
         Télécharger
       </button>
+      </div>
+      {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
     </div>
   );
 }

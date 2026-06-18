@@ -135,6 +135,7 @@ function GeolocateControl({
   const map = useMap();
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const locate = () => {
     if (typeof window === "undefined" || !navigator.geolocation) return;
@@ -149,7 +150,8 @@ function GeolocateControl({
       },
       () => {
         setLoading(false);
-        alert("Géolocalisation refusée. Active-la dans les paramètres du navigateur.");
+        setError("Géolocalisation refusée. Active-la dans les paramètres du navigateur.");
+        setTimeout(() => setError(null), 5000);
       },
       { enableHighAccuracy: true, timeout: 10000 },
     );
@@ -189,6 +191,11 @@ function GeolocateControl({
             </svg>
           )}
         </button>
+        {error && (
+          <div className="mt-2 max-w-[220px] text-xs text-red-700 bg-white border border-red-200 rounded-lg px-3 py-2 shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+            {error}
+          </div>
+        )}
       </div>
     </div>
   );

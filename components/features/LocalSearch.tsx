@@ -59,6 +59,7 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
   const [focusTarget, setFocusTarget] = useState<[number, number] | null>(null);
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
 
   /** Filtre les artisans selon query + métier sélectionné */
   const filtered = useMemo(() => {
@@ -88,6 +89,7 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
   const geolocate = (silent = false) => {
     if (typeof window === "undefined" || !navigator.geolocation) return;
     setGeoLoading(true);
+    setGeoError(null);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
@@ -98,7 +100,7 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
       () => {
         setGeoLoading(false);
         if (!silent) {
-          alert("Géolocalisation refusée. Activez-la dans votre navigateur.");
+          setGeoError("Géolocalisation refusée. Activez-la dans votre navigateur.");
         }
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -262,6 +264,10 @@ export function LocalSearch({ artisans, particuliers = [], metierOptions }: Loca
                 <Search size={16} /> Rechercher
               </button>
             </div>
+
+            {geoError && (
+              <p className="mt-2 text-xs text-red-300 bg-red-500/10 border border-red-400/30 rounded-lg px-3 py-2">{geoError}</p>
+            )}
 
             {/* User position info */}
             {userPos && (

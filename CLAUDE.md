@@ -110,28 +110,40 @@ scripts/              Scripts utilitaires (deploy.ps1, etc.)
 
 ## 🚀 Workflow déploiement
 
-### Local (build + tar)
-```powershell
-cd C:\Users\Laurent\Desktop\bisecco-v2
-.\scripts\deploy.ps1
-```
+> Préférer le slash command `/deploy` : il applique la procédure durcie ci-dessous avec les vérifs d'intégrité.
 
-OU manuel :
+### Local (build + tar vérifié)
 ```powershell
+cd C:\Users\Laurent\OneDrive\BISECCO-V2   # ⚠️ OneDrive, PAS Desktop
 npm run build
 Move-Item .next\cache .next-cache-temp -ErrorAction SilentlyContinue
 tar -czf next-build.tar.gz .next
 Move-Item .next-cache-temp .next\cache -ErrorAction SilentlyContinue
+# Vérif intégrité (noter taille en octets + nb d'entrées pour comparer côté serveur) :
+$len = (Get-Item next-build.tar.gz).Length
+"{0:N2} MB ({1} octets)" -f ($len/1MB), $len
+(tar -tzf next-build.tar.gz | Measure-Object -Line).Lines
 ```
 
-### Serveur (cPanel)
-1. File Manager → `/home5/laurentn/bisecco-v2/` → supprime ancien tar → upload nouveau
-2. Terminal cPanel :
+### Serveur (cPanel) — procédure durcie
+1. File Manager → `/home5/laurentn/bisecco-v2/` → upload nouveau tar (attendre 100%)
+2. **Vérifier l'upload AVANT d'extraire** (taille + nb d'entrées == local) :
+   ```bash
+   cd /home5/laurentn/bisecco-v2 && ls -la next-build.tar.gz && tar -tzf next-build.tar.gz | wc -l
+   ```
+3. **Extraction durcie** (chmod anti "Permission denied" + fallback + vérif) :
    ```bash
    source /home5/laurentn/nodevenv/bisecco-v2/20/bin/activate && cd /home5/laurentn/bisecco-v2
-   rm -rf .next && tar -xzf next-build.tar.gz && rm next-build.tar.gz
+   chmod -R u+w .next 2>/dev/null
+   rm -rf .next
+   [ -d .next ] && mv .next .next-broken-old
+   tar -xzf next-build.tar.gz && rm next-build.tar.gz
+   ls -la .next/server/pages-manifest.json && echo "OK fichier present"
    ```
-3. Node.js App → **RESTART**
+4. **Smoke test** avant restart : `node server.js` → attendre `ready`, puis Ctrl+C
+5. Node.js App → **RESTART**
+
+> Cause racine des pannes : upload File Manager tronqué + `.next` en lecture seule (rm refusé → `.next/server` incomplet → app qui ne démarre pas). Les vérifs ci-dessus couvrent les deux.
 
 ## 🚫 Anti-patterns à éviter
 

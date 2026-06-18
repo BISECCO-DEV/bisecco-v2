@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseAdminClient, findAuthUserByEmail } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/db/current-user";
 import { verifySiren } from "@/lib/siren";
 import { sendMail } from "@/lib/mail/mailer";
@@ -185,8 +185,7 @@ export async function hardDeleteUserAction(formData: FormData): Promise<void> {
   }
 
   // 1. Trouver le auth_user_id correspondant via email
-  const { data: list } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  const authUser = list.users.find((u) => u.email?.toLowerCase() === target!.email.toLowerCase());
+  const authUser = await findAuthUserByEmail(supabase, target!.email);
 
   // 2. Supprimer manuellement les données liées qui ne sont pas en CASCADE
   //    (la plupart sont en ON DELETE CASCADE déjà, mais on nettoie les orphelins)

@@ -6,7 +6,7 @@ import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { pushNotification } from "@/lib/notifications/actions";
 import { sendMail } from "@/lib/mail/mailer";
 
-const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.fr";
+const APP_URL_BASE = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://bisecco.eu";
 const MAX_BODY = 4000;
 const RATE_MAX = 20;
 const RATE_WINDOW_MS = 60 * 1000;

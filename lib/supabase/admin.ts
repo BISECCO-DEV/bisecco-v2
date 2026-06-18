@@ -24,3 +24,28 @@ export function createSupabaseAdminClient() {
     },
   });
 }
+
+type AdminClient = ReturnType<typeof createSupabaseAdminClient>;
+
+/**
+ * Recherche un utilisateur dans auth.users par email — SANS plafond.
+ *
+ * `listUsers()` est paginé (perPage par défaut = 50). Un simple `.find()` sur la
+ * première page rate donc tous les comptes au-delà : login / signup / reset
+ * cassent silencieusement à l'échelle. Ce helper parcourt TOUTES les pages.
+ *
+ * @returns l'objet user auth (ou null si introuvable). Comparaison insensible à la casse.
+ */
+export async function findAuthUserByEmail(admin: AdminClient, email: string) {
+  const target = email.trim().toLowerCase();
+  const perPage = 1000;
+  // Borne de sécurité (1M comptes max) pour ne jamais boucler à l'infini.
+  for (let page = 1; page <= 1000; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
+    if (error || !data?.users?.length) return null;
+    const found = data.users.find((u) => u.email?.toLowerCase() === target);
+    if (found) return found;
+    if (data.users.length < perPage) return null; // dernière page atteinte
+  }
+  return null;
+}

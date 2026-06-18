@@ -10,11 +10,18 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/db/current-user";
 
 export const metadata: Metadata = {
-  title: "Devenir Partenaire · Bisecco Pro",
+  title: { absolute: "Devenir Partenaire · Bisecco Pro" },
   description:
     "Rejoignez le 1er réseau social de professionnels français vérifiés SIREN. 100% gratuit, 0% commission, contact direct avec les clients. Inscription en 2 minutes.",
+  alternates: { canonical: "/partenaires" },
   openGraph: {
-    title: "Devenez partenaire Bisecco · 0% commission",
+    title: "Devenir Partenaire · Bisecco Pro",
+    description: "Réseau de professionnels vérifiés SIREN. Inscription gratuite, contact direct.",
+    url: "/partenaires",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Devenir Partenaire · Bisecco Pro",
     description: "Réseau de professionnels vérifiés SIREN. Inscription gratuite, contact direct.",
   },
 };

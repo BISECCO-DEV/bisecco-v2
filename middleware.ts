@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { getMetierPrioritaire } from "@/lib/seo/metiers-prioritaires";
+import { getVillePrioritaire } from "@/lib/seo/villes-prioritaires";
 
 // ─── COMING SOON GATE ───────────────────────────────────────────
 const COMING_SOON_ENABLED = process.env.COMING_SOON_ENABLED !== "false";
@@ -70,6 +72,9 @@ const PUBLIC_ROUTES = [
 
 // Routes accessibles uniquement aux membres connectés.
 // Le visiteur anonyme est redirigé vers /connexion?redirect=...
+// Matching par segment (=== p OU startsWith(p + "/")) → "/partenaires" ne capture
+// PAS "/partenaires-pro" (page marketing publique).
+// /contact retiré : le formulaire de contact est public.
 const PROTECTED_PATHS = [
   "/mon-profil",
   "/messagerie",
@@ -77,9 +82,14 @@ const PROTECTED_PATHS = [
   "/fil",
   "/emploi",
   "/partenaires",
-  "/contact",
 ];
+// Exceptions publiques sous un préfixe protégé (pages marketing / SEO, sitemap).
+const PUBLIC_EXCEPTIONS = ["/emploi/poster"];
 const GUEST_ONLY_PATHS = ["/connexion", "/inscription"];
+
+function matchesPath(pathname: string, base: string): boolean {
+  return pathname === base || pathname.startsWith(base + "/");
+}
 
 function isSupabaseConfigured(): boolean {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
@@ -119,6 +129,23 @@ export async function middleware(request: NextRequest) {
       url.host = "bisecco.fr";
       // Redirect 301 permanent · Google passe le PageRank au domaine canonique
       return NextResponse.redirect(url, 301);
+    }
+  }
+
+  // ── 0.5. Canonicalisation SEO · /artisans/{m}/{v} → /metiers/{m}/{v} (301) ──
+  // Les deux schémas servaient le MÊME contenu (duplicate content). /metiers est la
+  // route canonique (seule présente dans le sitemap). On ne redirige QUE si la combi
+  // existe côté /metiers (métier + ville prioritaires) — sinon /artisans couvre la
+  // longue traîne et reste la seule URL valide (pas de 404 créé).
+  {
+    const artisanMatch = pathname.match(/^\/artisans\/([^/]+)\/([^/]+)\/?$/);
+    if (artisanMatch) {
+      const [, metierSlug, villeSlug] = artisanMatch;
+      if (getMetierPrioritaire(metierSlug) && getVillePrioritaire(villeSlug)) {
+        const url = request.nextUrl.clone();
+        url.pathname = `/metiers/${metierSlug}/${villeSlug}`;
+        return NextResponse.redirect(url, 301);
+      }
     }
   }
 
@@ -182,7 +209,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── 3. Routes protégées (auth obligatoire) ──
-  if (PROTECTED_PATHS.some((p) => pathname.startsWith(p)) && !user) {
+  const isProtected =
+    PROTECTED_PATHS.some((p) => matchesPath(pathname, p)) &&
+    !PUBLIC_EXCEPTIONS.some((p) => matchesPath(pathname, p));
+  if (isProtected && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/connexion";
     url.searchParams.set("redirect", pathname);

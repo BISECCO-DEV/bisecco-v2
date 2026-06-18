@@ -46,11 +46,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const villeP = getVillePrioritaire(ville);
 
   if (!metierP || !villeP) {
-    return { title: "Page introuvable · Bisecco" };
+    return { title: "Page introuvable", robots: { index: false, follow: false } };
   }
 
   const metierLower = metierP.name.toLowerCase();
-  const title = `${metierP.name} à ${villeP.name} (${villeP.postalCode}) · Professionnel vérifié SIREN | Bisecco`;
+  const title = `${metierP.name} à ${villeP.name} (${villeP.postalCode}) · Professionnel vérifié SIREN`;
   const description =
     `Trouvez un ${metierLower} qualifié à ${villeP.name}. Tarifs ${metierP.tarifMin}-${metierP.tarifMax}€/h. ` +
     `Professionnels vérifiés SIREN, avis clients authentiques, devis gratuit en 2 min. ` +

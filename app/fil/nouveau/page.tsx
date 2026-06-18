@@ -7,7 +7,7 @@ import { getMetierOptions } from "@/lib/db/metier-options";
 import { FeedComposer } from "@/components/features/feed/FeedComposer";
 
 export const metadata: Metadata = {
-  title: "Nouvelle publication · Fil Bisecco",
+  title: "Nouvelle publication · Le Fil",
   robots: { index: false, follow: false },
 };
 

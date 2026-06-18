@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Wrench, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Bisecco · Maintenance · Le 1er réseau de professionnels français vérifiés SIREN",
+  title: { absolute: "Bisecco · Maintenance · Le 1er réseau de professionnels français vérifiés SIREN" },
   description:
     "Bisecco · Annuaire de professionnels français vérifiés SIREN. Plombier, électricien, maçon, menuisier, développeur web. 100% gratuit, 0% commission. Plateforme en mise à jour, retour très prochain.",
   keywords: ["professionnels", "professionnels vérifiés", "SIREN", "annuaire professionnels", "devis gratuit"],

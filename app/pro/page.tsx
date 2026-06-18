@@ -16,7 +16,7 @@ import {
 import { RevenueLineChart } from "./RevenueLineChart";
 
 export const metadata: Metadata = {
-  title: "Tableau de bord pro · Bisecco",
+  title: "Tableau de bord pro",
   robots: { index: false, follow: false },
 };
 

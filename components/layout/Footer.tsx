@@ -260,7 +260,7 @@ export function Footer() {
               <span className="text-white/20">·</span>
               <Link href="/mentions-legales"          className="hover:text-white transition">Mentions</Link>
               <Link href="/politique-confidentialite" className="hover:text-white transition">Confidentialité</Link>
-              <Link href="/cgv"                       className="hover:text-white transition">CGV</Link>
+              <Link href="/cgu"                       className="hover:text-white transition">CGU</Link>
               <Link href="/politique-remboursement"   className="hover:text-white transition">Remboursement</Link>
               <Link href="/plan-du-site"              className="hover:text-white transition">Plan du site</Link>
             </div>

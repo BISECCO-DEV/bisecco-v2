@@ -26,6 +26,13 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "www.bisecco.fr" },
     ],
   },
+  // Redirections permanentes (SEO) — l'ancienne route /cgv pointait vers du
+  // contenu CGU ; la route canonique est désormais /cgu.
+  async redirects() {
+    return [
+      { source: "/cgv", destination: "/cgu", permanent: true },
+    ];
+  },
   // Cache & headers SEO + sécurité globaux
   async headers() {
     return [

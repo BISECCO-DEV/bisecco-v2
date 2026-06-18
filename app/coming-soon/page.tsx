@@ -4,7 +4,7 @@ import { Sparkles, ShieldCheck, KeyRound, Mail } from "lucide-react";
 import { ComingSoonClient } from "./ComingSoonClient";
 
 export const metadata: Metadata = {
-  title: "Bisecco · Le 1er réseau social de professionnels français vérifiés SIREN",
+  title: { absolute: "Bisecco · Le 1er réseau social de professionnels français vérifiés SIREN" },
   description:
     "Bisecco · Annuaire de professionnels français vérifiés SIREN. Trouvez un professionnel qualifié près de chez vous (plombier, électricien, maçon, menuisier, développeur web…). 100% gratuit, 0% commission. Nouvelle version bientôt disponible.",
   keywords: ["professionnels", "professionnels vérifiés", "SIREN", "plombier", "électricien", "annuaire professionnels", "devis gratuit"],

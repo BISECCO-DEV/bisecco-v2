@@ -16,7 +16,7 @@ import { fetchAllMetiers } from "@/lib/db/metiers";
 import { getMetierOptions } from "@/lib/db/metier-options";
 
 export const metadata: Metadata = {
-  title: "Le Fil · Bisecco",
+  title: "Le Fil",
   description:
     "Le fil d'actualité où professionnels et particuliers échangent : réalisations de chantiers, questions travaux, conseils pratiques. Tous les comptes sont vérifiés SIREN.",
 };

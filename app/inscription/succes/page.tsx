@@ -6,7 +6,7 @@ import {
 import { CtaButton } from "@/components/ui/CtaButton";
 
 export const metadata: Metadata = {
-  title: "Inscription validée · Bisecco",
+  title: "Inscription validée",
   description: "Votre inscription Bisecco a bien été enregistrée. Activez votre compte depuis votre boîte mail.",
   robots: { index: false, follow: false },
 };

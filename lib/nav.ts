@@ -27,7 +27,7 @@ export const MAIN_NAV: NavLink[] = [
   { href: "/fil",         label: "Actu",        icon: Newspaper,         requiresAuth: true },
   { href: "/emploi",      label: "Emploi",      icon: BriefcaseBusiness, requiresAuth: true },
   { href: "/messagerie",  label: "Messagerie",  icon: MessageSquare,     requiresAuth: true },
-  { href: "/partenaires", label: "Mon réseau",  icon: Handshake,         requiresAuth: true },
+  { href: "/partenaires", label: "Partenaires",  icon: Handshake,         requiresAuth: true },
   { href: "/contact",     label: "Contact",     icon: Mail,              requiresAuth: true },
 ];
 

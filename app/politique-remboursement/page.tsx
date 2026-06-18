@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { LegalLayout } from "@/components/layout/LegalLayout";
 
 export const metadata: Metadata = {
-  title: "Politique de remboursement & litiges · Bisecco",
+  title: "Politique de remboursement & litiges",
+  alternates: { canonical: "/politique-remboursement" },
   description:
     "Politique de remboursement et résolution des litiges sur Bisecco. Service gratuit, médiation amiable, recours légaux.",
 };
@@ -75,7 +76,7 @@ export default function PolitiqueRemboursementPage() {
       <h3>3.2 Signalement à Bisecco</h3>
       <p>
         Si un comportement vous paraît contraire à nos{" "}
-        <a href="/cgv">conditions générales</a> (professionnel injoignable, faux profil,
+        <a href="/cgu">conditions générales</a> (professionnel injoignable, faux profil,
         prestation non conforme), vous pouvez signaler le problème via&nbsp;:
       </p>
       <ul>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import {
   MapPin, Star, ShieldCheck, MessageCircle,
   CheckCircle2, Award, Briefcase, Clock, ArrowLeft, Heart,
@@ -16,7 +16,7 @@ import { hasFavorited } from "@/lib/favorites/actions";
 import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { ContactButton } from "@/components/features/ContactButton";
 import { ShareButton } from "@/components/features/ShareButton";
-import { extractClientNumber } from "@/lib/utils";
+import { extractClientNumber, artisanProfilePath } from "@/lib/utils";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { LiveViewersCounter } from "@/components/features/LiveViewersCounter";
@@ -61,17 +61,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const clientNumber = extractClientNumber(id) ?? id;
   const detail = await fetchArtisanProfileDetail(clientNumber);
-  if (!detail) return { title: "Profil introuvable" };
+  if (!detail) return { title: "Profil introuvable", robots: { index: false, follow: false } };
   const a = detail.artisan;
   const metierLabel = a.metiers[0]?.name ?? "Professionnel";
+  const pageTitle = `${a.company_name ?? a.name} · ${metierLabel} à ${a.city ?? "France"}`;
+  const descr = a.description ?? `${metierLabel} vérifié sur Bisecco. Devis gratuit, contact direct.`;
+  const canonical = artisanProfilePath(a.company_name ?? a.name, a.client_number ?? clientNumber);
   return {
-    title: `${a.company_name ?? a.name} · ${metierLabel} à ${a.city ?? "France"}`,
-    description: a.description ?? `${metierLabel} vérifié sur Bisecco. Devis gratuit, contact direct.`,
+    title: pageTitle,
+    description: descr,
+    alternates: { canonical },
     openGraph: {
-      title: `${a.company_name ?? a.name} | Bisecco`,
-      description: a.description ?? `${metierLabel} vérifié.`,
+      title: pageTitle,
+      description: descr,
+      url: canonical,
       images: a.cover_photo ? [a.cover_photo] : [],
     },
+    twitter: { card: "summary_large_image", title: pageTitle, description: descr },
   };
 }
 
@@ -86,6 +92,20 @@ export default async function ProfilPage({ params, searchParams }: Props) {
     getCurrentDbUser(),
   ]);
   if (!detail) notFound();
+
+  // BUG 4 · canonicalisation de l'URL : on force le format slug lisible
+  // (/profil/{nom}-bis-2026-{id}). Le format court (/profil/BIS-2026-{id}) ou un
+  // slug obsolète sont redirigés en permanent (308 ≈ 301) vers l'URL canonique.
+  if (detail.artisan.client_number) {
+    const canonicalPath = artisanProfilePath(
+      detail.artisan.company_name ?? detail.artisan.name,
+      detail.artisan.client_number,
+    );
+    if (`/profil/${id}` !== canonicalPath) {
+      permanentRedirect(canonicalPath);
+    }
+  }
+
   // L'URL utilise le client_number (ex. BS-2026-001), pas un id numérique.
   // On récupère le vrai id DB depuis detail.artisan pour les actions (review/favorite/contact).
   const artisanIdResolved = detail.artisan.id;

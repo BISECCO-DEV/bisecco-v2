@@ -56,7 +56,7 @@ const SECTIONS = [
     links: [
       { href: "/mentions-legales",          href_label: "Mentions légales" },
       { href: "/politique-confidentialite", href_label: "Politique de confidentialité" },
-      { href: "/cgv",                       href_label: "Conditions générales de vente" },
+      { href: "/cgu",                       href_label: "Conditions générales d'utilisation" },
       { href: "/politique-remboursement",   href_label: "Politique de remboursement" },
     ],
   },

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { LegalLayout } from "@/components/layout/LegalLayout";
 
 export const metadata: Metadata = {
-  title: "Mentions légales · Bisecco",
+  title: "Mentions légales",
+  alternates: { canonical: "/mentions-legales" },
   description:
     "Mentions légales de Bisecco · Éditeur, hébergeur, propriété intellectuelle, contact.",
 };

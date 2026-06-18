@@ -133,7 +133,7 @@ export function PosterForm() {
         <input type="checkbox" name="consent" required className="mt-1 accent-brand-500" />
         <span>
           Je certifie que l&apos;offre est réelle et respecte les{" "}
-          <a href="/cgv" className="text-brand-500 font-bold hover:underline">conditions d&apos;utilisation</a>{" "}
+          <a href="/cgu" className="text-brand-500 font-bold hover:underline">conditions d&apos;utilisation</a>{" "}
           de Bisecco (notamment l&apos;interdiction de discrimination).
         </span>
       </label>

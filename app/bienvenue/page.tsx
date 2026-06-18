@@ -9,7 +9,7 @@ import { requireUser } from "@/lib/db/current-user";
 import { fetchOnboardingStatus, type OnboardingStep } from "@/lib/db/onboarding";
 
 export const metadata: Metadata = {
-  title: "Bienvenue sur Bisecco",
+  title: { absolute: "Bienvenue sur Bisecco" },
   robots: { index: false, follow: false },
 };
 

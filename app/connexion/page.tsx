@@ -12,7 +12,7 @@ import {
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
-  title: "Connexion · Bisecco",
+  title: "Connexion",
   description: "Connectez-vous à votre espace Bisecco. Vos contacts, vos devis, votre messagerie.",
   robots: { index: false, follow: false },
 };

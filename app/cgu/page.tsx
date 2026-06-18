@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { LegalLayout } from "@/components/layout/LegalLayout";
 
 export const metadata: Metadata = {
-  title: "CGU · Conditions Générales d'Utilisation · Bisecco",
+  title: "CGU · Conditions Générales d'Utilisation",
   description:
     "Conditions Générales d'Utilisation de la plateforme Bisecco · Inscription, obligations, modération, responsabilité.",
+  alternates: { canonical: "/cgu" },
 };
 
-export default function CgvPage() {
+export default function CguPage() {
   return (
     <LegalLayout
       title="Conditions Générales d'Utilisation"

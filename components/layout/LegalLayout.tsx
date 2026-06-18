@@ -72,7 +72,7 @@ export function LegalLayout({ title, subtitle, updatedAt, children }: Props) {
             {[
               { href: "/mentions-legales", label: "Mentions légales" },
               { href: "/politique-confidentialite", label: "Politique de confidentialité" },
-              { href: "/cgv", label: "Conditions générales" },
+              { href: "/cgu", label: "CGU" },
               { href: "/politique-remboursement", label: "Politique de remboursement" },
             ].map((l) => (
               <Link

@@ -346,7 +346,7 @@ export function SignupForm({ role: roleProp, onRoleChange }: SignupFormProps = {
           />
           <span className="text-[0.85rem] text-ink-600 leading-[1.5]">
             J&apos;accepte les{" "}
-            <Link href="/cgv" className="text-brand-500 font-bold hover:underline">
+            <Link href="/cgu" className="text-brand-500 font-bold hover:underline">
               conditions d&apos;utilisation
             </Link>{" "}
             et la{" "}

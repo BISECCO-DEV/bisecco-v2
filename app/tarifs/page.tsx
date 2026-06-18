@@ -153,7 +153,7 @@ export default function TarifsPage() {
               <p className="text-[0.85rem] text-emerald-800 mt-1 leading-relaxed">
                 La gratuité totale pour les particuliers et l&apos;absence de commission pour les professionnels sont
                 garanties contractuellement. Lisez-le noir sur blanc dans nos{" "}
-                <Link href="/cgv" className="font-bold underline hover:no-underline">conditions générales</Link>.
+                <Link href="/cgu" className="font-bold underline hover:no-underline">conditions générales</Link>.
               </p>
             </div>
           </div>

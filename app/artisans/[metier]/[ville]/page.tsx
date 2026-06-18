@@ -22,14 +22,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const m = await fetchMetierBySlug(metier);
   if (!m) return { title: "Page introuvable" };
   const villeLabel = unslug(ville);
+  const pageTitle = `${m.name} à ${villeLabel} · Devis gratuit, profils vérifiés`;
+  const pageDesc = `Trouvez un ${m.name.toLowerCase()} à ${villeLabel} parmi notre sélection de professionnels vérifiés. SIREN contrôlé, avis clients, devis gratuit en 2 minutes.`;
   return {
-    title: `${m.name} à ${villeLabel} · Devis gratuit, profils vérifiés`,
-    description: `Trouvez un ${m.name.toLowerCase()} à ${villeLabel} parmi notre sélection de professionnels vérifiés. SIREN contrôlé, avis clients, devis gratuit en 2 minutes.`,
+    title: pageTitle,
+    description: pageDesc,
     alternates: { canonical: `/artisans/${metier}/${ville}` },
     openGraph: {
-      title: `${m.name} à ${villeLabel} | Bisecco`,
+      title: pageTitle,
       description: `Professionnels ${m.name.toLowerCase()} vérifiés à ${villeLabel}.`,
+      url: `/artisans/${metier}/${ville}`,
     },
+    twitter: { card: "summary_large_image", title: pageTitle, description: pageDesc },
   };
 }
 

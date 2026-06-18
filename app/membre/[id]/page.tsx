@@ -42,9 +42,9 @@ async function fetchParticulierProfile(idOrClientNumber: string): Promise<Partic
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const profile = await fetchParticulierProfile(id);
-  if (!profile) return { title: "Membre · Bisecco", robots: { index: false } };
+  if (!profile) return { title: "Membre", robots: { index: false } };
   return {
-    title: `${profile.name} · Membre Bisecco`,
+    title: `${profile.name} · Membre`,
     description: `Profil de ${profile.name} sur Bisecco${profile.city ? `, ${profile.city}` : ""}.`,
     robots: { index: false, follow: false },
   };

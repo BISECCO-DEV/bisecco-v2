@@ -42,7 +42,7 @@ function buildSeoDescription(metier: { name: string; description: string | null 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const m = await fetchMetierBySlug(slug);
-  if (!m) return { title: "Métier introuvable · Bisecco" };
+  if (!m) return { title: "Métier introuvable", robots: { index: false, follow: false } };
 
   const description = buildSeoDescription(m);
   const titleTag = `${m.name} · Professionnel vérifié SIREN près de chez vous`;

@@ -13,12 +13,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const post = await fetchPostById(Number(id));
   if (!post || post.status !== "approved") {
-    return { title: "Publication · Bisecco", robots: { index: false } };
+    return { title: "Publication", robots: { index: false } };
   }
   const author = post.author.company_name || post.author.name;
   const excerpt = post.content.slice(0, 140);
   return {
-    title: `${excerpt} · ${author} · Bisecco`,
+    title: `${excerpt} · ${author}`,
     description: post.content.slice(0, 200),
   };
 }

@@ -5,8 +5,9 @@ import { getCurrentDbUser } from "@/lib/auth/current-user";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Programme de parrainage Bisecco",
+  title: "Programme de parrainage",
   description: "Invitez vos proches et vos professionnels à vous rejoindre sur bisecco.fr · le 1er réseau social de professionnels français vérifiés SIREN.",
+  alternates: { canonical: "/parrainage" },
 };
 
 export const dynamic = "force-dynamic";

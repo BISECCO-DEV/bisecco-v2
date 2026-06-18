@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { LegalLayout } from "@/components/layout/LegalLayout";
 
 export const metadata: Metadata = {
-  title: "Politique de confidentialité · Bisecco",
+  title: "Politique de confidentialité",
+  alternates: { canonical: "/politique-confidentialite" },
   description:
     "Politique de protection des données personnelles de Bisecco · Conformité RGPD, droits utilisateurs, durée de conservation.",
 };

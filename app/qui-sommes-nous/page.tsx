@@ -7,10 +7,15 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
 
+const QSN_TITLE = "Qui sommes-nous · Histoire, mission, équipe";
+const QSN_DESC = "Découvrez l'histoire de Bisecco, fondé en 2026 par Laurent Nero (AGISCO HOLDING SAS). Notre mission : connecter professionnels français vérifiés et particuliers, sans commission, avec transparence totale.";
+
 export const metadata: Metadata = {
-  title: "Qui sommes-nous · Histoire, mission, équipe Bisecco",
-  description: "Découvrez l'histoire de Bisecco, fondé en 2026 par Laurent Nero (AGISCO HOLDING SAS). Notre mission : connecter professionnels français vérifiés et particuliers, sans commission, avec transparence totale.",
+  title: QSN_TITLE,
+  description: QSN_DESC,
   alternates: { canonical: "/qui-sommes-nous" },
+  openGraph: { title: QSN_TITLE, description: QSN_DESC, url: "/qui-sommes-nous" },
+  twitter: { card: "summary_large_image", title: QSN_TITLE, description: QSN_DESC },
 };
 
 const TIMELINE = [

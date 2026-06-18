@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/db/current-user";
 import { ProSidebar } from "./ProSidebar";
 
 export const metadata: Metadata = {
-  title: "Espace professionnel · Bisecco",
+  title: "Espace professionnel",
   robots: { index: false, follow: false },
 };
 

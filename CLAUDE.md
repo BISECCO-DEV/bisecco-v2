@@ -131,19 +131,18 @@ $len = (Get-Item next-build.tar.gz).Length
    ```bash
    cd /home5/laurentn/bisecco-v2 && ls -la next-build.tar.gz && tar -tzf next-build.tar.gz | wc -l
    ```
-3. **Extraction durcie** (chmod anti "Permission denied" + fallback + vérif) :
+3. **Extraction BLINDÉE** (gère le bug OneDrive des dossiers read-only) :
    ```bash
    source /home5/laurentn/nodevenv/bisecco-v2/20/bin/activate && cd /home5/laurentn/bisecco-v2
-   chmod -R u+w .next 2>/dev/null
-   rm -rf .next
-   [ -d .next ] && mv .next .next-broken-old
-   tar -xzf next-build.tar.gz && rm next-build.tar.gz
-   ls -la .next/server/pages-manifest.json && echo "OK fichier present"
+   [ -d .next ] && mv .next ".next-old-$(date +%s)"   # mv marche même si verrouillé
+   tar --delay-directory-restore -xzf next-build.tar.gz   # crée les dossiers MODIFIABLES
+   chmod -R u+w .next 2>/dev/null && rm -f next-build.tar.gz
+   test -f ".next/server/app/metiers/[slug]/[ville]/page.js" && echo "OK build complet" || echo "ECHEC (relancer)"
    ```
 4. **Smoke test** avant restart : `node server.js` → attendre `ready`, puis Ctrl+C
 5. Node.js App → **RESTART**
 
-> Cause racine des pannes : upload File Manager tronqué + `.next` en lecture seule (rm refusé → `.next/server` incomplet → app qui ne démarre pas). Les vérifs ci-dessus couvrent les deux.
+> Causes racines des pannes : (1) upload File Manager tronqué (vérif taille+entrées) ; (2) **OneDrive marque les dossiers `.next` en lecture seule** (`dr-xr-xr-x`) → sans `--delay-directory-restore`, les dossiers à crochets `[slug]`/`[id]` ne s'extraient pas → 500 `MODULE_NOT_FOUND` sur les pages dynamiques. Le vrai test = un fichier à CROCHETS existe (pas juste `pages-manifest.json`, qui s'extrait toujours en premier).
 
 ## 🚫 Anti-patterns à éviter
 

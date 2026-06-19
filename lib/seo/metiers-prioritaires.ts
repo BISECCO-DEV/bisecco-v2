@@ -200,7 +200,7 @@ export const METIERS_PRIORITAIRES: MetierPrioritaire[] = [
       {
         question: "Quelle saison pour ravaler ma façade ?",
         answer:
-          "Printemps et automne sont idéaux (températures 10-25°C, peu d'humidité). Évitez juillet-août (chaleur fissure les enduits) et décembre-février (gel + humidité). Sur la Côte d'Azur, mars-mai et septembre-octobre sont parfaits.",
+          "Printemps et automne sont idéaux (températures 10-25°C, peu d'humidité). Évitez juillet-août (chaleur fissure les enduits) et décembre-février (gel + humidité). En Île-de-France, mai-juin et septembre-octobre sont les meilleures périodes.",
       },
     ],
   },
@@ -288,7 +288,7 @@ export const METIERS_PRIORITAIRES: MetierPrioritaire[] = [
       {
         question: "Démoussage : tous les combien de temps ?",
         answer:
-          "Tous les 5 à 10 ans selon l'exposition. Région humide ou ombragée : tous les 5 ans. Région sèche et ensoleillée (Côte d'Azur) : tous les 8-10 ans. Coût : 8 à 15€/m².",
+          "Tous les 5 à 10 ans selon l'exposition. Toiture humide ou ombragée (fréquent en Île-de-France) : tous les 5 ans. Toiture bien exposée et dégagée : tous les 8-10 ans. Coût : 8 à 15€/m².",
       },
     ],
   },
@@ -431,7 +431,7 @@ export const METIERS_PRIORITAIRES: MetierPrioritaire[] = [
     slug: "jardinier-artisanal",
     name: "Jardinier",
     pitch:
-      "Entretien, élagage, aménagement de jardin et terrasse. Demande très forte en zone résidentielle Côte d'Azur.",
+      "Entretien, élagage, aménagement de jardin et terrasse. Demande très forte dans les zones pavillonnaires d'Île-de-France.",
     tarifMin: 30,
     tarifMax: 55,
     urgence: false,
@@ -456,12 +456,12 @@ export const METIERS_PRIORITAIRES: MetierPrioritaire[] = [
       {
         question: "Quand élaguer mes arbres ?",
         answer:
-          "Arbres caducs (chênes, érables, mûriers) : hiver, hors gel. Conifères (cyprès, pins, sapins) : fin d'été. Fruitiers : après récolte. Évitez le printemps (montée de sève). Sur la Côte d'Azur : novembre-février pour la plupart des espèces.",
+          "Arbres caducs (chênes, érables, mûriers) : hiver, hors gel. Conifères (cyprès, pins, sapins) : fin d'été. Fruitiers : après récolte. Évitez le printemps (montée de sève). En Île-de-France : novembre à mars, hors épisodes de gel intense.",
       },
       {
         question: "Tonte de pelouse : quelle fréquence ?",
         answer:
-          "Printemps-été (mars-octobre) : toutes les 1 à 2 semaines. Hiver : 1× par mois si croissance. Hauteur de coupe : 4-5 cm en été (résistance à la sécheresse), 3 cm en automne. En Côte d'Azur, la tonte continue parfois toute l'année.",
+          "Printemps-été (mars-octobre) : toutes les 1 à 2 semaines. Hiver : tonte généralement à l'arrêt de novembre à février. Hauteur de coupe : 4-5 cm en été (résistance à la sécheresse), 3 cm en automne.",
       },
       {
         question: "Aménager un jardin : par où commencer ?",

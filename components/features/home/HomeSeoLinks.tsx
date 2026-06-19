@@ -6,9 +6,9 @@ import { VILLES_PRIORITAIRES } from "@/lib/seo/villes-prioritaires";
 /**
  * Section bas-de-home pour le maillage interne SEO + UX.
  *
- * Liens vers les 500 pages programmatiques (métier × ville) :
+ * Liens vers les pages programmatiques (métier × ville) autour de Meaux :
  *   - Boost PageRank interne (chaque page reçoit plus de jus de la home)
- *   - UX : un visiteur peut trouver "plombier Cannes" en 1 clic
+ *   - UX : un visiteur peut trouver "plombier Meaux" en 1 clic
  *   - SEO : sémantique très claire pour Google sur la couverture du site
  *
  * Stratégie de rendu :
@@ -17,14 +17,14 @@ import { VILLES_PRIORITAIRES } from "@/lib/seo/villes-prioritaires";
  *   - Affichage compact en grille pour ne pas alourdir la page
  */
 export function HomeSeoLinks() {
-  // 6 villes phares en mise en avant
+  // 6 villes phares en mise en avant (zone de Meaux)
   const VILLES_PHARES = [
-    "cannes",
-    "nice",
-    "antibes",
     "meaux",
-    "paris",
-    "argenteuil",
+    "chelles",
+    "lagny-sur-marne",
+    "coulommiers",
+    "pontault-combault",
+    "bussy-saint-georges",
   ];
 
   const villesPhares = VILLES_PHARES

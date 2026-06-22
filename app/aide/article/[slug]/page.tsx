@@ -45,8 +45,8 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const a = ARTICLES[slug];
-  if (!a) return { title: "Article introuvable" };
-  return { title: `${a.title} · Aide`, description: a.excerpt };
+  if (!a) return { title: "Article introuvable", robots: { index: false, follow: false } };
+  return { title: `${a.title} · Aide`, description: a.excerpt, alternates: { canonical: `/aide/article/${slug}` } };
 }
 
 export default async function AideArticlePage({ params }: Props) {

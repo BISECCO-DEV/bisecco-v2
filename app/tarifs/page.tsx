@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Tarifs · 100 % gratuit pour professionnels et particuliers",
   description:
     "Bisecco est gratuit à vie pour les particuliers et les professionnels. Pas de commission sur vos chantiers, pas d'abonnement obligatoire, pas de frais cachés. Découvrez comment on tient ce modèle.",
-  alternates: { canonical: "https://bisecco.fr/tarifs" },
+  alternates: { canonical: "/tarifs" },
   openGraph: {
     title: "Tarifs Bisecco · 100 % gratuit",
     description:

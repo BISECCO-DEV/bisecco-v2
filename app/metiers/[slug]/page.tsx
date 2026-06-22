@@ -51,16 +51,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: titleTag,
     description,
-    keywords: [
-      nameLower,
-      `${nameLower} près de chez moi`,
-      `trouver un ${nameLower}`,
-      `devis ${nameLower}`,
-      `${nameLower} vérifié SIREN`,
-      "professionnel français",
-      "devis gratuit",
-      "sans commission",
-    ].join(", "),
     alternates: { canonical: `/metiers/${slug}` },
     openGraph: {
       title: titleTag,

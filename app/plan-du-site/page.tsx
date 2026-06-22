@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Plan du site",
   description: "Navigation complète du site Bisecco : toutes les pages en un coup d'œil.",
+  alternates: { canonical: "/plan-du-site" },
 };
 
 const SECTIONS = [

@@ -75,8 +75,8 @@ type Props = { params: Promise<{ categorie: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categorie } = await params;
   const cat = CATEGORIES[categorie];
-  if (!cat) return { title: "Catégorie introuvable" };
-  return { title: `${cat.title} · Centre d'aide`, description: cat.description };
+  if (!cat) return { title: "Catégorie introuvable", robots: { index: false, follow: false } };
+  return { title: `${cat.title} · Centre d'aide`, description: cat.description, alternates: { canonical: `/aide/${categorie}` } };
 }
 
 export default async function AideCategoriePage({ params }: Props) {

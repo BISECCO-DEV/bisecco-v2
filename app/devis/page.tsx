@@ -6,6 +6,7 @@ import { getMetierOptions } from "@/lib/db/metier-options";
 export const metadata: Metadata = {
   title: "Demander un devis gratuit",
   description: "Décrivez votre projet en 2 minutes, ajoutez des photos et recevez plusieurs devis de professionnels vérifiés. 100% gratuit, sans engagement.",
+  alternates: { canonical: "/devis" },
 };
 
 export default async function DevisPage() {

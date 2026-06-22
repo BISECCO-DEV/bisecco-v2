@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   title: { absolute: "Bisecco · Le 1er réseau social de professionnels français vérifiés SIREN" },
   description:
     "Bisecco · Annuaire de professionnels français vérifiés SIREN. Trouvez un professionnel qualifié près de chez vous (plombier, électricien, maçon, menuisier, développeur web…). 100% gratuit, 0% commission. Nouvelle version bientôt disponible.",
-  keywords: ["professionnels", "professionnels vérifiés", "SIREN", "plombier", "électricien", "annuaire professionnels", "devis gratuit"],
   alternates: { canonical: "https://bisecco.fr" },
   openGraph: {
     title: "Bisecco · Réseau de professionnels français vérifiés",

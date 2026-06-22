@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Tous les métiers artisanaux · Spécialités vérifiées SIREN",
   description:
     "Plombier, électricien, maçon, menuisier, peintre, couvreur, boulanger, développeur informatique… Découvrez tous les métiers du réseau Bisecco. Trouvez un professionnel vérifié SIREN près de chez vous.",
+  alternates: { canonical: "/metiers" },
 };
 
 export const dynamic = "force-dynamic";

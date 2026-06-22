@@ -158,7 +158,7 @@ export default async function SeoLocalePage({ params }: Props) {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={a.profile_photo ?? `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(a.name)}`}
-                      alt=""
+                      alt={`${a.company_name ?? a.name}, ${m.name.toLowerCase()} à ${villeLabel}`}
                       className="w-16 h-16 rounded-2xl object-cover flex-shrink-0 bg-ink-100"
                     />
                     <div className="flex-1 min-w-0">

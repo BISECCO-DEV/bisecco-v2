@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Emploi artisanat · Bientôt disponible",
   description:
     "Le job board Bisecco arrive bientôt. Réservé aux entreprises abonnées Pro pour publier leurs offres, gratuit pour les candidats dès l'ouverture. En attendant, échangez en direct avec les professionnels vérifiés SIREN.",
+  alternates: { canonical: "/emploi" },
 };
 
 export default function EmploiPage() {

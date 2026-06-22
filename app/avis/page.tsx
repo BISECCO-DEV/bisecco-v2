@@ -6,6 +6,7 @@ import { ShieldCheck, Star } from "lucide-react";
 export const metadata: Metadata = {
   title: "Tous les avis vérifiés",
   description: "Découvrez les 247 avis clients vérifiés sur Bisecco. Seuls les clients ayant échangé avec un professionnel via la plateforme peuvent en laisser.",
+  alternates: { canonical: "/avis" },
 };
 
 export default function AvisPage() {

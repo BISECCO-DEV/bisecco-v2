@@ -507,7 +507,7 @@ export default async function PartenairesPage() {
                   <div className="relative h-24 bg-gradient-to-br from-ink-700 to-ink-800 overflow-hidden">
                     {a.coverPhoto ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={a.coverPhoto} alt="" className="w-full h-full object-cover" loading="lazy" />
+                      <img src={a.coverPhoto} alt={`Couverture de ${a.name}`} className="w-full h-full object-cover" loading="lazy" />
                     ) : (
                       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(240,122,47,0.25),transparent)]" />
                     )}
@@ -516,7 +516,7 @@ export default async function PartenairesPage() {
                     <div className="w-16 h-16 rounded-2xl border-[3px] border-white bg-ink-100 overflow-hidden shadow-card">
                       {a.profilePhoto ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={a.profilePhoto} alt="" className="w-full h-full object-cover" />
+                        <img src={a.profilePhoto} alt={`${a.name}, ${a.metier} à ${a.city}`} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600 text-white font-extrabold text-xl">
                           {a.name.charAt(0)}
@@ -574,7 +574,7 @@ export default async function PartenairesPage() {
                       <div className="w-14 h-14 rounded-2xl border-2 border-blue-100 bg-blue-50 overflow-hidden shadow-card flex-shrink-0">
                         {p.profilePhoto ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.profilePhoto} alt="" className="w-full h-full object-cover" loading="lazy" />
+                          <img src={p.profilePhoto} alt={`Photo de ${p.name}`} className="w-full h-full object-cover" loading="lazy" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600 text-white font-extrabold text-lg">
                             {p.name.charAt(0).toUpperCase()}

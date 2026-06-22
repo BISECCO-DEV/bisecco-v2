@@ -33,6 +33,11 @@ import {
   Send,
 } from "lucide-react";
 
+// Canonical de l'accueil (titre/description hérités du layout racine).
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
 
 // Revalidation toutes les 5 min : la home se cache et se régénère en arrière-plan.
 // Les sections dynamiques (HomeLocalSearch, HomeReviews) sont rebuild à fréquence

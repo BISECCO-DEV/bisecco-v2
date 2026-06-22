@@ -5,6 +5,7 @@ import { Search, FileText, MessageCircle, ShieldCheck, CreditCard, User, Briefca
 export const metadata: Metadata = {
   title: "Centre d'aide",
   description: "Trouvez les réponses à vos questions sur Bisecco : inscription, devis, paiement, sécurité, RGPD.",
+  alternates: { canonical: "/aide" },
 };
 
 const CATEGORIES = [

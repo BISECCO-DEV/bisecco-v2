@@ -5,6 +5,7 @@ import { Newspaper, Download, Mail, ArrowRight, Calendar } from "lucide-react";
 export const metadata: Metadata = {
   title: "Espace presse",
   description: "Kit média Bisecco : logos, photos, communiqués, contact RP. Tout pour vos articles.",
+  alternates: { canonical: "/presse" },
 };
 
 const PRESS_ARTICLES = [

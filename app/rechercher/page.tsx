@@ -50,6 +50,7 @@ async function fetchMetiersWithCounts(): Promise<MetierWithCount[]> {
 export const metadata: Metadata = {
   title: "Rechercher un professionnel qualifié",
   description: "Recherchez un professionnel qualifié près de chez vous par métier et par ville. Profils vérifiés, avis clients réels.",
+  alternates: { canonical: "/rechercher" },
 };
 
 export const dynamic = "force-dynamic";

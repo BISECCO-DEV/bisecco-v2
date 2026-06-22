@@ -59,20 +59,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    keywords: [
-      `${metierLower} ${villeP.name.toLowerCase()}`,
-      `${metierLower} ${villeP.postalCode}`,
-      `${metierLower} ${villeP.name.toLowerCase()} pas cher`,
-      `devis ${metierLower} ${villeP.name.toLowerCase()}`,
-      `${metierLower} vérifié SIREN`,
-      `trouver un ${metierLower} ${villeP.name.toLowerCase()}`,
-      metierP.urgence ? `${metierLower} urgence ${villeP.name.toLowerCase()}` : "",
-      `${metierLower} pas cher`,
-      `professionnel ${villeP.name.toLowerCase()}`,
-      `annuaire ${metierLower}`,
-    ]
-      .filter(Boolean)
-      .join(", "),
     alternates: { canonical: `/metiers/${slug}/${ville}` },
     openGraph: {
       title,
@@ -350,7 +336,7 @@ export default async function MetierVillePage({ params }: Props) {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={a.profile_photo.startsWith("http") ? a.profile_photo : `https://bisecco.fr/storage/${a.profile_photo}`}
-                        alt={a.name}
+                        alt={`${a.name}, ${metierP.name.toLowerCase()} à ${villeP.name}`}
                         className="w-14 h-14 rounded-xl object-cover flex-shrink-0"
                       />
                     ) : (

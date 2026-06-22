@@ -5,6 +5,7 @@ import { Building2, Briefcase, Users, ShieldCheck, ArrowRight, Award } from "luc
 export const metadata: Metadata = {
   title: "Partenaires B2B",
   description: "Bisecco s'associe aux assureurs, syndics, agences immobilières et entreprises. Découvrez nos offres B2B.",
+  alternates: { canonical: "/partenaires-pro" },
 };
 
 const PARTNERS = [

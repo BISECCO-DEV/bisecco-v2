@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import {
   LayoutDashboard, Users, Briefcase, Star, Gift, Settings,
   Shield, ExternalLink, LogOut, Flag, FileText, MessageSquare,
-  Calendar,
+  Calendar, Activity,
 } from "lucide-react";
 import { requireAdmin } from "@/lib/db/current-user";
 import { logoutAction } from "@/lib/auth/actions";
@@ -24,6 +24,7 @@ const NAV_SECTIONS: Array<{ section: string; items: NavItem[] }> = [
     section: "Pilotage",
     items: [
       { href: "/admin",                label: "Dashboard",    icon: LayoutDashboard, exact: true },
+      { href: "/admin/sante",          label: "Santé",        icon: Activity },
       { href: "/admin/utilisateurs",   label: "Utilisateurs", icon: Users },
       { href: "/admin/metiers",        label: "Métiers",      icon: Briefcase },
       { href: "/admin/stats",          label: "Agenda",       icon: Calendar },

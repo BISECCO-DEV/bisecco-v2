@@ -29,6 +29,19 @@ function getTransporter(): nodemailer.Transporter {
   return transporter;
 }
 
+/** Vérifie que la connexion au serveur SMTP fonctionne (health check). */
+export async function verifySmtp(): Promise<{ ok: boolean; error?: string }> {
+  if (!SMTP_PASSWORD) {
+    return { ok: false, error: "SMTP_PASSWORD non configuré" };
+  }
+  try {
+    await getTransporter().verify();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 export type SendMailOptions = {
   to: string;
   subject: string;
